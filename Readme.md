@@ -10,3 +10,7 @@
    - Usuario: i32gacoj
    - Rama: joseluis
 
+ - Rafael Luque Laplana (GM2)
+     - Usuario: i32lular
+     - Rama: rafa
+
