@@ -14,3 +14,6 @@
      - Usuario: i32lular
      - Rama: rafa
 
+ - Javier Jesús Costa Ruiz-Canela (GM2)
+     - Usuario: i32coruj
+     - Rama: javi
