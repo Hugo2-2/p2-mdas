@@ -1,13 +1,15 @@
 package com.GM2.model;
 
+import java.time.LocalDate;
+
 public class Inscripcion {
     private String id;
     private String socioTitularId;
     private String tipo;
     private String cuotaAnual;
-    private String fechaCreacion;
+    private LocalDate fechaCreacion;
 
-    public Inscripcion(String id, String fechaCreacion, String cuotaAnual, String tipo, String socioTitularId) {
+    public Inscripcion(String id, LocalDate fechaCreacion, String cuotaAnual, String tipo, String socioTitularId) {
         this.id = id;
         this.fechaCreacion = fechaCreacion;
         this.cuotaAnual = cuotaAnual;
@@ -47,11 +49,11 @@ public class Inscripcion {
         this.cuotaAnual = cuotaAnual;
     }
 
-    public String getFechaCreacion() {
+    public LocalDate getFechaCreacion() {
         return fechaCreacion;
     }
 
-    public void setFechaCreacion(String fechaCreacion) {
+    public void setFechaCreacion(LocalDate fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
 }
