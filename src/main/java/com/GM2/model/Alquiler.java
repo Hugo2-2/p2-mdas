@@ -1,6 +1,7 @@
 package com.GM2.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class Alquiler {
     private int id;
@@ -8,10 +9,12 @@ public class Alquiler {
     private LocalDate fechafin;
     private double precio;
     private int plazas;
-    private String usuario_id;
+    private String usuario_dni;
+    private ArrayList<String> acompanantes_dni;
+    private String matricula_embarcacion;
+
+
     
-
-
     public int getId() {
         return id;
     }
@@ -50,6 +53,30 @@ public class Alquiler {
     
     public void setPlazas(int plazas) {
         this.plazas = plazas;
+    }
+
+    public String getUsuario_dni() {
+        return usuario_dni;
+    }
+
+    public void setUsuario_dni(String usuario_dni) {
+        this.usuario_dni = usuario_dni;
+    }
+
+    public ArrayList<String> getAcompanantes_dni() {
+        return acompanantes_dni;
+    }
+
+    public void setAcompanantes_dni(ArrayList<String> acompanantes_dni) {
+        this.acompanantes_dni = acompanantes_dni;
+    }
+
+    public String getMatricula_embarcacion() {
+        return matricula_embarcacion;
+    }
+
+    public void setMatricula_embarcacion(String matricula_embarcacion) {
+        this.matricula_embarcacion = matricula_embarcacion;
     }
 
 }
