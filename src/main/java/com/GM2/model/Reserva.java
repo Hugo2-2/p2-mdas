@@ -9,6 +9,7 @@ public class Reserva {
     private int plazas;
     private double precio;
     private String usuario_id;
+    private String matricula_embarcacion;
     private String descripcion;
 
 
@@ -50,6 +51,14 @@ public class Reserva {
 
     public void setUsuario_id(String usuario_id) {
         this.usuario_id = usuario_id;
+    }
+
+    public String getMatricula_embarcacion() {
+        return matricula_embarcacion;
+    }
+
+    public void setMatricula_embarcacion(String matricula_embarcacion) {
+        this.matricula_embarcacion = matricula_embarcacion;
     }
 
     public String getDescripcion() {
