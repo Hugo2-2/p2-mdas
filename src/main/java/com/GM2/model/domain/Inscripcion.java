@@ -1,4 +1,4 @@
-package com.GM2.model;
+package com.GM2.model.domain;
 
 import java.time.LocalDate;
 
