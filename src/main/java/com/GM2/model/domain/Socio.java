@@ -1,19 +1,20 @@
 package com.GM2.model.domain;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 public class Socio {
-    private String id;
+    private int id;
     private String nombre;
     private String apellidos;
     private String dni;
-    private String fechaNacimiento;
+    private LocalDate fechaNacimiento;
     private String direccion;
     private LocalDate fechaInscripcion;
     private Boolean esTitular;
     private Boolean tieneLicenciaPatron;
 
-    public Socio(Boolean tieneLicenciaPatron, Boolean esTitular, LocalDate fechaInscripcion, String direccion, String fechaNacimiento, String dni, String apellidos, String nombre, String id) {
+    public Socio(Boolean tieneLicenciaPatron, Boolean esTitular, LocalDate fechaInscripcion, String direccion, LocalDate fechaNacimiento, String dni, String apellidos, String nombre, int id) {
         this.tieneLicenciaPatron = tieneLicenciaPatron;
         this.esTitular = esTitular;
         this.fechaInscripcion = fechaInscripcion;
@@ -25,11 +26,11 @@ public class Socio {
         this.id = id;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -57,11 +58,11 @@ public class Socio {
         this.dni = dni;
     }
 
-    public String getFechaNacimiento() {
+    public LocalDate getFechaNacimiento() {
         return fechaNacimiento;
     }
 
-    public void setFechaNacimiento(String fechaNacimiento) {
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
 
