@@ -1,0 +1,110 @@
+package com.GM2.model.repository;
+
+import com.GM2.model.domain.Patron;
+import com.GM2.model.domain.Socio;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+@Repository
+public class PatronRepository extends AbstractRepository {
+
+    public PatronRepository(JdbcTemplate jdbcTemplate) { this.jdbcTemplate = jdbcTemplate; }
+
+    public List<Patron> findAllPatrones() {
+        try {
+            String query = sqlQueries.getProperty("select-findAllPatrones");
+            if(query != null){
+                List<Patron> result = jdbcTemplate.query(query, new RowMapper<Patron>() {
+                    public Patron mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        return new Patron(
+                                rs.getString("id"),
+                                rs.getString("nombre"),
+                                rs.getString("apellidos"),
+                                rs.getString("dni"),
+                                rs.getDate("fecha_nacimiento").toLocalDate(),
+                                rs.getDate("fecha_expedicion_titulo").toLocalDate()
+                        );
+                    };
+                });
+
+                return result;
+            } else return null;
+
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to find patrones");
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
+    public Patron findPatronById(String id) {
+        try {
+            String query = sqlQueries.getProperty("select-findPatronById");
+            Patron result = jdbcTemplate.query(query, this::mapRowToPatron, id);
+            if( result != null )
+                return result;
+            else return null;
+        } catch(DataAccessException exception) {
+            System.err.println("Unable to find patron with id: " + id);
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
+    private Patron mapRowToPatron(ResultSet row) {
+        try {
+
+            if(row.first()) {
+                String id = row.getString("id");
+                String nombre = row.getString("nombre");
+                String apellidos = row.getString("apellidos");
+                String dni = row.getString("dni");
+                Date fechaNacimiento = row.getDate("fecha_nacimiento");
+                Date fechaExpedicionTitulo = row.getDate("fecha_inscripcion");
+
+                Patron patron = new Patron(id, nombre, apellidos, dni, fechaNacimiento.toLocalDate(), fechaExpedicionTitulo.toLocalDate());
+                return patron;
+            } else {
+                return null;
+            }
+
+        } catch (SQLException exception) {
+            System.err.println("Unable to retrieve results from the database");
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean addPatron(Patron patron) {
+        try {
+            String query = sqlQueries.getProperty("insert-addPatron");
+            if(query != null) {
+                int result = jdbcTemplate.update(query,
+                        patron.getId(),
+                        patron.getNombre(),
+                        patron.getApellidos(),
+                        patron.getDni(),
+                        patron.getFechaNacimiento(),
+                        patron.getFechaExpedicionTitulo()
+                );
+
+                if (result > 0)
+                    return true;
+                else return false;
+
+            } else return false;
+
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to insert patron in the database");
+        }
+
+        return false;
+    }
+}
