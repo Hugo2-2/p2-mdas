@@ -86,7 +86,35 @@ INSERT INTO `reserva` VALUES
 (0, '2025-06-01', 4, 350.00, '12345678A', 'ABC1234', 'Reserva de embarcación para paseo familiar.'),
 (1, '2025-06-15', 2, 200.00, '26325825W', 'XYZ9876', 'Reserva para pesca deportiva.'),
 (2, '2025-07-20', 6, 500.00, '26325825W', 'LMN2468', 'Salida de grupo turístico.');
--- 
+--
+--
+--Estructura para la tabla 'embarcacion'
+
+CREATE TABLE embarcacion (
+     matricula VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+     nombre VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+     tipo VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+     plazas INT(11) NOT NULL,
+     dimensiones VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+     id_patron VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+     PRIMARY KEY (matricula),
+     FOREIGN KEY (id_patron) REFERENCES socios(dni)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+--Estructura para la tabla patron
+CREATE TABLE patron (
+    id VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    nombre VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    apellidos VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    dni VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
+    fecha_nacimiento DATE NOT NULL,
+    fecha_expedicion_titulo DATE NOT NULL,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+--
 -- Base de datos: `information_schema`
 -- 
 CREATE DATABASE `information_schema` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
