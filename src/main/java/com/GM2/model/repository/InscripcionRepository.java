@@ -18,7 +18,7 @@ public class InscripcionRepository extends AbstractRepository{
     public InscripcionRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
+ 
     public List<Inscripcion> findAllInscripciones() {
         try {
             String query = sqlQueries.getProperty("select-findAllInscripciones");
@@ -45,7 +45,7 @@ public class InscripcionRepository extends AbstractRepository{
         }
     }
 
-    public Inscripcion findInscripcionById(int id) {
+    public Inscripcion findInscripcionById(String id) {
         try {
             String query = sqlQueries.getProperty("select-findInscripcionById");
             Inscripcion result = jdbcTemplate.query(query, this::mapRowToInscripcion, id);

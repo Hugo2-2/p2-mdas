@@ -11,7 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-
+ 
 @Repository
 public class FamiliarRepository extends AbstractRepository{
 
@@ -19,9 +19,9 @@ public class FamiliarRepository extends AbstractRepository{
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Familiar> findAllFamiliars() {
+    public List<Familiar> findAllFamiliares() {
         try {
-            String query = sqlQueries.getProperty("select-findAllFamiliars");
+            String query = sqlQueries.getProperty("select-findAllFamiliares");
             if( query != null ) {
                 List<Familiar> result = jdbcTemplate.query(query, new RowMapper<Familiar>() {
                    public Familiar mapRow(ResultSet rs, int rowNum) throws SQLException {
