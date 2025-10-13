@@ -16,6 +16,8 @@
 --
 
 DROP TABLE IF EXISTS `socios`;
+DROP TABLE IF EXISTS `alquiler`;
+DROP TABLE IF EXISTS `reserva`;
 DROP TABLE IF EXISTS `embarcacion`;
 DROP TABLE IF EXISTS `patron`;
 
@@ -37,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `socios` (
 --
 -- Estructura de tabla para la tabla `alquiler`
 --
-CREATE TABLE `alquiler` (
+CREATE TABLE IF NOT EXISTS `alquiler` (
     `id` INT(11) NOT NULL,
     `fechainicio` DATE NOT NULL,
     `fechafin` DATE NOT NULL,
@@ -62,7 +64,7 @@ INSERT INTO `alquiler` VALUES
 --
 -- Estructura de tabla para la tabla `reserva`
 --
-CREATE TABLE `reserva` (
+CREATE TABLE IF NOT EXISTS `reserva` (
    `id` INT(11) NOT NULL,
    `fecha` DATE NOT NULL,
    `plazas` INT(11) NOT NULL,
@@ -84,24 +86,24 @@ INSERT INTO `reserva` VALUES
 --
 --Estructura para la tabla 'embarcacion'
 
-CREATE TABLE embarcacion (
-    matricula VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-    nombre VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-    tipo VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-    plazas INT(11) NOT NULL,
-    dimensiones VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-    id_patron VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-    PRIMARY KEY (matricula),
+CREATE TABLE `embarcacion` (
+    `matricula` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    `nombre` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    `tipo` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    `plazas` INT(11) NOT NULL,
+    `dimensiones` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    `id_patron` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    PRIMARY KEY (`matricula`),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 --Estructura para la tabla patron
 CREATE TABLE patron (
-    id VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-    nombre VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-    apellidos VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-    dni VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
-    fecha_nacimiento DATE NOT NULL,
-    fecha_expedicion_titulo DATE NOT NULL,
-    PRIMARY KEY (id)
+    `id` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    `nombre` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    `apellidos` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    `dni` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
+    `fecha_nacimiento` DATE NOT NULL,
+    `fecha_expedicion_titulo` DATE NOT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
