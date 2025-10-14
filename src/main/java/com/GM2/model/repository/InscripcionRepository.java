@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.List;
 
 @Repository
