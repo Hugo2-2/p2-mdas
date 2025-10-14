@@ -27,7 +27,7 @@ public class InscripcionRepository extends AbstractRepository{
                        return new Inscripcion(
                                rs.getString("id"),
                                rs.getDate("fechaCreacion").toLocalDate(),
-                               rs.getString("CuotaAnual"),
+                               rs.getFloat("CuotaAnual"),
                                rs.getString("TipoInscripcion"),
                                rs.getString("SocioTitular")
                        );
@@ -63,7 +63,7 @@ public class InscripcionRepository extends AbstractRepository{
             if(row.first()) {
                 String id = row.getString("id");
                 Date fechaCreacion = row.getDate("fechaCreacion");
-                String cuotaAnual = row.getString("CuotaAnual");
+                float cuotaAnual = row.getFloat("CuotaAnual");
                 String tipoInscripcion = row.getString("TipoInscripcion");
                 String socioTitular = row.getString("SocioTitular");
 

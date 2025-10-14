@@ -6,10 +6,10 @@ public class Inscripcion {
     private String id;
     private String socioTitularId;
     private String tipo;
-    private String cuotaAnual;
+    private float cuotaAnual;
     private LocalDate fechaCreacion;
  
-    public Inscripcion(String id, LocalDate fechaCreacion, String cuotaAnual, String tipo, String socioTitularId) {
+    public Inscripcion(String id, LocalDate fechaCreacion, float cuotaAnual, String tipo, String socioTitularId) {
         this.id = id;
         this.fechaCreacion = fechaCreacion;
         this.cuotaAnual = cuotaAnual;
@@ -41,11 +41,11 @@ public class Inscripcion {
         this.tipo = tipo;
     }
 
-    public String getCuotaAnual() {
+    public float getCuotaAnual() {
         return cuotaAnual;
     }
 
-    public void setCuotaAnual(String cuotaAnual) {
+    public void setCuotaAnual(float cuotaAnual) {
         this.cuotaAnual = cuotaAnual;
     }
 
