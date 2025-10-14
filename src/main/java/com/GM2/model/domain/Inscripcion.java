@@ -8,7 +8,7 @@ public class Inscripcion {
     private String tipo;
     private String cuotaAnual;
     private LocalDate fechaCreacion;
-
+ 
     public Inscripcion(String id, LocalDate fechaCreacion, String cuotaAnual, String tipo, String socioTitularId) {
         this.id = id;
         this.fechaCreacion = fechaCreacion;
