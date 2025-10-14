@@ -77,3 +77,19 @@ CREATE TABLE `patron` (
     `fecha_expedicion_titulo` DATE NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `familiar`{
+    `id` INT(11) NOT NULL,
+    `id_inscripcion` INT(11) NOT NULL,
+    `id_socio` INT(11) NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `inscripcion` (
+    `id` INT(11) NOT NULL,
+    `socio_Titular` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    `tipo` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    `cuota_anual` DOUBLE NOT NULL,
+    `fecha_creacion` DATE NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
