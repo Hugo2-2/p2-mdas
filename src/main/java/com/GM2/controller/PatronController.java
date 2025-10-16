@@ -23,8 +23,8 @@ public class PatronController {
     @GetMapping
     public List<Patron> getPatrones() { return patronRepository.findAllPatrones(); }
 
-    @GetMapping("/{id}")
-    public Patron getPatronById(@PathVariable String id){ return patronRepository.findPatronById(id); }
+    @GetMapping("/{dni}")
+    public Patron getPatronById(@PathVariable String dni){ return patronRepository.findPatronByDNI(dni); }
 
     @PostMapping
     public String addPatron(@RequestBody Patron patron) {

@@ -3,28 +3,18 @@ package com.GM2.model.domain;
 import java.time.LocalDate;
 
 public class Patron {
-    private String id;
     private String nombre;
     private String apellidos;
     private String dni;
     private LocalDate fechaNacimiento;
     private LocalDate fechaExpedicionTitulo;
 
-    public Patron(String id, String nombre, String apellidos, String dni, LocalDate fechaNacimiento, LocalDate fechaExpedicionTitulo) {
-        this.id = id;
+    public Patron(String nombre, String apellidos, String dni, LocalDate fechaNacimiento, LocalDate fechaExpedicionTitulo) {
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.dni = dni;
         this.fechaNacimiento = fechaNacimiento;
         this.fechaExpedicionTitulo = fechaExpedicionTitulo;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getNombre() {

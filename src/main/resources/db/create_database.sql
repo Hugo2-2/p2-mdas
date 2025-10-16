@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `patron` (
     `fecha_nacimiento` DATE NOT NULL,
     `fecha_expedicion_titulo` DATE NOT NULL,
     PRIMARY KEY (`dni`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `embarcacion` (
     `matricula` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
