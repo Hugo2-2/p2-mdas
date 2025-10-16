@@ -34,8 +34,7 @@ public class SocioRepository extends AbstractRepository {
                                rs.getDate("fecha_nacimiento").toLocalDate(),
                                rs.getString("dni"),
                                rs.getString("apellidos"),
-                               rs.getString("nombre"),
-                               rs.getInt("id")
+                               rs.getString("nombre")
                        );
                    };
                 });
@@ -49,15 +48,15 @@ public class SocioRepository extends AbstractRepository {
         }
     }
 
-    public Socio findSocioById(int id) {
+    public Socio findSocioByDNI(String dni) {
         try {
-            String query = sqlQueries.getProperty("select-findSocioById");
-            Socio result = jdbcTemplate.query(query, this::mapRowToSocio, id);
+            String query = sqlQueries.getProperty("select-findSocioByDNI");
+            Socio result = jdbcTemplate.query(query, this::mapRowToSocio, dni);
             if( result != null )
                 return result;
             else return null;
         } catch(DataAccessException exception) {
-            System.err.println("Unable to find socio with id: " + id);
+            System.err.println("Unable to find socio with dni: " + dni);
             exception.printStackTrace();
             return null;
         }
@@ -67,7 +66,6 @@ public class SocioRepository extends AbstractRepository {
         try {
 
             if(row.first()) {
-                int id = row.getInt("id");
                 String nombre = row.getString("nombre");
                 String apellidos = row.getString("apellidos");
                 String dni = row.getString("dni");
@@ -77,7 +75,8 @@ public class SocioRepository extends AbstractRepository {
                 Boolean esTitular = row.getBoolean("es_titular");
                 Boolean tituloPatron = row.getBoolean("titulo_patron");
 
-                Socio socio = new Socio(tituloPatron, esTitular, fechaInscripcion.toLocalDate(), direccion, fechaNacimiento.toLocalDate(), dni, apellidos, nombre, id);
+                Socio socio = new Socio(tituloPatron, esTitular, fechaInscripcion.toLocalDate(),
+                        direccion, fechaNacimiento.toLocalDate(), dni, apellidos, nombre);
                 return socio;
             } else {
                 return null;
@@ -95,7 +94,6 @@ public class SocioRepository extends AbstractRepository {
             String query = sqlQueries.getProperty("insert-addSocio");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
-                   socio.getId(),
                    socio.getNombre(),
                    socio.getApellidos(),
                    socio.getDni(),

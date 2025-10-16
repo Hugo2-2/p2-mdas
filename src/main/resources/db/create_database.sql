@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `socios` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `patron` (
-                                        `nombre` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    `nombre` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
     `apellidos` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
     `dni` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
     `fecha_nacimiento` DATE NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `patron` (
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `embarcacion` (
-                                             `matricula` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    `matricula` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
     `nombre` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
     `tipo` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
     `plazas` INT(11) NOT NULL,

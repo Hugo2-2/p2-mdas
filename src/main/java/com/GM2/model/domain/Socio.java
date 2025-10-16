@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public class Socio {
-    private int id;
     private String nombre;
     private String apellidos;
     private String dni;
@@ -14,7 +13,7 @@ public class Socio {
     private Boolean esTitular;
     private Boolean tieneLicenciaPatron;
 
-    public Socio(Boolean tieneLicenciaPatron, Boolean esTitular, LocalDate fechaInscripcion, String direccion, LocalDate fechaNacimiento, String dni, String apellidos, String nombre, int id) {
+    public Socio(Boolean tieneLicenciaPatron, Boolean esTitular, LocalDate fechaInscripcion, String direccion, LocalDate fechaNacimiento, String dni, String apellidos, String nombre) {
         this.tieneLicenciaPatron = tieneLicenciaPatron;
         this.esTitular = esTitular;
         this.fechaInscripcion = fechaInscripcion;
@@ -23,15 +22,6 @@ public class Socio {
         this.dni = dni;
         this.apellidos = apellidos;
         this.nombre = nombre;
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getNombre() {
