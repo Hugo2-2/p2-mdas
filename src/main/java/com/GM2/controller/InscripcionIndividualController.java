@@ -1,33 +1,33 @@
 package com.GM2.controller;
 
-import com.GM2.model.domain.Inscripcion;
-import com.GM2.model.repository.InscripcionRepository;
+import com.GM2.model.domain.InscripcionIndividual;
+import com.GM2.model.repository.InscripcionIndividualRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/inscripciones")
-public class InscripcionController {
+public class InscripcionIndividualController {
 
-    private final InscripcionRepository inscripcionRepository;
+    private final InscripcionIndividualRepository inscripcionRepository;
 
-    public InscripcionController(InscripcionRepository inscripcionRepository) {
+    public InscripcionIndividualController(InscripcionIndividualRepository inscripcionRepository) {
         this.inscripcionRepository = inscripcionRepository;
     }
 
     @GetMapping
-    public List<Inscripcion> getInscripciones() {
+    public List<InscripcionIndividual> getInscripciones() {
         return inscripcionRepository.findAllInscripciones();
     }
 
     @GetMapping("/{id}")
-    public Inscripcion getInscripcionById(@PathVariable String id) {
+    public InscripcionIndividual getInscripcionById(@PathVariable String id) {
         return inscripcionRepository.findInscripcionById(id);
     }
 
     @PostMapping
-    public String addInscripcion(@RequestBody Inscripcion inscripcion) {
+    public String addInscripcion(@RequestBody InscripcionIndividual inscripcion) {
         boolean res = inscripcionRepository.addInscripcion(inscripcion);
         if (res) {
             return "Inscripcion added successfully";
