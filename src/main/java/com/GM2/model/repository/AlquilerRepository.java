@@ -32,8 +32,7 @@ public class AlquilerRepository extends AbstractRepository{
                                rs.getDouble("precio"),
                                rs.getInt("plazas"),
                                rs.getString("usuario_dni"),
-                               rs.getString("matricula_embarcacion"),
-                               rs.getString("acompanantes_dni")
+                               rs.getString("matricula_embarcacion")
                        );
                    };
                 });
@@ -74,7 +73,7 @@ public class AlquilerRepository extends AbstractRepository{
                 String matricula_embarcacion = row.getString("matricula_embarcacion");
                 String acompanantes_dni = row.getString("acompanantes_dni");
 
-                Alquiler alquiler = new Alquiler(id, fechainicio.toLocalDate(), fechafin.toLocalDate(), precio, plazas, usuario_dni, matricula_embarcacion, acompanantes_dni);
+                Alquiler alquiler = new Alquiler(id, fechainicio.toLocalDate(), fechafin.toLocalDate(), precio, plazas, usuario_dni, matricula_embarcacion);
                 return alquiler;
 
             } else {
@@ -93,16 +92,15 @@ public class AlquilerRepository extends AbstractRepository{
             String query = sqlQueries.getProperty("insert-addAlquiler");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
-                   
-                   alquiler.getId(),
-                   alquiler.getFechainicio(),
-                   alquiler.getFechafin(),
-                   alquiler.getPrecio(),
-                   alquiler.getPlazas(),
-                   alquiler.getUsuario_dni(),
-                   alquiler.getMatricula_embarcacion(),
-                   alquiler.getAcompanantes_dni()
+                        alquiler.getId(),
+                        alquiler.getFechainicio(),
+                        alquiler.getFechafin(),
+                        alquiler.getPrecio(),
+                        alquiler.getPlazas(),
+                        alquiler.getUsuario_dni(),
+                        alquiler.getMatricula_embarcacion()
                 );
+
 
                 if (result > 0)
                     return true;
@@ -112,6 +110,7 @@ public class AlquilerRepository extends AbstractRepository{
 
         } catch (DataAccessException exception) {
             System.err.println("Unable to insert alquileres in the database");
+            exception.printStackTrace();
         }
 
         return false;

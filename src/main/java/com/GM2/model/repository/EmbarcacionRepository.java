@@ -92,12 +92,12 @@ public class EmbarcacionRepository extends AbstractRepository {
             String query = sqlQueries.getProperty("insert-addEmbarcacion");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
-                        embarcacion.getIdPatron(),
-                        embarcacion.getDimensiones(),
-                        embarcacion.getPlazas(),
-                        embarcacion.getTipo(),
+                        embarcacion.getMatricula(),
                         embarcacion.getNombre(),
-                        embarcacion.getMatricula()
+                        embarcacion.getTipo(),
+                        embarcacion.getPlazas(),
+                        embarcacion.getDimensiones(),
+                        embarcacion.getIdPatron()
                 );
 
                 if(result > 0)
@@ -107,7 +107,7 @@ public class EmbarcacionRepository extends AbstractRepository {
             } else return false;
 
         } catch (DataAccessException exception) {
-            System.err.println("Unable to insert reservas in the database");
+            System.err.println("Unable to insert embarcacion in the database");
         }
 
         return false;
