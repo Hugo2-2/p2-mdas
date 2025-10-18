@@ -1,6 +1,7 @@
 package com.GM2.model.repository;
 
 import com.GM2.model.domain.Embarcacion;
+import com.GM2.model.domain.Patron;
 import com.GM2.model.domain.Reserva;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,6 +15,8 @@ import java.util.List;
 
 @Repository
 public class EmbarcacionRepository extends AbstractRepository {
+
+    PatronRepository patronRepository;
 
     public EmbarcacionRepository(JdbcTemplate jdbcTemplate) { this.jdbcTemplate = jdbcTemplate; }
 
@@ -111,5 +114,17 @@ public class EmbarcacionRepository extends AbstractRepository {
         }
 
         return false;
+    }
+
+    //Funcion para comprobar si la embarcacion tiene un patron asignado
+    public boolean isPatronAssignedToEmbarcacion(String patronDNI) {
+        Patron patron = patronRepository.findPatronByDNI(patronDNI);
+        if(patron != null) {
+            String query = sqlQueries.getProperty("isPatronAssignedToEmbarcacion");
+            if(query != null) {
+                return true;
+            }
+            return false;
+        }
     }
 }

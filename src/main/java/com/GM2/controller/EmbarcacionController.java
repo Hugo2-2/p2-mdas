@@ -3,6 +3,7 @@ package com.GM2.controller;
 import com.GM2.model.domain.Embarcacion;
 import com.GM2.model.repository.EmbarcacionRepository;
 
+import com.GM2.model.repository.PatronRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
