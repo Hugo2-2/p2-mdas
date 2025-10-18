@@ -48,10 +48,10 @@ public class InscripcionFamiliarRepository extends AbstractRepository {
     public InscripcionFamiliar findInscripcionFamiliarById(int id) {
         try {
             String query = sqlQueries.getProperty("select-findInscripcionFamiliarById");
-            InscripcionFamiliar result = jdbcTemplate.query(query, this::mapRowToInscripcion, id);
+            List<InscripcionFamiliar> result = jdbcTemplate.query(query, this::mapRowToInscripcion, id);
 
             if( result != null ) {
-                return result;
+                return result.getFirst();
             } else return null;
         } catch (DataAccessException exception) {
             System.err.println("Unable to find inscripcionFamiliar with id: " +  id);
@@ -70,8 +70,8 @@ public class InscripcionFamiliarRepository extends AbstractRepository {
                 String adultoAdicional = rs.getString("segundo_adulto");
                 List<Hijos> hijos = hijosRepository.findHijosByInscripcion(id);
 
-                InscripcionFamiliar inscripcion = new InscripcionFamiliar(id, fechaCreacion, cuotaAnual, socioTitular, adultoAdicional, hijos);
-                return inscripcion;
+                InscripcionFamiliar inscripcionFamiliar = new InscripcionFamiliar(id, fechaCreacion, cuotaAnual, socioTitular, adultoAdicional, hijos);
+                return inscripcionFamiliar;
             } else return null;
         } catch (SQLException ex) {
             System.err.println("Unable to find inscripcionFamiliar");

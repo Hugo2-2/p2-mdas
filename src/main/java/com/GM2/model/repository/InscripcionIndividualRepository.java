@@ -79,6 +79,9 @@ public class InscripcionIndividualRepository extends AbstractRepository{
 
     public boolean addInscripcion(InscripcionIndividual inscripcion) {
         try {
+
+            
+
             String query = sqlQueries.getProperty("insert-addInscripcionIndividual");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
