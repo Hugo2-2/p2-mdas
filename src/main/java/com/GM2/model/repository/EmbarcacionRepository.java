@@ -117,14 +117,46 @@ public class EmbarcacionRepository extends AbstractRepository {
     }
 
     //Funcion para comprobar si la embarcacion tiene un patron asignado
-    public boolean isPatronAssignedToEmbarcacion(String patronDNI) {
-        Patron patron = patronRepository.findPatronByDNI(patronDNI);
-        if(patron != null) {
-            String query = sqlQueries.getProperty("isPatronAssignedToEmbarcacion");
-            if(query != null) {
-                return true;
-            }
+    public boolean isPatronAssignedToEmbarcacion(String patronDni) {
+        try {
+            // Esta consulta cuenta cuántas embarcaciones tienen este DNI de patrón.
+            String query = sqlQueries.getProperty("select-isPatronAssignedToEmbarcacion");
+
+            // Usamos queryForObject porque esperamos un único valor (un número).
+            Integer count = jdbcTemplate.queryForObject(query, Integer.class, patronDni);
+
+            // Si el contador es null (improbable pero posible) o 0, no está asignado.
+            // Si es mayor que 0, sí lo está.
+            return count != null && count > 0;
+
+        } catch (DataAccessException e) {
+            System.err.println("Error al comprobar la asignación del patrón: " + patronDni);
+            e.printStackTrace();
             return false;
         }
+    }
+
+    //Funcion para obtener el patron de la embarcacion
+    public String getPatronAssignedToEmbarcacion(String matricula) {
+        try {
+            String query = sqlQueries.getProperty("select-getPatronAssignedToEmbarcacion");
+            //Guardamos el dni del patron asignado a la embarcacion
+            String patronAsignadoDni =  jdbcTemplate.queryForObject(query, String.class, matricula);
+            return patronAsignadoDni;
+        } catch (DataAccessException e) {
+            System.err.println("No hay ningún patron asignado a la embarcación actual");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    //Funcion para cambiar el patron de la embarcacion
+    public boolean updatePatron(String patronDni,  String matricula) {
+        String query = sqlQueries.getProperty("update-updatePatron");
+        if(query != null) {
+            jdbcTemplate.update(query, patronDni, matricula);
+            return true;
+        }
+        return false;
     }
 }

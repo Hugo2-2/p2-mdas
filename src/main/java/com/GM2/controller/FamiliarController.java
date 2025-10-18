@@ -38,9 +38,9 @@ public class FamiliarController {
         }
     }
 
-    public static class InscripcionFamiliarController extends AbstractRepository {
-
-        public InscripcionFamiliarRep
-
-    }
+//    public static class InscripcionFamiliarController extends AbstractRepository {
+//
+//        public InscripcionFamiliarRep
+//
+//    }
 }

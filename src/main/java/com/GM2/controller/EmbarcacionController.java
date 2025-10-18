@@ -1,6 +1,7 @@
 package com.GM2.controller;
 
 import com.GM2.model.domain.Embarcacion;
+import com.GM2.model.domain.Patron;
 import com.GM2.model.repository.EmbarcacionRepository;
 
 import com.GM2.model.repository.PatronRepository;
@@ -13,9 +14,12 @@ import java.util.List;
 public class EmbarcacionController {
 
     EmbarcacionRepository embarcacionRepository;
+    AssignPatronToEmbarcacion assignPatronToEmbarcacion;
 
-    public EmbarcacionController(EmbarcacionRepository embarcacionRepository) {
+    public EmbarcacionController(EmbarcacionRepository embarcacionRepository, AssignPatronToEmbarcacion assignPatronToEmbarcacion) {
         this.embarcacionRepository = embarcacionRepository;
+        this.assignPatronToEmbarcacion = assignPatronToEmbarcacion;
+
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
         this.embarcacionRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
@@ -35,5 +39,13 @@ public class EmbarcacionController {
         } else {
             return "Embarcacion could not be added";
         }
+    }
+
+    //TENGO QUE HACER AQUI LA DE OBTENER EMBARCACION POR TIPO
+
+
+    @PutMapping("/{matricula}/patron")
+    public String asociatePatronToEmbarcacion(@PathVariable String matricula, @RequestBody String patronDni){
+        return assignPatronToEmbarcacion.asociatePatron(matricula, patronDni);
     }
 }
