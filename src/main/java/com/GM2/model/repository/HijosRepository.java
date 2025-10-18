@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -72,6 +73,29 @@ public class HijosRepository extends AbstractRepository {
             exception.printStackTrace();
             return null;
         }
+    }
+
+    public List<Hijos> findHijosByInscripcion(int inscripcion) {
+        try {
+            String query = sqlQueries.getProperty("select-findHijosByInscripcion");
+            List<Hijos> hijos = jdbcTemplate.query(query, this::mapRowFromInscripcion, inscripcion);
+
+            if( hijos != null )
+                return hijos;
+            else return null;
+        } catch(DataAccessException exception) {
+            System.err.println("Unable to retrieve hijos from the database");
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
+    private Hijos mapRowFromInscripcion(ResultSet row, int rowNum) throws SQLException {
+        String dni = row.getString("dni");
+        int id_inscripcion = row.getInt("id_inscripcion");
+
+        return new Hijos(dni, id_inscripcion);
+
     }
 
     public boolean addHijo(Hijos hijo) {
