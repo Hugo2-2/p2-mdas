@@ -1,6 +1,7 @@
 package com.GM2.model.domain;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.Date;
 
 public class Socio {
@@ -86,5 +87,11 @@ public class Socio {
 
     public void setTieneLicenciaPatron(Boolean tieneLicenciaPatron) {
         this.tieneLicenciaPatron = tieneLicenciaPatron;
+    }
+
+    public boolean esMayorEdad() {
+        LocalDate hoy = LocalDate.now();
+        int edad = Period.between(fechaNacimiento, hoy).getYears();
+        return edad >= 18;
     }
 }
