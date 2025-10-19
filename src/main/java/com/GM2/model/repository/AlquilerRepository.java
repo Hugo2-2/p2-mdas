@@ -114,9 +114,8 @@ public class AlquilerRepository extends AbstractRepository{
 
                 int result = jdbcTemplate.update(query,
                    
-                   alquiler.getId(),
-                   alquiler.getFechainicio(),
-                   alquiler.getFechafin(),
+                   Date.valueOf(alquiler.getFechainicio()),
+                   Date.valueOf(alquiler.getFechafin()),
                    alquiler.getPrecio(),
                    alquiler.getPlazas(),
                    alquiler.getUsuario_dni(),
@@ -138,47 +137,5 @@ public class AlquilerRepository extends AbstractRepository{
 
         return false;
     }
-
-
-    public List<Embarcacion> findEmbarcacionDisponible(LocalDate fechaInicio, LocalDate fechaFin) {
-           try {
-            String query = sqlQueries.getProperty("select-findEmbarcacionesDisponibles");
-            if (query != null) {
-                return jdbcTemplate.query(query, new RowMapper<Embarcacion>() {
-                    public Embarcacion mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        return new Embarcacion(
-                            rs.getString("matricula"),
-                            rs.getString("nombre"),
-                            rs.getInt("plazas"),
-                            rs.getString("tipo"),
-                            rs.getString("dimensiones"),
-                            rs.getString("id_patron")
-                        );
-                    }
-                }, java.sql.Date.valueOf(fechaInicio), java.sql.Date.valueOf(fechaFin));
-            } else return null;
-        } catch (DataAccessException ex) {
-            System.err.println("Unable to find available boats between dates");
-            ex.printStackTrace();
-            return null;
-        }
-    }
-
-
-    public List<Alquiler> findAlquileresFuturos() {
-        try {
-            String query = sqlQueries.getProperty("select-findAlquileresFuturos");
-            if (query != null) {
-                return jdbcTemplate.query(query, (rs, rowNum) -> mapRowToAlquiler(rs));
-            } else return null;
-        } catch (DataAccessException ex) {
-            System.err.println("Unable to retrieve future rentals");
-            ex.printStackTrace();
-            return null;
-        }
-    }
-
-
-
 
 }

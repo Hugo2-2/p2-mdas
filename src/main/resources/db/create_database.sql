@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `embarcacion` (
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `alquiler` (
-    `id` INT(11) NOT NULL,
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
     `fechainicio` DATE NOT NULL,
     `fechafin` DATE NOT NULL,
     `precio` DOUBLE NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `alquiler` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `reserva` (
-    `id` INT(11) NOT NULL,
+    `id` INT(11) NOT NULL AUTOINCREMENT,
     `fecha` DATE NOT NULL,
     `plazas` INT(11) NOT NULL,
     `precio` DOUBLE NOT NULL,
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `reserva` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `inscripcionIndividual` (
-    `id` INT(11) NOT NULL,
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
     `socio_Titular` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
     `cuota_anual` DOUBLE NOT NULL,
     `fecha_creacion` DATE NOT NULL,
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `inscripcionIndividual` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `inscripcionFamiliar` (
-     `id` INT(11) NOT NULL,
+     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `socio_Titular` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
     `cuota_anual` DOUBLE NOT NULL,
     `fecha_creacion` DATE NOT NULL,
