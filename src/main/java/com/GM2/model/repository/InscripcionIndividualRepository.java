@@ -1,6 +1,6 @@
 package com.GM2.model.repository;
 
-import com.GM2.model.domain.Inscripcion;
+import com.GM2.model.domain.InscripcionIndividual;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,24 +12,23 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Repository
-public class InscripcionRepository extends AbstractRepository{
+public class InscripcionIndividualRepository extends AbstractRepository{
 
-    public InscripcionRepository(JdbcTemplate jdbcTemplate) {
+    public InscripcionIndividualRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
- 
-    public List<Inscripcion> findAllInscripciones() {
+
+    public List<InscripcionIndividual> findAllInscripciones() {
         try {
-            String query = sqlQueries.getProperty("select-findAllInscripciones");
+            String query = sqlQueries.getProperty("select-findAllInscripcionesIndividuales");
             if( query != null ) {
-                List<Inscripcion> result = jdbcTemplate.query(query, new RowMapper<Inscripcion>() {
-                   public Inscripcion mapRow(ResultSet rs, int rowNum) throws SQLException {
-                       return new Inscripcion(
-                               rs.getString("id"),
-                               rs.getDate("fechaCreacion").toLocalDate(),
-                               rs.getString("CuotaAnual"),
-                               rs.getString("TipoInscripcion"),
-                               rs.getString("SocioTitular")
+                List<InscripcionIndividual> result = jdbcTemplate.query(query, new RowMapper<InscripcionIndividual>() {
+                   public InscripcionIndividual mapRow(ResultSet rs, int rowNum) throws SQLException {
+                       return new InscripcionIndividual(
+                               rs.getInt("id"),
+                               rs.getDate("fecha_creacion").toLocalDate(),
+                               rs.getFloat("cuota_anual"),
+                               rs.getString("socio_Titular")
                        );
                    };
                 });
@@ -44,10 +43,10 @@ public class InscripcionRepository extends AbstractRepository{
         }
     }
 
-    public Inscripcion findInscripcionById(String id) {
+    public InscripcionIndividual findInscripcionById(String id) {
         try {
-            String query = sqlQueries.getProperty("select-findInscripcionById");
-            Inscripcion result = jdbcTemplate.query(query, this::mapRowToInscripcion, id);
+            String query = sqlQueries.getProperty("select-findInscripcionIndividualById");
+            InscripcionIndividual result = jdbcTemplate.query(query, this::mapRowToInscripcion, id);
             if( result != null )
                 return result;
             else return null;
@@ -58,16 +57,15 @@ public class InscripcionRepository extends AbstractRepository{
         }
     }
 
-    private Inscripcion mapRowToInscripcion(ResultSet row) {
+    private InscripcionIndividual mapRowToInscripcion(ResultSet row) {
         try {
             if(row.first()) {
-                String id = row.getString("id");
+                int id = row.getInt("id");
                 Date fechaCreacion = row.getDate("fechaCreacion");
-                String cuotaAnual = row.getString("CuotaAnual");
-                String tipoInscripcion = row.getString("TipoInscripcion");
+                float cuotaAnual = row.getFloat("CuotaAnual");
                 String socioTitular = row.getString("SocioTitular");
 
-                Inscripcion inscripcion = new Inscripcion(id, fechaCreacion.toLocalDate(), cuotaAnual, tipoInscripcion, socioTitular);
+                InscripcionIndividual inscripcion = new InscripcionIndividual(id, fechaCreacion.toLocalDate(), cuotaAnual, socioTitular);
                 return inscripcion;
             } else {
                 return null;
@@ -79,15 +77,17 @@ public class InscripcionRepository extends AbstractRepository{
         }
     }
 
-    public boolean addInscripcion(Inscripcion inscripcion) {
+    public boolean addInscripcion(InscripcionIndividual inscripcion) {
         try {
-            String query = sqlQueries.getProperty("insert-addInscripcion");
+
+            
+
+            String query = sqlQueries.getProperty("insert-addInscripcionIndividual");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
                     inscripcion.getId(),
                     inscripcion.getFechaCreacion(),
                     inscripcion.getCuotaAnual(),
-                    inscripcion.getTipo(),
                     inscripcion.getSocioTitularId()
                 );
 
@@ -96,8 +96,9 @@ public class InscripcionRepository extends AbstractRepository{
                 else return false;
 
             } else return false;
-         } catch (DataAccessException exception) {
+        } catch (DataAccessException exception) {
             System.err.println("Unable to insert inscripcion in the database");
+            exception.printStackTrace();
         }
         return false;
     }

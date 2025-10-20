@@ -1,6 +1,7 @@
 package com.GM2.model.repository;
 
 import com.GM2.model.domain.Embarcacion;
+import com.GM2.model.domain.Patron;
 import com.GM2.model.domain.Reserva;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,6 +15,8 @@ import java.util.List;
 
 @Repository
 public class EmbarcacionRepository extends AbstractRepository {
+
+    PatronRepository patronRepository;
 
     public EmbarcacionRepository(JdbcTemplate jdbcTemplate) { this.jdbcTemplate = jdbcTemplate; }
 
@@ -92,12 +95,12 @@ public class EmbarcacionRepository extends AbstractRepository {
             String query = sqlQueries.getProperty("insert-addEmbarcacion");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
-                        embarcacion.getIdPatron(),
-                        embarcacion.getDimensiones(),
-                        embarcacion.getPlazas(),
-                        embarcacion.getTipo(),
+                        embarcacion.getMatricula(),
                         embarcacion.getNombre(),
-                        embarcacion.getMatricula()
+                        embarcacion.getTipo(),
+                        embarcacion.getPlazas(),
+                        embarcacion.getDimensiones(),
+                        embarcacion.getIdPatron()
                 );
 
                 if(result > 0)
@@ -107,9 +110,53 @@ public class EmbarcacionRepository extends AbstractRepository {
             } else return false;
 
         } catch (DataAccessException exception) {
-            System.err.println("Unable to insert reservas in the database");
+            System.err.println("Unable to insert embarcacion in the database");
         }
 
+        return false;
+    }
+
+    //Funcion para comprobar si la embarcacion tiene un patron asignado
+    public boolean isPatronAssignedToEmbarcacion(String patronDni) {
+        try {
+            // Esta consulta cuenta cuántas embarcaciones tienen este DNI de patrón.
+            String query = sqlQueries.getProperty("select-isPatronAssignedToEmbarcacion");
+
+            // Usamos queryForObject porque esperamos un único valor (un número).
+            Integer count = jdbcTemplate.queryForObject(query, Integer.class, patronDni);
+
+            // Si el contador es null (improbable pero posible) o 0, no está asignado.
+            // Si es mayor que 0, sí lo está.
+            return count != null && count > 0;
+
+        } catch (DataAccessException e) {
+            System.err.println("Error al comprobar la asignación del patrón: " + patronDni);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    //Funcion para obtener el patron de la embarcacion
+    public String getPatronAssignedToEmbarcacion(String matricula) {
+        try {
+            String query = sqlQueries.getProperty("select-getPatronAssignedToEmbarcacion");
+            //Guardamos el dni del patron asignado a la embarcacion
+            String patronAsignadoDni =  jdbcTemplate.queryForObject(query, String.class, matricula);
+            return patronAsignadoDni;
+        } catch (DataAccessException e) {
+            System.err.println("No hay ningún patron asignado a la embarcación actual");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    //Funcion para cambiar el patron de la embarcacion
+    public boolean updatePatron(String patronDni,  String matricula) {
+        String query = sqlQueries.getProperty("update-updatePatron");
+        if(query != null) {
+            jdbcTemplate.update(query, patronDni, matricula);
+            return true;
+        }
         return false;
     }
 }

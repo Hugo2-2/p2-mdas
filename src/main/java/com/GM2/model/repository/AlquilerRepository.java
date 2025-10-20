@@ -1,6 +1,8 @@
 package com.GM2.model.repository;
 
 import com.GM2.model.domain.Alquiler;
+import com.GM2.model.domain.Embarcacion;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -9,7 +11,11 @@ import org.springframework.stereotype.Repository;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.time.LocalDate;
+
 
 @Repository
 public class AlquilerRepository extends AbstractRepository{
@@ -24,18 +30,24 @@ public class AlquilerRepository extends AbstractRepository{
             String query = sqlQueries.getProperty("select-findAllAlquileres");
             if( query != null ) {
                 List<Alquiler> result = jdbcTemplate.query(query, new RowMapper<Alquiler>() {
-                   public Alquiler mapRow(ResultSet rs, int rowNum) throws SQLException {
-                       return new Alquiler(
-                               rs.getInt("id"),
-                               rs.getDate("fechainicio").toLocalDate(),
-                               rs.getDate("fechafin").toLocalDate(),
-                               rs.getDouble("precio"),
-                               rs.getInt("plazas"),
-                               rs.getString("usuario_dni"),
-                               rs.getString("matricula_embarcacion"),
-                               rs.getString("acompanantes_dni")
-                       );
-                   };
+                    public Alquiler mapRow(ResultSet rs, int rowNum) throws SQLException {
+                 
+                        String acompStr = rs.getString("acompanantes_dni");
+                        ArrayList<String> acompanantes_dni = new ArrayList<>();
+                        if (acompStr != null && !acompStr.isEmpty()) {
+                            acompanantes_dni = new ArrayList<>(Arrays.asList(acompStr.split(",")));
+                        }
+                        return new Alquiler(
+                                rs.getInt("id"),
+                                rs.getDate("fechainicio").toLocalDate(),
+                                rs.getDate("fechafin").toLocalDate(),
+                                rs.getDouble("precio"),
+                                rs.getInt("plazas"),
+                                rs.getString("usuario_dni"),
+                                rs.getString("matricula_embarcacion"),
+                                acompanantes_dni
+                        );
+                    };
                 });
 
                 return result;
@@ -63,7 +75,11 @@ public class AlquilerRepository extends AbstractRepository{
 
     private Alquiler mapRowToAlquiler(ResultSet row) {
         try {
-
+            String acompStr = row.getString("acompanantes_dni");
+            ArrayList<String> acompanantes_dni = new ArrayList<>();
+            if (acompStr != null && !acompStr.isEmpty()) {
+                acompanantes_dni = new ArrayList<>(Arrays.asList(acompStr.split(",")));
+            }
             if(row.first()) {
                 int id = row.getInt("id");
                 Date fechainicio = row.getDate("fechainicio");
@@ -72,7 +88,7 @@ public class AlquilerRepository extends AbstractRepository{
                 int plazas = row.getInt("plazas");
                 String usuario_dni = row.getString("usuario_dni");
                 String matricula_embarcacion = row.getString("matricula_embarcacion");
-                String acompanantes_dni = row.getString("acompanantes_dni");
+                
 
                 Alquiler alquiler = new Alquiler(id, fechainicio.toLocalDate(), fechafin.toLocalDate(), precio, plazas, usuario_dni, matricula_embarcacion, acompanantes_dni);
                 return alquiler;
@@ -92,17 +108,21 @@ public class AlquilerRepository extends AbstractRepository{
         try {
             String query = sqlQueries.getProperty("insert-addAlquiler");
             if(query != null) {
+
+                // Convertir lista de acompañantes a cadena separada por comas
+                String acompStr = String.join(",", alquiler.getAcompanantes_dni() != null ? alquiler.getAcompanantes_dni() : new ArrayList<>());
+
                 int result = jdbcTemplate.update(query,
                    
-                   alquiler.getId(),
-                   alquiler.getFechainicio(),
-                   alquiler.getFechafin(),
+                   Date.valueOf(alquiler.getFechainicio()),
+                   Date.valueOf(alquiler.getFechafin()),
                    alquiler.getPrecio(),
                    alquiler.getPlazas(),
                    alquiler.getUsuario_dni(),
                    alquiler.getMatricula_embarcacion(),
-                   alquiler.getAcompanantes_dni()
+                   acompStr
                 );
+
 
                 if (result > 0)
                     return true;
@@ -112,6 +132,7 @@ public class AlquilerRepository extends AbstractRepository{
 
         } catch (DataAccessException exception) {
             System.err.println("Unable to insert alquileres in the database");
+            exception.printStackTrace();
         }
 
         return false;

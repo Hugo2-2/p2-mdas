@@ -30,9 +30,9 @@ public class SocioController {
         return socioRepository.findAllSocios();
     }
 
-    @GetMapping("/{id}")
-    public Socio getSocioById(@PathVariable int id) {
-        return socioRepository.findSocioById(id);
+    @GetMapping("/{dni}")
+    public Socio getSocioByDNI(@PathVariable String dni) {
+        return socioRepository.findSocioByDNI(dni);
     }
 
     @PostMapping

@@ -1,6 +1,7 @@
 package com.GM2.controller;
 
 import com.GM2.model.domain.Familiar;
+import com.GM2.model.repository.AbstractRepository;
 import com.GM2.model.repository.FamiliarRepository;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,4 +37,10 @@ public class FamiliarController {
             return "Error adding familiar";
         }
     }
+
+//    public static class InscripcionFamiliarController extends AbstractRepository {
+//
+//        public InscripcionFamiliarRep
+//
+//    }
 }

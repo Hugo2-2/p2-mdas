@@ -109,9 +109,10 @@ public class ReservaRepository extends AbstractRepository{
 
         } catch (DataAccessException exception) {
             System.err.println("Unable to insert reservas in the database");
+            exception.printStackTrace();
         }
 
-        return false;
+        return false; 
     }
 
 }
