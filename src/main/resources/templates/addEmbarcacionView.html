@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Añadir Embarcación</title>
+</head>
+
+<body>
+<h1>Añadir una nueva embarcación</h1>
+
+<form method="POST" th:action="@{/api/embarcaciones/addEmbarcacion}" th:object="${newEmbarcacion}">
+
+    <div>
+        <label for="matricula">Matrícula:</label><br>
+        <input type="text" id="matricula" th:field="*{matricula}"><br>
+    </div>
+
+    <div>
+        <label for="nombre">Nombre:</label><br>
+        <input type="text" id="nombre" th:field="*{nombre}"><br>
+    </div>
+
+    <div>
+        <label for="tipo">Tipo:</label><br>
+        <input type="text" id="tipo" th:field="*{tipo}"><br>
+    </div>
+
+    <div>
+        <label for="plazas">Plazas:</label><br>
+        <input type="number" id="plazas" th:field="*{plazas}"><br>
+    </div>
+
+    <div>
+        <label for="dimensiones">Dimensiones:</label><br>
+        <input type="text" id="dimensiones" th:field="*{dimensiones}"><br>
+    </div>
+
+    <div>
+        <label for="idPatron">ID del Patrón:</label><br>
+        <input type="text" id="idPatron" th:field="*{idPatron}"><br>
+    </div>
+
+    <br>
+
+    <div>
+        [cite_start]<input type="submit" value="Guardar Embarcación"> [cite: 403]
+    </div>
+
+</form>
+</body>
+</html>

@@ -8,6 +8,9 @@ public class Embarcacion {
     private String dimensiones;
     private String idPatron;
 
+    public Embarcacion(){
+    }
+
     public Embarcacion(String idPatron, String dimensiones, int plazas, String tipo, String nombre, String matricula) {
         this.idPatron = idPatron;
         this.dimensiones = dimensiones;
