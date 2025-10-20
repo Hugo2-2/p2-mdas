@@ -49,7 +49,7 @@ public class EmbarcacionController {
     @GetMapping("/addEmbarcacion")
     public ModelAndView getAddEmbarcacionView() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("addEmbarcacionView.html");
+        modelAndView.setViewName("addEmbarcacionView");
         modelAndView.addObject("newEmbarcacion", new Embarcacion());
         return modelAndView;
     }
