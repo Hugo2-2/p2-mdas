@@ -57,6 +57,20 @@ public class PatronRepository extends AbstractRepository {
         }
     }
 
+    public boolean isRegistered(String dni) {
+        try {
+            String query = sqlQueries.getProperty("select-countPatronByDNI");
+            Integer count = jdbcTemplate.queryForObject(query, Integer.class, dni);
+            if( count != null && count > 0 )
+                return true;
+            else return false;
+        } catch(DataAccessException exception) {
+            System.err.println("Unable to find patron with dni: " + dni);
+            exception.printStackTrace();
+            return false;
+        }
+    }
+
     private Patron mapRowToPatron(ResultSet row) {
         try {
 
@@ -106,4 +120,5 @@ public class PatronRepository extends AbstractRepository {
 
         return false;
     }
+
 }
