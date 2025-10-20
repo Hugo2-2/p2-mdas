@@ -7,13 +7,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/inscripciones")
+@RequestMapping("/api/inscripcionesIndividuales")
 public class InscripcionIndividualController {
 
     private final InscripcionIndividualRepository inscripcionRepository;
 
     public InscripcionIndividualController(InscripcionIndividualRepository inscripcionRepository) {
         this.inscripcionRepository = inscripcionRepository;
+        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        this.inscripcionRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
     @GetMapping
