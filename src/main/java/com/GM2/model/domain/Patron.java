@@ -9,6 +9,9 @@ public class Patron {
     private LocalDate fechaNacimiento;
     private LocalDate fechaExpedicionTitulo;
 
+    public Patron(){
+    }
+
     public Patron(String nombre, String apellidos, String dni, LocalDate fechaNacimiento, LocalDate fechaExpedicionTitulo) {
         this.nombre = nombre;
         this.apellidos = apellidos;
