@@ -5,18 +5,21 @@ import com.GM2.model.domain.InscripcionFamiliar;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
+@Repository
 public class InscripcionFamiliarRepository extends AbstractRepository {
 
     HijosRepository hijosRepository;
 
-    public InscripcionFamiliarRepository(JdbcTemplate jdbcTemplate) {this.jdbcTemplate = jdbcTemplate;}
+    public InscripcionFamiliarRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public List<InscripcionFamiliar> findAllInscripciones(){
         try {
@@ -26,10 +29,10 @@ public class InscripcionFamiliarRepository extends AbstractRepository {
                     public InscripcionFamiliar mapRow(ResultSet rs, int rowNum) throws SQLException {
                         return new InscripcionFamiliar(
                                 rs.getInt("id"),
-                                rs.getDate("fechaCreacion").toLocalDate(),
-                                rs.getFloat("CuotaAnual"),
-                                rs.getString("SocioTitular"),
-                                rs.getString("adultoAdicional"),
+                                rs.getDate("fecha_creacion").toLocalDate(),
+                                rs.getFloat("cuota_anual"),
+                                rs.getString("socio_titular"),
+                                rs.getString("segundo_adulto"),
                                 hijosRepository.findHijosByInscripcion(rs.getInt("id"))
                         );
                     };
@@ -78,5 +81,31 @@ public class InscripcionFamiliarRepository extends AbstractRepository {
             ex.printStackTrace();
             return null;
         }
+    }
+
+    public boolean addInscripcionFamiliar(InscripcionFamiliar inscripcionFamiliar) {
+        try {
+            String query = sqlQueries.getProperty("insert-addInscripcionFamiliar");
+            if( query != null ) {
+                int firstResult = jdbcTemplate.update(query,
+                        inscripcionFamiliar.getSocioTitularId(),
+                        inscripcionFamiliar.getCuotaAnual(),
+                        inscripcionFamiliar.getFechaCreacion(),
+                        inscripcionFamiliar.getSegundoAudlto()
+                );
+
+                // Ternaria para parsear un boolean a un integer.
+                int seconResult = hijosRepository.addHijos(inscripcionFamiliar.getHijos()) ? 1 : 0;
+
+                if( firstResult == 1 && seconResult == 1 ) {
+                    return true;
+                }  else return false;
+            }
+        } catch (DataAccessException ex) {
+            System.err.println("Unable to add inscripcionFamiliar");
+            ex.printStackTrace();
+        }
+
+        return false;
     }
 }

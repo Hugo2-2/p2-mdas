@@ -17,7 +17,7 @@ public class InscripcionIndividualRepository extends AbstractRepository{
     public InscripcionIndividualRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
- 
+
     public List<InscripcionIndividual> findAllInscripciones() {
         try {
             String query = sqlQueries.getProperty("select-findAllInscripcionesIndividuales");
@@ -26,9 +26,9 @@ public class InscripcionIndividualRepository extends AbstractRepository{
                    public InscripcionIndividual mapRow(ResultSet rs, int rowNum) throws SQLException {
                        return new InscripcionIndividual(
                                rs.getInt("id"),
-                               rs.getDate("fechaCreacion").toLocalDate(),
-                               rs.getFloat("CuotaAnual"),
-                               rs.getString("SocioTitular")
+                               rs.getDate("fecha_creacion").toLocalDate(),
+                               rs.getFloat("cuota_anual"),
+                               rs.getString("socio_Titular")
                        );
                    };
                 });
@@ -96,8 +96,9 @@ public class InscripcionIndividualRepository extends AbstractRepository{
                 else return false;
 
             } else return false;
-         } catch (DataAccessException exception) {
+        } catch (DataAccessException exception) {
             System.err.println("Unable to insert inscripcion in the database");
+            exception.printStackTrace();
         }
         return false;
     }
