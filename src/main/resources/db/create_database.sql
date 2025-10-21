@@ -30,12 +30,12 @@ CREATE TABLE IF NOT EXISTS `patron` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `embarcacion` (
-    `matricula` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-    `nombre` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    `matricula` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
+    `nombre` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
     `tipo` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
     `plazas` INT(11) NOT NULL,
     `dimensiones` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-    `id_patron` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    `id_patron` VARCHAR(255) COLLATE utf8_unicode_ci ,
     PRIMARY KEY (`matricula`),
     FOREIGN KEY (`id_patron`) REFERENCES patron(`dni`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `alquiler` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `reserva` (
-    `id` INT(11) NOT NULL AUTOINCREMENT,
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
     `fecha` DATE NOT NULL,
     `plazas` INT(11) NOT NULL,
     `precio` DOUBLE NOT NULL,
