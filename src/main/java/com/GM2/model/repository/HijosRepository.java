@@ -113,10 +113,33 @@ public class HijosRepository extends AbstractRepository {
 
             } else return false;
 
-        } catch (DataAccessException exception) {
+         } catch (DataAccessException exception) {
             System.err.println("Unable to insert patron in the database");
+            exception.printStackTrace();
+            return false;
+         }
+    }
+
+    public boolean addHijos(List<Hijos> hijos) {
+        for(Hijos hijo : hijos) {
+            try {
+                String query = sqlQueries.getProperty("insert-addHijo");
+                if(query != null){
+                    int result = jdbcTemplate.update(query,
+                            hijo.getDni(),
+                            hijo.getId_inscripcion()
+                    );
+
+                    if (result <= 0)
+                        return false;
+                } else return false;
+            } catch (DataAccessException exception) {
+                System.err.println("Unable to insert patron in the database");
+                exception.printStackTrace();
+                return false;
+            }
         }
 
-        return false;
+        return true;
     }
 }
