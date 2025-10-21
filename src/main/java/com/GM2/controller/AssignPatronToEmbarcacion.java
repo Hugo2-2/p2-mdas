@@ -4,12 +4,13 @@ import com.GM2.model.domain.Embarcacion;
 import com.GM2.model.repository.EmbarcacionRepository;
 import com.GM2.model.repository.PatronRepository;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/api/embarcaciones")
@@ -94,28 +95,30 @@ public class AssignPatronToEmbarcacion {
         return "redirect:/api/embarcaciones/asociarPatron";
     }
 
-//    public String asociatePatron(String matricula, String patronDni) {
-//        // 1. Verificar que el patrón existe
-//        if (patronRepository.findPatronByDNI(patronDni) == null) {
-//            return "Error: El patrón con DNI " + patronDni + " no existe.";
-//        }
-//
-//        // 2. Verificar si el patrón ya está asignado a OTRA embarcación [cite: 991]
-//        if (embarcacionRepository.isPatronAssignedToEmbarcacion(patronDni)) {
-//            return "Error: El patrón ya está asignado a otra embarcación.";
-//        }
-//
-//        // 3. Obtener el patrón actual de la embarcación [cite: 986]
-//        String patronActual = embarcacionRepository.getPatronAssignedToEmbarcacion(matricula);
-//
-//        // 4. Ejecutar la asignación
-//        embarcacionRepository.updatePatron(patronDni, matricula);
-//
-//        if (patronActual != null) {
-//            // Informar del reemplazo [cite: 986, 992]
-//            return "Reemplazo exitoso. Patrón " + patronActual + " ahora está libre.";
-//        } else {
-//            return "Patrón " + patronDni + " asignado correctamente.";
-//        }
-//    }
+    @GetMapping("/consultarEmbarcacionesPorTipo")
+    public ModelAndView getEmbarcacionesByTypeView(ModelAndView modelAndView) {
+        modelAndView.setViewName("selectEmbarcacionesByTypeView");
+        return modelAndView;
+    }
+
+    @PostMapping("/consultarEmbarcacionesPorTipo")
+    public String showEmbarcacionesByType(@RequestParam String tipo,
+                                 SessionStatus sessionStatus,
+                                 Model model) { // 'Model' es para pasar datos a la vista de confirmación
+
+        //1.Buscamos todas las embarcaciones de ese tipo
+        List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcacionesByTipo(tipo);
+
+//        System.out.println("Buscando por tipo: " + tipo);
+//        System.out.println("Embarcaciones encontradas: " + embarcaciones.size());
+
+        // 2. Añadir la lista filtrada al modelo
+        model.addAttribute("listaEmbarcaciones", embarcaciones);
+
+        // 3.  Añadir el tipo para mostrar un título
+        model.addAttribute("tipo", tipo);
+
+        sessionStatus.setComplete();
+        return "showEmbarcacionesInformationView";
+    }
 }
