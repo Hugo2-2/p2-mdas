@@ -14,27 +14,38 @@
 
     <div>
         <label for="matricula">Matrícula:</label><br>
-        <input type="text" id="matricula" th:field="*{matricula}"><br>
+        <input type="text" id="matricula" th:field="*{matricula}" required><br>
     </div>
 
     <div>
         <label for="nombre">Nombre:</label><br>
-        <input type="text" id="nombre" th:field="*{nombre}"><br>
+        <input type="text" id="nombre" th:field="*{nombre}" required><br>
     </div>
 
     <div>
         <label for="tipo">Tipo:</label><br>
-        <input type="text" id="tipo" th:field="*{tipo}"><br>
+
+        <select id="tipo" th:field="*{tipo}" required>
+
+            <option value="">-- Selecciona un tipo --</option>
+
+            <option value="VELERO">Velero</option>
+            <option value="YATE">Yate</option>
+            <option value="LANCHA">Lancha</option>
+            <option value="BARCA_PESCA">Barca de Pesca</option>
+            <option value="CATAMARAN">Catamarán</option>
+
+        </select><br>
     </div>
 
     <div>
         <label for="plazas">Plazas:</label><br>
-        <input type="number" id="plazas" th:field="*{plazas}"><br>
+        <input type="number" id="plazas" th:field="*{plazas}" required><br>
     </div>
 
     <div>
         <label for="dimensiones">Dimensiones:</label><br>
-        <input type="text" id="dimensiones" th:field="*{dimensiones}"><br>
+        <input type="text" id="dimensiones" th:field="*{dimensiones}" required><br>
     </div>
 
     <div>
