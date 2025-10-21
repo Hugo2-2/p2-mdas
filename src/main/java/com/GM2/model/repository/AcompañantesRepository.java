@@ -54,6 +54,28 @@ public class AcompañantesRepository extends AbstractRepository {
         }
     }
 
+    public List<Acompañantes> findAcompañantesByAlquiler(int id_alquiler) {
+        try {
+            String query = sqlQueries.getProperty("select-findAcompañantesByAlquiler");
+            List<Acompañantes> result = jdbcTemplate.query(query, this::mapRowFromAlquiler, id_alquiler);
+            if( result != null )
+                return result;
+            else return null;
+        } catch(DataAccessException exception) {
+            System.err.println("Unable to find acompañantes with id_alquiler: " + id_alquiler);
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
+    private Acompañantes mapRowFromAlquiler(ResultSet row, int rowNum) throws SQLException {
+                String dni = row.getString("dni");
+                int id_alquiler = row.getInt("id_alquiler");
+
+                return new Acompañantes(dni, id_alquiler);
+            
+    }
+    
     private Acompañantes mapRowToAcompañantes(ResultSet row) {
         try {
 
