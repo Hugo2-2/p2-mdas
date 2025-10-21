@@ -68,7 +68,8 @@ public class PatronController {
             boolean success = patronRepository.addPatron(newPatron);
 
             if(success){
-                nextPage = "addPatronView";
+                sessionStatus.setComplete();
+                return "redirect:/api/patrones/addPatron";
             }
             else
                 nextPage = "addPatronViewFail";

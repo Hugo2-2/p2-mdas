@@ -1,0 +1,27 @@
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Title</title>
+        </head>
+        <body>
+            <h1>ASOCIAR PATRON A UNA EMBARCACIÓN</h1>
+            <form action="POST" th:action="@{/api/embarcaciones/asociarPatron}" th:object="${Embarcacion}">
+                <div>
+                    <label for="matricula"> Matricula</label><br>
+                    <input type="text" id="matricula" th:field="*{matricula}">
+                </div>
+
+                <div>
+                    <label for="PatronDNI"> DNI del patron</label><br>
+                    <input type="text" id="PatronDNI" th:field="*{idPatron}">
+                </div>
+
+                <br>
+
+                <div>
+                    <input type="submit" value="Asignar Patrón">
+                </div>
+            </form>
+        </body>
+    </html>
