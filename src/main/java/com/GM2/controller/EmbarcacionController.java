@@ -67,7 +67,8 @@ public class EmbarcacionController {
         String nextPage;
 
         if(success){
-            nextPage = "addEmbarcacionView";
+            sessionStatus.setComplete();
+            nextPage = "redirect:/api/embarcaciones/addEmbarcacion";
         }
         else
             nextPage = "addEmbarcacionViewFail";

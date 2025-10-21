@@ -20,6 +20,16 @@ public class Embarcacion {
         this.matricula = matricula;
     }
 
+    public Embarcacion(String dimensiones, int plazas, String tipo, String nombre, String matricula) {
+        this.idPatron = "";
+        this.dimensiones = dimensiones;
+        this.plazas = plazas;
+        this.tipo = tipo;
+        this.nombre = nombre;
+        this.matricula = matricula;
+    }
+
+
     public String getIdPatron() {
         return idPatron;
     }

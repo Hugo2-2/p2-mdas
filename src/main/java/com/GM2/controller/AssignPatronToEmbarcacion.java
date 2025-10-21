@@ -5,12 +5,11 @@ import com.GM2.model.repository.EmbarcacionRepository;
 import com.GM2.model.repository.PatronRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/api/embarcaciones")
@@ -24,35 +23,76 @@ public class AssignPatronToEmbarcacion {
     }
 
     @GetMapping("/asociarPatron")
-    public ModelAndView getAddEmbarcacionView() {
+    public ModelAndView getAsociatePatronView() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("asociatePatronToEmbarcacionView");
-        modelAndView.addObject("Embarcacion", new Embarcacion());
-        return modelAndView;
+        modelAndView.addObject("todasLasEmbarcaciones", embarcacionRepository.findAllEmbarcaciones());
+        modelAndView.addObject("patronesLibres", patronRepository.findAllFreePatrones());return modelAndView;
     }
 
     @PostMapping("/asociarPatron")
-    public String asociatePatron(@ModelAttribute Embarcacion embarcacion, SessionStatus sessionStatus) {
-        //1.Comprobar si tiene patron
-        String nextPage;
-        if(embarcacionRepository.isPatronAssignedToEmbarcacion(embarcacion.getIdPatron())) {
-            //1A.Si tiene patron, preguntamos si quiere sustituir
-            nextPage = "patronAssignedView";
+    public String asociatePatron(@RequestParam String matricula,
+                                 @RequestParam String dniPatronNuevo,
+                                 SessionStatus sessionStatus,
+                                 RedirectAttributes redirectAttributes, //Esto es para poder lanzar mensajes de error sin tener que crear vistas nuevas
+                                 Model model) { // 'Model' es para pasar datos a la vista de confirmación
+
+        // 1. Comprobar si el nuevo patrón está libre
+//        if (embarcacionRepository.isPatronAssignedToEmbarcacion(dniPatronNuevo)) {
+//            redirectAttributes.addFlashAttribute("errorMessage", "Error: El patrón seleccionado ya está asignado a otra barca.");
+//            return "redirect:/api/embarcaciones/asociarPatron"; // Vuelve al formulario
+//        }
+
+        // 2. Comprobar si la EMBARCACIÓN tiene un patrón antiguo
+        String dniPatronAntiguo = embarcacionRepository.getPatronAssignedToEmbarcacion(matricula);
+
+        if (dniPatronAntiguo != null) {
+
+            // Si tiene patron antiguo. Hay que confirmar.
+            // Preparamos la vista de confirmación sin actualizar la base de datos
+
+            // Pasamos los datos a la vista 'patronAssignedView'
+            model.addAttribute("matricula", matricula);
+            model.addAttribute("dniPatronNuevo", dniPatronNuevo);
+            model.addAttribute("dniPatronAntiguo", dniPatronAntiguo);
+
+            return "patronAssignedView"; // Muestra la vista de confirmación
+
         } else {
-            //1B.Si no tiene patron, mostramos patrones libres y seleccionamos uno
-            boolean success = embarcacionRepository.updatePatron(embarcacion.getIdPatron(), embarcacion.getMatricula());
+
+            // No tiene patron, está libre. Está libre. Asignamos directamente.
+            boolean success = embarcacionRepository.updatePatron(dniPatronNuevo, matricula);
 
             if(success) {
-                nextPage = "patronSuccessfullyAssignedView";
+                redirectAttributes.addFlashAttribute("successMessage", "Patrón asignado correctamente a la embarcación libre.");
             } else {
-                nextPage = "patronFailAssignedView";
+                redirectAttributes.addFlashAttribute("errorMessage", "Error al asignar el patrón.");
             }
-        }
 
-        sessionStatus.setComplete();;
-        return nextPage;
+            sessionStatus.setComplete(); // Solo limpiamos si el flujo termina
+            return "redirect:/api/embarcaciones/asociarPatron"; // Vuelve al formulario
+        }
     }
 
+    //Este Post será llamado en la vista patronAssignedView, en caso de que en el
+    //post anterior querramos reemplazar el patrón
+    @PostMapping("/confirmarReemplazoPatron")
+    public String confirmarReemplazo(@RequestParam String matricula,
+                                     @RequestParam String dniPatronNuevo,
+                                     RedirectAttributes redirectAttributes) {
+
+        // Ejecutamos la actualización
+        boolean success = embarcacionRepository.updatePatron(dniPatronNuevo, matricula);
+
+        if(success) {
+            redirectAttributes.addFlashAttribute("successMessage", "Patrón reemplazado con éxito.");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al reemplazar el patrón.");
+        }
+
+        // Redirigimos de vuelta al formulario principal
+        return "redirect:/api/embarcaciones/asociarPatron";
+    }
 
 //    public String asociatePatron(String matricula, String patronDni) {
 //        // 1. Verificar que el patrón existe
