@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+    </head>
+    <body>
+        <h1>Confirmar Reemplazo</h1>
+        <p>
+            La embarcación <span th:text="${matricula}"></span> ya tiene al patrón <span th:text="${dniPatronAntiguo}"></span>.
+            ¿Deseas reemplazarlo por el patrón <span th:text="${dniPatronNuevo}"></span>?
+        </p>
+
+        <form method="POST" th:action="@{/api/embarcaciones/confirmarReemplazoPatron}">
+            <input type="hidden" name="matricula" th:value="${matricula}" />
+            <input type="hidden" name="dniPatronNuevo" th:value="${dniPatronNuevo}" />
+
+            <div>
+                <input type="submit" value="Si reemplazar patron">
+            </div>
+
+        </form>
+    </body>
+</html>

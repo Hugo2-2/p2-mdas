@@ -1,41 +1,41 @@
-    <!DOCTYPE html>
-    <html lang="en">
+<!DOCTYPE html>
+<html lang="en">
     <head>
         <meta charset="UTF-8">
         <title>Añadir Patron</title>
-        </head>
-        <body>
-            <h1>Añadir Patron</h1>
-            <form method="POST" th:action="@{/api/patrones/addPatron}" th:object="${newPatron}">
+    </head>
+    <body>
+        <h1>Añadir Patron</h1>
+        <form method="POST" th:action="@{/api/patrones/addPatron}" th:object="${newPatron}">
 
-                <div>
-                    <label for="nombre"> Nombre</label><br>
-                    <input type="text" id="nombre" th:field="*{nombre}"><br>
-                </div>
+            <div>
+                <label for="nombre"> Nombre</label><br>
+                <input type="text" id="nombre" th:field="*{nombre}"><br>
+            </div>
 
-                <div>
-                    <label for="apellidos"> Apellidos</label><br>
-                    <input type="text" id="apellidos" th:field="*{apellidos}"><br>
-                </div>
+            <div>
+                <label for="apellidos"> Apellidos</label><br>
+                <input type="text" id="apellidos" th:field="*{apellidos}"><br>
+            </div>
 
-                <div>
-                    <label for="dni"> DNI</label><br>
-                    <input type="text" id="dni" th:field="*{dni}"><br>
-                </div>
-                <div>
-                    <label for="fechaNacimiento"> Fecha de nacimiento</label><br>
-                    <input type="text" id="fechaNacimiento" th:field="*{fechaNacimiento}"><br>
-                </div>
-                <div>
-                    <label for="fechaExpedicionTitulo"> Fecha de expedicion del título</label><br>
-                    <input type="text" id="fechaExpedicionTitulo" th:field="*{fechaExpedicionTitulo}"><br>
-                </div>
+            <div>
+                <label for="dni"> DNI</label><br>
+                <input type="text" id="dni" th:field="*{dni}"><br>
+            </div>
+            <div>
+                <label for="fechaNacimiento"> Fecha de nacimiento</label><br>
+                <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}"><br>
+            </div>
+            <div>
+                <label for="fechaExpedicionTitulo"> Fecha de expedicion del título</label><br>
+                <input type="date" id="fechaExpedicionTitulo" th:field="*{fechaExpedicionTitulo}"><br>
+            </div>
 
-                <br>
+            <br>
 
-                <div>
-                    <input type="submit" value="Guardar Patrón">
-                </div>
-                </form>
-        </body>
-    </html>
+            <div>
+                <input type="submit" value="Guardar Patrón">
+            </div>
+            </form>
+    </body>
+</html>

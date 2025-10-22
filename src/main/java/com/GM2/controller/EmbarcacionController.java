@@ -67,7 +67,8 @@ public class EmbarcacionController {
         String nextPage;
 
         if(success){
-            nextPage = "addEmbarcacionView";
+            sessionStatus.setComplete();
+            nextPage = "redirect:/api/embarcaciones/addEmbarcacion";
         }
         else
             nextPage = "addEmbarcacionViewFail";
@@ -78,10 +79,10 @@ public class EmbarcacionController {
 
     //TENGO QUE HACER AQUI LA DE OBTENER EMBARCACION POR TIPO
 
-
-    @PutMapping("/{matricula}/patron")
-    @ResponseBody
-    public String asociatePatronToEmbarcacion(@PathVariable String matricula, @RequestBody String patronDni){
-        return assignPatronToEmbarcacion.asociatePatron(matricula, patronDni);
-    }
+//
+//    @PutMapping("/{matricula}/patron")
+//    @ResponseBody
+//    public String asociatePatronToEmbarcacion(@PathVariable String matricula, @RequestBody String patronDni){
+//        return assignPatronToEmbarcacion.asociatePatron(matricula, patronDni);
+//    }
 }

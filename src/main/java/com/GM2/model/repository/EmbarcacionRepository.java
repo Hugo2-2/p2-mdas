@@ -111,6 +111,7 @@ public class EmbarcacionRepository extends AbstractRepository {
 
         } catch (DataAccessException exception) {
             System.err.println("Unable to insert embarcacion in the database");
+            exception.printStackTrace();
         }
 
         return false;

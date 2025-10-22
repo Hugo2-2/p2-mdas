@@ -1,5 +1,9 @@
 package com.GM2.model.domain;
 
 public enum EmbarcacionType {
-    VELERO, YATE, PESADO, BOTE
+    VELERO,
+    YATE,
+    LANCHA,
+    BARCA_PESCA,
+    CATAMARAN
 }

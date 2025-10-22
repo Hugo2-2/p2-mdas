@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Asociar Patrón a Embarcación</title>
+</head>
+
+<body>
+
+<h1>Asociar Patrón a Embarcación</h1>
+
+<div th:if="${successMessage}">
+    <p style="color:green;" th:text="${successMessage}"></p>
+</div>
+
+<div th:if="${errorMessage}">
+    <p style="color:red;" th:text="${errorMessage}"></p>
+</div>
+
+<form method="POST" th:action="@{/api/embarcaciones/asociarPatron}">
+
+    <div>
+        <label for="matricula">1. Seleccione la Embarcación:</label>
+        <br>
+        <select id="matricula" name="matricula" required>
+            <option value="">-- Elija una embarcación --</option>
+            <p>th:echa es como un for</p>
+            <option th:each="embarcacion : ${todasLasEmbarcaciones}"
+                    th:value="${embarcacion.matricula}"
+                    th:text="${embarcacion.nombre} + ' (' + ${embarcacion.matricula} + ')'">
+            </option>
+        </select>
+    </div>
+
+    <br>
+
+    <div>
+        <label for="dniPatronNuevo">2. Seleccione el Patrón (sólo libres):</label>
+        <br>
+        <select id="dniPatronNuevo" name="dniPatronNuevo" required>
+            <option value="">-- Elija un patrón --</option>
+            <option th:each="patron : ${patronesLibres}"
+                    th:value="${patron.dni}"
+                    th:text="${patron.nombre} + ' ' + ${patron.apellidos} + ' (' + ${patron.dni} + ')'">
+            </option>
+        </select>
+    </div>
+
+    <br>
+
+    <div>
+        <input type="submit" value="Asociar Patrón">
+    </div>
+
+</form>
+
+</body>
+</html>
