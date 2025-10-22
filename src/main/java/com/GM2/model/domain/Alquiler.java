@@ -1,6 +1,7 @@
 package com.GM2.model.domain;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Alquiler {
@@ -13,6 +14,9 @@ public class Alquiler {
     private String matricula_embarcacion;
     private List<Acompañantes> acompanantes;
 
+    public Alquiler() {
+        this.acompanantes = new ArrayList<>();
+    }
 
     public Alquiler(int id, LocalDate fechaInicio, LocalDate fechaFin, double precio, int plazas, String usuario_dni, String matricula_embarcacion, List<Acompañantes> acompanantes) {
         this.id = id;
