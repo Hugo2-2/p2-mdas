@@ -14,6 +14,8 @@ public class Socio {
     private Boolean esTitular;
     private Boolean tieneLicenciaPatron;
 
+    public Socio() {}
+
     public Socio(Boolean tieneLicenciaPatron, Boolean esTitular, LocalDate fechaInscripcion, String direccion, LocalDate fechaNacimiento, String dni, String apellidos, String nombre) {
         this.tieneLicenciaPatron = tieneLicenciaPatron;
         this.esTitular = esTitular;

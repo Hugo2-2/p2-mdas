@@ -3,6 +3,9 @@ package com.GM2.controller;
 import com.GM2.model.domain.Alquiler;
 import com.GM2.model.domain.Embarcacion;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.ModelAndView;
+
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,6 +18,37 @@ public class AlquilerController {
 
     public AlquilerController(AlquilerService alquilerService) {
         this.alquilerService = alquilerService;        
+    }
+
+
+    @GetMapping("/addAlquiler")
+    public ModelAndView mostrarFormularioAlquiler() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("addAlquilerView");
+        modelAndView.addObject("alquiler", new Alquiler());
+        return modelAndView; 
+    }
+
+    @PostMapping("/addAlquiler")
+    public ModelAndView procesarFormularioAlquiler(@ModelAttribute Alquiler alquiler, SessionStatus status) {
+    
+        ModelAndView modelAndView = new ModelAndView();
+
+        String resultado = alquilerService.alquilarEmbarcacion(alquiler);
+        status.setComplete();
+
+        if (resultado.startsWith("Alquiler registrado con éxito.") ){
+
+        
+            // Éxito: volvemos al formulario, podemos añadir mensaje de éxito
+            modelAndView.setViewName("addAlquilerView");
+            modelAndView.addObject("mensajeExito", resultado);
+        } else {
+            // Fallo: volvemos al formulario y mostramos mensaje de error
+            modelAndView.setViewName("addAlquilerView");
+            modelAndView.addObject("mensajeError", resultado);
+        }
+        return modelAndView;
     }
 
     @GetMapping
