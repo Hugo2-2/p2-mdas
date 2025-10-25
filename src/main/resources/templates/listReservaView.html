@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de Reservas de Actividades</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+
+    <h1 class="mb-4 text-center"> Listado de Reservas de Actividades</h1>
+
+    <div th:if="${reservasList == null or reservasList.isEmpty()}" class="alert alert-info text-center">
+        No hay reservas de actividades registradas.
+    </div>
+
+    <div th:unless="${reservasList == null or reservasList.isEmpty()}">
+        <table class="table table-striped table-bordered shadow-sm">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Socio DNI</th>
+                <th>Matrícula Embarcación</th>
+                <th>Fecha</th>
+                <th>Plazas Solicitadas</th>
+                <th>Propósito</th>
+                <th>Precio (€)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="reserva : ${reservasList}">
+                <td th:text="${reserva.id}">1</td>
+                <td th:text="${reserva.usuario_id}">12345678A</td>
+                <td th:text="${reserva.matricula_embarcacion}">MATR-123</td>
+                <td th:text="${reserva.fecha}">2025-10-25</td>
+                <td th:text="${reserva.plazas}">5</td>
+                <td th:text="${reserva.descripcion}">Paseo en yate</td>
+                <td th:text="${#numbers.formatDecimal(reserva.precio, 1, 2)}">200.00</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-center mt-4">
+        <a th:href="@{/web/reserva/solicitar}" class="btn btn-primary me-2">Solicitar nueva reserva</a>
+        <a th:href="@{/home}" class="btn btn-secondary">Volver al Menú Principal</a>
+    </div>
+</div>
+</body>
+</html>

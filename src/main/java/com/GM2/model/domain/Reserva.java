@@ -12,6 +12,9 @@ public class Reserva {
     private String matricula_embarcacion;
     private String descripcion;
 
+    public Reserva() {
+    }
+
     public Reserva(int id, LocalDate fecha, int plazas, double precio, String usuario_id, String matricula_embarcacion, String descripcion) {
         this.id = id;
         this.fecha = fecha;
