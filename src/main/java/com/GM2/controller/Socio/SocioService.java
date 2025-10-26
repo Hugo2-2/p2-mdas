@@ -24,13 +24,16 @@ public class SocioService {
         return socioRepository.findSocioByDNI(dni);
     }
 
-    public String addSocio(@RequestBody Socio socio) {
+    public String addSocio(Socio socio) {
+        if( socio == null ) return "No se ha ingresado un socio";
+        if(socio.getFechaNacimiento().getYear() > 2007) return "Debes de ser mayor de edad para realizar esta inscripción";
+
         boolean res = socioRepository.addSocio(socio);
 
         if(res) {
-            return "Socio was added successfully";
+            return "Se ha añadido el socio correctamente";
         } else {
-            return "Socio could not be added";
+            return "No se ha podido guardar el socio";
         }
     }
 

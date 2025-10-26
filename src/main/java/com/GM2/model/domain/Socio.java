@@ -27,6 +27,17 @@ public class Socio {
         this.nombre = nombre;
     }
 
+    public Socio(Boolean tieneLicenciaPatron, Boolean esTitular, String direccion, LocalDate fechaNacimiento, String dni, String apellidos, String nombre) {
+        this.tieneLicenciaPatron = tieneLicenciaPatron;
+        this.esTitular = esTitular;
+        this.fechaInscripcion = LocalDate.now();
+        this.direccion = direccion;
+        this.fechaNacimiento = fechaNacimiento;
+        this.dni = dni;
+        this.apellidos = apellidos;
+        this.nombre = nombre;
+    }
+
     public String getNombre() {
         return nombre;
     }

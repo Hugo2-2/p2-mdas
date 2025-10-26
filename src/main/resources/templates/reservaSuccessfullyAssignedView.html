@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reserva Exitosa</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+
+    <div class="alert alert-success text-center">
+        <h2>✅ Reserva de Actividad Confirmada</h2>
+        <p>La actividad ha sido registrada con éxito. Se ha asignado una embarcación disponible con patrón.</p>
+    </div>
+
+    <div class="card p-4 shadow-sm">
+        <h3 class="card-title mb-3">Detalles de la Reserva</h3>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><strong>ID de Reserva:</strong> <span th:text="${reserva.id}">[ID]</span></li>
+            <li class="list-group-item"><strong>Socio Solicitante (DNI):</strong> <span th:text="${reserva.usuario_id}">[DNI]</span></li>
+            <li class="list-group-item"><strong>Embarcación Asignada:</strong> <span th:text="${reserva.matricula_embarcacion}">[Matrícula]</span></li>
+            <li class="list-group-item"><strong>Fecha:</strong> <span th:text="${reserva.fecha}">[Fecha]</span></li>
+            <li class="list-group-item"><strong>Plazas Solicitadas:</strong> <span th:text="${reserva.plazas}">[Plazas]</span></li>
+            <li class="list-group-item"><strong>Propósito:</strong> <span th:text="${reserva.descripcion}">[Descripción]</span></li>
+            <li class="list-group-item"><strong>Precio Total:</strong> <span class="badge bg-primary" th:text="${#numbers.formatDecimal(reserva.precio, 1, 2) + '€'}">0.00€</span></li>
+        </ul>
+    </div>
+
+    <div class="text-center mt-4">
+        <a th:href="@{/web/reserva/solicitar}" class="btn btn-success me-2">Realizar otra reserva</a>
+        <a th:href="@{/web/reserva/listar}" class="btn btn-secondary me-2">Ver Listado de Reservas</a>
+    </div>
+</div>
+</body>
+</html>
