@@ -112,6 +112,7 @@ public class SocioRepository extends AbstractRepository {
 
         } catch (DataAccessException exception) {
             System.err.println("Unable to insert socios in the database");
+            exception.printStackTrace();
         }
 
         return false;

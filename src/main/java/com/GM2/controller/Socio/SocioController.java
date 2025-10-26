@@ -5,6 +5,7 @@ import com.GM2.model.domain.Socio;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -30,8 +31,30 @@ public class SocioController {
     }
 
     @PostMapping("/addSocio")
-    public String addSocio(@RequestBody Socio socio) {
-        return socioService.addSocio(socio);
+    public String addSocio(@ModelAttribute Socio socio, RedirectAttributes redirectAttributes) {
+
+        //Mensajes para depurar en terminal
+        System.out.println("[SocioController] Informacion recivida: nombre=" + socio.getNombre() +
+                " apellidos=" + socio.getApellidos() +
+                " dni=" + socio.getDni() +
+                " fechaNacimiento=" + socio.getFechaNacimiento() +
+                " direccion=" + socio.getDireccion() +
+                " fechaInscripcion=" + socio.getFechaInscripcion() +
+                " esTitular=" + socio.getEsTitular() +
+                " tieneLicenciaPatron=" + socio.getTieneLicenciaPatron());
+
+        //Usaremos estas funciones para añadir al socio y mostrar mensajes de error
+        String mensaje = socioService.addSocio(socio);
+
+        //Evaluamos el mensaje que se mostrará en las flashcards de error
+        if(mensaje.equals("EXITO")) {
+            redirectAttributes.addFlashAttribute("mensaje", "Socio guardado exitosamente");
+        } else {
+            redirectAttributes.addFlashAttribute("mensaje", mensaje);
+        }
+
+        //Volvemos al formulario vacio
+        return "redirect:/api/socios/addSocio";
     }
 
 

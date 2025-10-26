@@ -44,7 +44,7 @@
                 <div class="row mb-3 items-baseline">
                     <div class="col">
                         <label for="direccion" class="form-label">Direccion</label>
-                        <input type="text" id="direccion" th:field="*{dni}" class="form-control" required />
+                        <input type="text" id="direccion" th:field="*{direccion}" class="form-control" required />
                     </div>
                 </div>
 
@@ -54,8 +54,8 @@
                 </div>
 
                 <div class="mb-3">
-                    <input type="checkbox" id="tienenLicenciaPatron" th:field="*{tieneLicenciaPatron}" value="Boolean" class="checkbox" required />
-                    <label for="tienenLicenciaPatron" class="form-label">Licencia de patrón</label>
+                    <input type="checkbox" id="tieneLicenciaPatron" th:field="*{tieneLicenciaPatron}" value="Boolean" class="checkbox" required />
+                    <label for="tieneLicenciaPatron" class="form-label">Licencia de patrón</label>
                 </div>
 
                 <div class="text-center">

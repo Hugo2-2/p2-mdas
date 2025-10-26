@@ -31,7 +31,7 @@ public class SocioService {
         boolean res = socioRepository.addSocio(socio);
 
         if(res) {
-            return "Se ha añadido el socio correctamente";
+            return "EXITO";
         } else {
             return "No se ha podido guardar el socio";
         }
