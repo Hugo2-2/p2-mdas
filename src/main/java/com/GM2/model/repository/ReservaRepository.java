@@ -18,7 +18,6 @@ public class ReservaRepository extends AbstractRepository{
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
     public List<Reserva> findAllReservas() {
         try {
             String query = sqlQueries.getProperty("select-findAllReservas");
