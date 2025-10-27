@@ -28,7 +28,8 @@ public class AssignPatronToEmbarcacion {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("asociatePatronToEmbarcacionView");
         modelAndView.addObject("todasLasEmbarcaciones", embarcacionRepository.findAllEmbarcaciones());
-        modelAndView.addObject("patronesLibres", patronRepository.findAllFreePatrones());return modelAndView;
+        modelAndView.addObject("patronesLibres", patronRepository.findAllFreePatrones());
+        return modelAndView;
     }
 
     @PostMapping("/asociarPatron")

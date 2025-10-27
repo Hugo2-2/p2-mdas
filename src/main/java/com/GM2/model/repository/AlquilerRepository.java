@@ -21,8 +21,9 @@ public class AlquilerRepository extends AbstractRepository{
 
     private AcompañantesRepository acompanantesRepository;
 
-    public AlquilerRepository(JdbcTemplate jdbcTemplate) {
+    public AlquilerRepository(JdbcTemplate jdbcTemplate, AcompañantesRepository acompanantesRepository) {
         this.jdbcTemplate = jdbcTemplate;
+        this.acompanantesRepository = acompanantesRepository;
     }
 
 
