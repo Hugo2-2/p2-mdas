@@ -71,18 +71,10 @@ CREATE TABLE IF NOT EXISTS `inscripcionIndividual` (
     `socio_Titular` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
     `cuota_anual` DOUBLE NOT NULL,
     `fecha_creacion` DATE NOT NULL,
+    `segundo_adulto` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`socio_Titular`) REFERENCES socios(`dni`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS `inscripcionFamiliar` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `socio_Titular` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-    `cuota_anual` DOUBLE NOT NULL,
-    `fecha_creacion` DATE NOT NULL,
-    `segundo_adulto` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-    PRIMARY KEY (`id`),
-    FOREIGN KEY (`socio_Titular`) REFERENCES socios(`dni`)
+    FOREIGN KEY (`socio_Titular`) REFERENCES socios(`dni`),
+    FOREIGN KEY (`segundo_adulto`) REFERENCES socios(`dni`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `hijos` (

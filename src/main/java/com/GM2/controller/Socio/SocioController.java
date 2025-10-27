@@ -3,6 +3,7 @@ package com.GM2.controller.Socio;
 import com.GM2.model.domain.Alquiler;
 import com.GM2.model.domain.Socio;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -31,7 +32,8 @@ public class SocioController {
     }
 
     @PostMapping("/addSocio")
-    public String addSocio(@ModelAttribute Socio socio, RedirectAttributes redirectAttributes) {
+    public String addSocio(@ModelAttribute Socio socio,
+                           RedirectAttributes redirectAttributes) {
 
         //Mensajes para depurar en terminal
         System.out.println("[SocioController] Informacion recivida: nombre=" + socio.getNombre() +
@@ -56,6 +58,5 @@ public class SocioController {
         //Volvemos al formulario vacio
         return "redirect:/api/socios/addSocio";
     }
-
 
 }
