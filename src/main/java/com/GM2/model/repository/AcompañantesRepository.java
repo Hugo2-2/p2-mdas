@@ -19,7 +19,7 @@ public class AcompañantesRepository extends AbstractRepository {
 
     public List<Acompañantes> findAllAcompañantes() {
         try {
-            String query = sqlQueries.getProperty("select-findAllAcompañantes");
+            String query = sqlQueries.getProperty("select-findAllAcompanantes");
             if(query != null){
                 List<Acompañantes> result = jdbcTemplate.query(query, new RowMapper<Acompañantes>() {
                     public Acompañantes mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -34,7 +34,7 @@ public class AcompañantesRepository extends AbstractRepository {
             } else return null;
 
         } catch (DataAccessException exception) {
-            System.err.println("Unable to find acompañantes");
+            System.err.println("Unable to find acompanantes");
             exception.printStackTrace();
             return null;
         }
@@ -42,13 +42,13 @@ public class AcompañantesRepository extends AbstractRepository {
 
     public Acompañantes findAcompañanteByDni(String dni) {
         try {
-            String query = sqlQueries.getProperty("select-findAcompañanteByDni");
+            String query = sqlQueries.getProperty("select-findAcompananteByDni");
             Acompañantes result = jdbcTemplate.query(query, this::mapRowToAcompañantes, dni);
             if( result != null )
                 return result;
             else return null;
         } catch(DataAccessException exception) {
-            System.err.println("Unable to find acompañante with dni: " + dni);
+            System.err.println("Unable to find acompanante with dni: " + dni);
             exception.printStackTrace();
             return null;
         }
@@ -56,13 +56,13 @@ public class AcompañantesRepository extends AbstractRepository {
 
     public List<Acompañantes> findAcompañantesByAlquiler(int id_alquiler) {
         try {
-            String query = sqlQueries.getProperty("select-findAcompañantesByAlquiler");
+            String query = sqlQueries.getProperty("select-findAcompanantesByAlquiler");
             List<Acompañantes> result = jdbcTemplate.query(query, this::mapRowFromAlquiler, id_alquiler);
             if( result != null )
                 return result;
             else return null;
         } catch(DataAccessException exception) {
-            System.err.println("Unable to find acompañantes with id_alquiler: " + id_alquiler);
+            System.err.println("Unable to find acompanantes with id_alquiler: " + id_alquiler);
             exception.printStackTrace();
             return null;
         }
@@ -89,7 +89,7 @@ public class AcompañantesRepository extends AbstractRepository {
                 return null;
             }
         } catch (SQLException exception) {
-            System.err.println("Unable to map row to Acompañantes object");
+            System.err.println("Unable to map row to Acompanantes object");
             exception.printStackTrace();
             return null;
         }
@@ -97,11 +97,11 @@ public class AcompañantesRepository extends AbstractRepository {
 
     public boolean addAcompañante(Acompañantes acompañante) {
         try {
-            String query = sqlQueries.getProperty("insert-addAcompañante");
+            String query = sqlQueries.getProperty("insert-addAcompanante");
             int rowsAffected = jdbcTemplate.update(query, acompañante.getDni(), acompañante.getId_alquiler());
             return rowsAffected > 0;
         } catch (DataAccessException exception) {
-            System.err.println("Unable to add acompañante");
+            System.err.println("Unable to add acompanante");
             exception.printStackTrace();
             return false;
         }

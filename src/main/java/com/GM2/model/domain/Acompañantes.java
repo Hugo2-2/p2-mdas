@@ -4,6 +4,8 @@ public class Acompañantes {
     private String dni;
     private int id_alquiler;
 
+    public Acompañantes() {}
+    
     public Acompañantes(String dni, int id_alquiler) {
         this.dni = dni;
         this.id_alquiler = id_alquiler;
