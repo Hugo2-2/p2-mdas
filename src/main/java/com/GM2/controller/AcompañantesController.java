@@ -26,13 +26,24 @@ public class AcompañantesController {
     public Acompañantes getAcompañanteByDni(@PathVariable String dni){ return acompañantesRepository.findAcompañanteByDni(dni); }
 
     @PostMapping
-    public String addAcompañante(@RequestBody Acompañantes acompañante) {
-        boolean res = acompañantesRepository.addAcompañante(acompañante);
-
-        if(res) {
-            return "Acompañante was added successfully";
-        } else {
-            return "Acompañante could not be added";
+    public String addAcompañantes(@RequestParam("alquilerId") Integer alquilerId,
+                          @RequestParam("dni") List<String> dnis) {
+        boolean ok = true;
+        
+        for (String dni : dnis) {
+            if (dni != null && !dni.trim().isEmpty()) {
+                Acompañantes a = new Acompañantes();
+                a.setDni(dni);
+                a.setId_alquiler(alquilerId);
+                
+                if (!acompañantesRepository.addAcompañante(a)) {
+                    ok = false;
+                }
+            }
         }
+
+        return ok ? "Acompañantes añadidos correctamente al alquiler " + alquilerId
+                : "Error al insertar algunos acompañantes.";
     }
+
 }

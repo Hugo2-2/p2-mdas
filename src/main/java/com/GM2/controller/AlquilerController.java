@@ -1,5 +1,6 @@
 package com.GM2.controller;
 
+import com.GM2.model.domain.Acompañantes;
 import com.GM2.model.domain.Alquiler;
 import com.GM2.model.domain.Embarcacion;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -35,21 +37,44 @@ public class AlquilerController {
         ModelAndView modelAndView = new ModelAndView();
 
         String resultado = alquilerService.alquilarEmbarcacion(alquiler);
-        status.setComplete();
 
-        if (resultado.startsWith("Alquiler registrado con éxito.") ){
+        if (resultado.startsWith("OK:") ){
 
         
-            // Éxito: volvemos al formulario, podemos añadir mensaje de éxito
-            modelAndView.setViewName("addAlquilerView");
-            modelAndView.addObject("mensajeExito", resultado);
+            // Extraer el id del alquiler
+            Integer alquilerId = Integer.parseInt(resultado.substring(3));
+            int plazas = alquiler.getPlazas();
+
+        modelAndView.setViewName("redirect:/api/alquiler/acompanantes/" + alquilerId + "/" + plazas);
+    
         } else {
             // Fallo: volvemos al formulario y mostramos mensaje de error
             modelAndView.setViewName("addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
         }
+        status.setComplete();
+
         return modelAndView;
     }
+
+    @GetMapping("/acompanantes/{alquilerId}/{plazas}")
+    public ModelAndView mostrarFormularioAcompanantes(@PathVariable Integer alquilerId, @PathVariable int plazas) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("addAcompanante");
+
+        // Creamos una lista vacía de acompañantes según el número de plazas - 1
+        List<Acompañantes> acompanantes = new ArrayList<>();
+        for (int i = 0; i < plazas - 1; i++) {
+            acompanantes.add(new Acompañantes());
+        }
+
+        modelAndView.addObject("alquilerId", alquilerId);
+        modelAndView.addObject("acompanantes", acompanantes);
+
+
+        return modelAndView;
+    }
+
 
     @GetMapping
     public List<Alquiler> getAlquileres() { return  alquilerService.findAllAlquileres(); }
