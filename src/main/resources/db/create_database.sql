@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `reserva` (
     FOREIGN KEY (`matricula_embarcacion`) REFERENCES embarcacion(`matricula`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `inscripcionIndividual` (
+CREATE TABLE IF NOT EXISTS `inscripcion` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `socio_Titular` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
     `cuota_anual` DOUBLE NOT NULL,

@@ -16,8 +16,8 @@ public class Inscripcion {
     public Inscripcion() {
     }
 
-    public Inscripcion(int id) {
-        this.id = id;
+    public Inscripcion(String socioTitularId) {
+        this.socioTitularId = socioTitularId;
         this.cuotaAnual = 300;
         this.fechaCreacion = LocalDate.now();
         this.segundoAudlto = null;
@@ -37,7 +37,9 @@ public class Inscripcion {
         this.cuotaAnual = cuotaAnual;
         this.fechaCreacion = fechaCreacion;
         this.segundoAudlto = segundoAudlto;
-        this.hijos = hijos;
+
+        if(!hijos.isEmpty())
+            this.hijos = hijos;
     }
 
     public int getId() {
