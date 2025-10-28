@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Añadir acompañantes</title>
+</head>
+<body>
+<h2>Introduce los acompañantes</h2>
+
+<form th:action="@{/api/acompanhantes}" method="post">
+
+    <input type="hidden" name="alquilerId" th:value="${alquilerId}"/>
+
+    <div th:each="i : ${#numbers.sequence(0, acompanantes.size() - 1)}">
+        <h3>Acompañante [[${i + 1}]]</h3>
+
+        <label>DNI:</label>
+        <!-- Cambia el name a "dni" para todos los campos -->
+        <input type="text" name="dni" required/>
+        <br/><br/>
+    </div>
+
+    <button type="submit">Guardar acompañantes</button>
+</form>
+
+</body>
+</html>
