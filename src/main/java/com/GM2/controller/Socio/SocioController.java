@@ -17,7 +17,6 @@ public class SocioController {
 
     SocioService socioService;
 
-
     public SocioController(SocioService socioService) { this.socioService = socioService; }
 
     @GetMapping
