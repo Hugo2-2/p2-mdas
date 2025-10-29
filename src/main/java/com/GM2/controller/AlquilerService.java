@@ -118,7 +118,11 @@ public class AlquilerService {
         nuevoAlquiler.setPrecio(precio);
 
         boolean insertado = alquilerRepository.addAlquiler(nuevoAlquiler);
-        return insertado ? "Alquiler registrado con éxito. Precio total: " + precio + " €" : "Error al registrar el alquiler.";
+        if (insertado) {
+            return "OK:" + nuevoAlquiler.getId(); // devolvemos ID de alquiler para el siguiente paso
+        } else {
+            return "Error al registrar el alquiler.";
+        }    
     }
 
 

@@ -90,8 +90,6 @@ public class ReservaRepository extends AbstractRepository{
             String query = sqlQueries.getProperty("insert-addReserva");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
-                   
-                   reserva.getId(),
                    reserva.getFecha(),
                    reserva.getPlazas(),
                    reserva.getPrecio(),

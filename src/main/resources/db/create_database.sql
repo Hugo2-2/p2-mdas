@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS acompanantes;
 DROP TABLE IF EXISTS hijos;
-DROP TABLE IF EXISTS inscripcion;
+DROP TABLE IF EXISTS inscripcionFamiliar;
+DROP TABLE IF EXISTS inscripcionIndividual;
 DROP TABLE IF EXISTS reserva;
 DROP TABLE IF EXISTS alquiler;
 DROP TABLE IF EXISTS embarcacion;
@@ -65,8 +66,8 @@ CREATE TABLE IF NOT EXISTS `reserva` (
     FOREIGN KEY (`matricula_embarcacion`) REFERENCES embarcacion(`matricula`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `inscripcion` (
-                                             `id` INT(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `inscripcionIndividual` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
     `socio_Titular` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
     `cuota_anual` DOUBLE NOT NULL,
     `fecha_creacion` DATE NOT NULL,
@@ -74,14 +75,14 @@ CREATE TABLE IF NOT EXISTS `inscripcion` (
     PRIMARY KEY (`id`),
     FOREIGN KEY (`socio_Titular`) REFERENCES socios(`dni`),
     FOREIGN KEY (`segundo_adulto`) REFERENCES socios(`dni`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `hijos` (
     `dni` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
     `id_inscripcion` INT(11) NOT NULL,
     PRIMARY KEY (`dni`),
     FOREIGN KEY (`dni`) REFERENCES socios(`dni`),
-    FOREIGN KEY (`id_inscripcion`) REFERENCES inscripcion(`id`)
+    FOREIGN KEY (`id_inscripcion`) REFERENCES inscripcionFamiliar(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `acompanantes` (

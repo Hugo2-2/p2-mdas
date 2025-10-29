@@ -10,9 +10,20 @@
     <script>
         // Calcula el precio automáticamente (40 € por plaza)
         function actualizarPrecio() {
+            // Obtiene el valor de las plazas
             const plazas = document.getElementById("plazas").value;
+
+            // Calcula el precio (40 € por plaza)
             const precio = plazas ? plazas * 40 : 0;
+
+            // Asigna el valor calculado al campo oculto 'precio' para que Spring lo reciba
             document.getElementById("precio").value = precio.toFixed(2);
+
+            // Opcional: Si quieres mostrar el precio al usuario en un campo de solo lectura
+            const precioDisplay = document.getElementById("precio_display");
+            if (precioDisplay) {
+                precioDisplay.value = precio.toFixed(2);
+            }
         }
     </script>
 </head>
@@ -21,8 +32,10 @@
 <div class="container mt-5">
 
     <!-- Mensajes -->
-    <div th:if="${mensajeExito}" class="alert alert-success" th:text="${mensajeExito}"></div>
-    <div th:if="${mensajeError}" class="alert alert-danger" th:text="${mensajeError}"></div>
+    <div th:if="${mensaje}"
+         th:class="${mensaje.startsWith('Reserva realizada con exito') ? 'alert alert-success' : 'alert alert-danger'}"
+         th:text="${mensaje}">
+    </div>
 
     <h1 class="mb-4 text-center">Registrar nueva reserva de actividad</h1>
 
@@ -43,7 +56,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="usuario_id" class="form-label">DNI del socio solicitante</label>
+            <label for="usuario_id" class="form-label">UID del socio solicitante</label>
             <input type="text" id="usuario_id" th:field="*{usuario_id}" class="form-control"
                    placeholder="Ej: 12345678A" required>
         </div>
@@ -59,12 +72,6 @@
             <textarea id="descripcion" th:field="*{descripcion}" rows="3"
                       class="form-control"
                       placeholder="Ej: excursión a la isla, comida en alta mar..." required></textarea>
-        </div>
-
-        <div class="mb-3">
-            <label for="precio" class="form-label">Precio total (€)</label>
-            <input type="text" id="precio" th:field="*{precio}" class="form-control" readonly>
-            <small class="text-muted">Precio: 40 € por persona</small>
         </div>
 
         <div class="text-center">

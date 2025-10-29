@@ -125,21 +125,9 @@ public class AlquilerRepository extends AbstractRepository{
 
                 //Obtener el ID del último alquiler insertado (puedes ajustarlo según tu BBDD)
                 Integer idAlquiler = jdbcTemplate.queryForObject(lastIdQuery, Integer.class);
+                alquiler.setId(idAlquiler);
 
-                //Insertar los acompañantes si existen
-                boolean acompanantesOK = true;
-                if (alquiler.getAcompanantes() != null && !alquiler.getAcompanantes().isEmpty()) {
-                    for (Acompañantes acomp : alquiler.getAcompanantes()) {
-                        acomp.setId_alquiler(idAlquiler); // asignar el id del alquiler a cada acompañante
-                        boolean ok = acompanantesRepository.addAcompañante(acomp);
-                        if (!ok) {
-                            acompanantesOK = false;
-                            break;
-                        }
-                    }
-                }
-
-                return (result > 0 && acompanantesOK);
+                return true;
 
             } else return false;
 
