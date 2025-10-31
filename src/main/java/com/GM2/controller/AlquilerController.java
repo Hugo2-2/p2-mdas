@@ -6,13 +6,13 @@ import com.GM2.model.domain.Embarcacion;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
-
+import org.springframework.stereotype.Controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/api/alquiler")
 public class AlquilerController {
 
@@ -77,34 +77,59 @@ public class AlquilerController {
 
 
     @GetMapping
-    public List<Alquiler> getAlquileres() { return  alquilerService.findAllAlquileres(); }
+    public ModelAndView getAlquileres() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("listAlquiler");
+        
+        List<Alquiler> alquileres = alquilerService.findAllAlquileres();
+        modelAndView.addObject("alquileres", alquileres);
+        
+        return modelAndView;
+    }
 
     @GetMapping("/{id}")
-    public Alquiler getAlquilerById(@PathVariable Integer id) { return alquilerService.findAlquilerById(id); };
-
-    @PostMapping
-    public String addAlquiler(@RequestBody Alquiler alquiler) {
-        boolean res = alquilerService.addAlquiler(alquiler);
-
-        if(res) {
-            return "Alquiler was added successfully";
-        } else {
-            return "Alquiler could not be added";
-        }
+    public ModelAndView getAlquilerDetalles(@PathVariable Integer id) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("detallesAlquiler");
+        
+        Alquiler alquiler = alquilerService.findAlquilerById(id);
+        modelAndView.addObject("alquiler", alquiler);
+        
+        return modelAndView;
     }
 
     // Buscar embarcaciones disponibles entre dos fechas
-    // Ejemplo: GET /api/alquiler/disponibles?inicio=2025-10-20&fin=2025-10-25
     @GetMapping("/disponibles")
-    public List<Embarcacion> getEmbarcacionesDisponibles(
-        @RequestParam("inicio") String inicio,
-        @RequestParam("fin") String fin) {
+    public ModelAndView getEmbarcacionesDisponibles(
+        @RequestParam(value = "inicio", required = false) String inicio,
+        @RequestParam(value = "fin", required = false) String fin) {
 
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("alquilerDisponible");
+        
+        // Si no hay parámetros, mostrar solo el formulario
+        if (inicio == null || fin == null) {
+            return modelAndView;
+        }
+        
+        // Si hay parámetros, procesar y mostrar resultados
+        try {
             LocalDate fechaInicio = LocalDate.parse(inicio);
             LocalDate fechaFin = LocalDate.parse(fin);
-
-            return alquilerService.buscarEmbarcacionesDisponibles(fechaInicio, fechaFin);
+            
+            List<Embarcacion> disponibles = alquilerService.buscarEmbarcacionesDisponibles(fechaInicio, fechaFin);
+            
+            modelAndView.addObject("disponibles", disponibles);
+            modelAndView.addObject("fechaInicio", fechaInicio);
+            modelAndView.addObject("fechaFin", fechaFin);
+            modelAndView.addObject("mostrarResultados", true);
+            
+        } catch (Exception e) {
+            modelAndView.addObject("error", "Formato de fecha incorrecto");
         }
+        
+        return modelAndView;
+    }
     
     // Registrar un nuevo alquiler (alquilar embarcación)
     // Ejemplo: POST /api/alquiler/alquilar
@@ -117,8 +142,14 @@ public class AlquilerController {
     // Listar solo los alquileres futuros
     // Ejemplo: GET /api/alquiler/futuros
     @GetMapping("/futuros")
-    public List<Alquiler> getAlquileresFuturos() {
-        return alquilerService.listarAlquileresFuturos();
+    public ModelAndView getAlquileresFuturos() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("alquileresFuturos");
+        
+        List<Alquiler> alquileresFuturos = alquilerService.listarAlquileresFuturos();
+        modelAndView.addObject("alquileresFuturos", alquileresFuturos);
+        
+        return modelAndView;
     }
 
 }

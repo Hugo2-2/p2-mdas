@@ -15,10 +15,5 @@ public class Gm2Application {
 		SpringApplication.run(Gm2Application.class, args);
 	}
 
-    @GetMapping("/")
-    public String home(){
-        return String.format("Hello world");
-    }
-
 
 }
