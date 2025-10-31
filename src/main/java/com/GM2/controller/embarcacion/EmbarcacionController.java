@@ -1,10 +1,9 @@
-package com.GM2.controller;
+package com.GM2.controller.embarcacion;
 
+import com.GM2.controller.patron.AssignPatronToEmbarcacion;
 import com.GM2.model.domain.Embarcacion;
-import com.GM2.model.domain.Patron;
 import com.GM2.model.repository.EmbarcacionRepository;
 
-import com.GM2.model.repository.PatronRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;

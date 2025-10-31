@@ -1,11 +1,8 @@
-package com.GM2.controller;
+package com.GM2.controller.patron;
 
 
-import com.GM2.model.domain.Embarcacion;
 import com.GM2.model.domain.Patron;
-import com.GM2.model.domain.Socio;
 import com.GM2.model.repository.PatronRepository;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;

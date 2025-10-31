@@ -1,4 +1,4 @@
-package com.GM2.controller;
+package com.GM2.controller.patron;
 
 import com.GM2.model.domain.Embarcacion;
 import com.GM2.model.repository.EmbarcacionRepository;
