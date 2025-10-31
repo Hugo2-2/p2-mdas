@@ -95,31 +95,4 @@ public class AssignPatronToEmbarcacion {
         // Redirigimos de vuelta al formulario principal
         return "redirect:/api/embarcaciones/asociarPatron";
     }
-
-    @GetMapping("/consultarEmbarcacionesPorTipo")
-    public ModelAndView getEmbarcacionesByTypeView(ModelAndView modelAndView) {
-        modelAndView.setViewName("selectEmbarcacionesByTypeView");
-        return modelAndView;
-    }
-
-    @PostMapping("/consultarEmbarcacionesPorTipo")
-    public String showEmbarcacionesByType(@RequestParam String tipo,
-                                 SessionStatus sessionStatus,
-                                 Model model) { // 'Model' es para pasar datos a la vista de confirmación
-
-        //1.Buscamos todas las embarcaciones de ese tipo
-        List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcacionesByTipo(tipo);
-
-//        System.out.println("Buscando por tipo: " + tipo);
-//        System.out.println("Embarcaciones encontradas: " + embarcaciones.size());
-
-        // 2. Añadir la lista filtrada al modelo
-        model.addAttribute("listaEmbarcaciones", embarcaciones);
-
-        // 3.  Añadir el tipo para mostrar un título
-        model.addAttribute("tipo", tipo);
-
-        sessionStatus.setComplete();
-        return "showEmbarcacionesInformationView";
-    }
 }

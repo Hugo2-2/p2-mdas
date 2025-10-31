@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Consultar Embarcaciones</title>
+    </head>
+    <body>
+
+        <h1>Buscar embarcación por tipo</h1>
+
+        <form method="GET" th:action="@{/api/embarcaciones/consultarEmbarcacionesPorTipo}">
+
+            <div>
+                <label for="tipo">Tipo:</label><br>
+                <select id="tipo" name="tipo" required>
+                    <option value="">-- Selecciona un tipo --</option>
+                    <option value="VELERO">Velero</option>
+                    <option value="YATE">Yate</option>
+                    <option value="LANCHA">Lancha</option>
+                    <option value="BARCA_PESCA">Barca de Pesca</option>
+                    <option value="CATAMARAN">Catamarán</option>
+                </select><br>
+            </div>
+
+            <br>
+            <div>
+                <input type="submit" value="Consultar">
+            </div>
+
+        </form>
+
+        <hr>
+
+        <div th:if="${listaEmbarcaciones != null}">
+
+            <h1>Resultados para: <span th:text="${tipoBuscado}">Tipo</span></h1>
+
+            <div th:if="${listaEmbarcaciones.isEmpty()}">
+                <p>No se encontraron embarcaciones de este tipo.</p>
+            </div>
+
+            <ul th:if="${!listaEmbarcaciones.isEmpty()}">
+                <li th:each="embarcacion : ${listaEmbarcaciones}">
+                    <span th:text="${embarcacion.nombre}">Nombre Barco</span>
+                    (<span th:text="${embarcacion.matricula}">Matrícula</span>) -
+                    Plazas: <span th:text="${embarcacion.plazas}"></span> -
+                    Patron: <span th:if="${embarcacion.idPatron != null}" th:text="Si"></span>
+                    <span th:unless="${embarcacion.idPatron != null}" th:text="No"></span>
+                </li>
+            </ul>
+
+        </div>
+
+
+        <a th:href="@{/menu}">Volver al menú</a>
+
+    </body>
+</html>

@@ -1,4 +1,4 @@
-package com.GM2.controller;
+package com.GM2.controller.alquiler;
 
 import com.GM2.model.domain.Alquiler;
 import com.GM2.model.domain.Embarcacion;

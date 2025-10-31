@@ -74,16 +74,16 @@
                             <div class="card-body text-center">
                                 <h5 class="card-title">Todas las Embarcaciones</h5>
                                 <p class="card-text">Lista completa</p>
-                                <a th:href="@{/api/embarcacion}" class="btn btn-info">Ver Lista</a>
+                                <a th:href="@{/api/embarcaciones}" class="btn btn-info">Ver Lista</a>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <div class="card">
                             <div class="card-body text-center">
-                                <h5 class="card-title">Buscar por Matrícula</h5>
+                                <h5 class="card-title">Consultar embarcaciones por tipo</h5>
                                 <p class="card-text">Buscar específica</p>
-                                <a th:href="@{/api/embarcacion/{matricula}}" class="btn btn-secondary">Buscar</a>
+                                <a th:href="@{/api/embarcaciones/consultarEmbarcacionesPorTipo}" class="btn btn-secondary">Buscar</a>
                             </div>
                         </div>
                     </div>
@@ -92,7 +92,7 @@
                             <div class="card-body text-center">
                                 <h5 class="card-title">Añadir Embarcación</h5>
                                 <p class="card-text">Nueva embarcación</p>
-                                <a th:href="@{/api/embarcacion/add}" class="btn btn-primary">Añadir</a>
+                                <a th:href="@{/api/embarcaciones/addEmbarcacion}" class="btn btn-primary">Añadir</a>
                             </div>
                         </div>
                     </div>
@@ -179,7 +179,7 @@
                             <div class="card-body text-center">
                                 <h5 class="card-title">Todos los Patrones</h5>
                                 <p class="card-text">Lista completa</p>
-                                <a th:href="@{/api/patron}" class="btn btn-info">Ver Lista</a>
+                                <a th:href="@{/api/patrones}" class="btn btn-info">Ver Lista</a>
                             </div>
                         </div>
                     </div>
@@ -197,7 +197,7 @@
                             <div class="card-body text-center">
                                 <h5 class="card-title">Añadir Patrón</h5>
                                 <p class="card-text">Nuevo patrón</p>
-                                <a th:href="@{/api/patron/add}" class="btn btn-primary">Añadir</a>
+                                <a th:href="@{/api/patrones/addPatron}" class="btn btn-primary">Añadir</a>
                             </div>
                         </div>
                     </div>
