@@ -1,6 +1,8 @@
 package com.GM2.controller.Socio;
 
+import com.GM2.controller.Inscripcion.InscripcionService;
 import com.GM2.model.domain.Alquiler;
+import com.GM2.model.domain.Inscripcion;
 import com.GM2.model.domain.Socio;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,8 +19,9 @@ public class SocioController {
 
     SocioService socioService;
 
-    public SocioController(SocioService socioService) { this.socioService = socioService; }
-
+    public SocioController(SocioService socioService, InscripcionService inscripcionService) {
+        this.socioService = socioService;
+    }
     @GetMapping
     @ResponseBody
     public List<Socio> getSocios() { return socioService.findAll(); }
@@ -32,6 +35,7 @@ public class SocioController {
 
     @PostMapping("/addSocio")
     public String addSocio(@ModelAttribute Socio socio,
+                           @RequestParam(name = "ampliarInscripcion", required = false) String ampliarInscripcion,
                            RedirectAttributes redirectAttributes) {
 
         //Mensajes para depurar en terminal
@@ -54,8 +58,19 @@ public class SocioController {
             redirectAttributes.addFlashAttribute("mensaje", mensaje);
         }
 
-        //Volvemos al formulario vacio
-        return "redirect:/api/socios/addSocio";
+        //Confirmamos que la checkbox de la vista está marcada
+        boolean quiereAmpliar = (ampliarInscripcion != null && ampliarInscripcion.equals("true"));
+
+        if(socio.getEsTitular() && quiereAmpliar) {
+            // Pasamos el DNI del socio recién creado a la siguiente página
+            redirectAttributes.addFlashAttribute("dniSocioTitular", socio.getDni());
+
+            // Redirigimos al nuevo formulario de inscripción familiar pasando el id de la inscripción como parámetro en el enlace
+            return "redirect:/api/inscripciones/upgradeInscripcion";
+        } else {
+            redirectAttributes.addFlashAttribute("mensajeExito", "Socio guardado exitosamente.");
+            return "redirect:/api/socios/addSocio";
+        }
     }
 
 }
