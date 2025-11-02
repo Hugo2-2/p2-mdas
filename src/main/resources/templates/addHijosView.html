@@ -1,10 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
-    <title>Añadir Hijos</title>
+    <title>Añadir Hijos a Inscripción</title>
 </head>
-<body>
 
+<body>
+<h1>Añadir Hijos</h1>
+<p>
+    Estás añadiendo hijos a la inscripción del titular: <b th:text="${dniTitular}"></b>
+</p>
+
+<form method="POST" th:action="@{/api/inscripciones/addHijosView}">
+
+    <input type="hidden" name="dniTitular" th:value="${dniTitular}" />
+
+    <div th:each="i : ${#numbers.sequence(1, numeroHijos)}">
+
+        <hr>
+        <h3 th:text="'Datos del Hijo ' + ${i}"></h3>
+
+        <div>
+            <label th:for="${'hijo_dni' + i}">DNI:</label><br>
+            <input type="text" th:id="${'hijo_dni' + i}" name="hijo_dni" required><br>
+        </div>
+    </div>
+
+    <hr>
+    <br>
+
+    <div>
+        <button type="submit">Guardar Hijos y Finalizar</button>
+    </div>
+
+</form>
 </body>
 </html>

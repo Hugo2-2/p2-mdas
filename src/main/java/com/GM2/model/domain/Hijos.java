@@ -9,6 +9,10 @@ public class Hijos {
         this.id_inscripcion = id_inscripcion;
     }
 
+    public Hijos() {
+
+    }
+
     public String getDni() {
         return dni;
     }

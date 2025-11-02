@@ -17,8 +17,9 @@ public class InscripcionRepository extends AbstractRepository{
 
     private HijosRepository hijosRepository;
 
-    public InscripcionRepository(JdbcTemplate jdbcTemplate) {
+    public InscripcionRepository(JdbcTemplate jdbcTemplate, HijosRepository hijosRepository) {
         this.jdbcTemplate = jdbcTemplate;
+        this.hijosRepository = hijosRepository;
     }
 
     private Inscripcion mapRowToInscripcion(ResultSet rs) {
