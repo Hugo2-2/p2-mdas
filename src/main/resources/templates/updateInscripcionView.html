@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Mejorar Inscripción</title>
+
+        <style>
+            /* (Tu CSS para ocultar/mostrar está bien) */
+            .opcion-hijos {
+                display: none;
+            }
+            #añadirHijos:checked ~ .opcion-hijos {
+                display: block;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>Completar Inscripcion Familiar</h1>
+
+            <div th:if="${mensajeExito}" class="alert alert-success" style="color: green;">
+                <p th:text="${mensajeExito}"></p>
+            </div>
+            <div th:if="${mensajeError}" class="alert alert-danger" style="color: red;">
+                <p th:text="${mensajeError}"></p>
+            </div>
+            <form method="POST" th:action="@{/api/inscripciones/updateInscripcion}">
+
+                <div>
+                    <label for="dniTitular">DNI Titular:</label><br>
+                    <input type="text" id="dniTitular" name="dniTitular" required><br>
+                </div>
+
+                <div>
+                    <label for="dniSegundoAdulto">DNI segundo acompañante</label><br>
+                    <input type="text" id="dniSegundoAdulto" name="dniSegundoAdulto"><br>
+                </div>
+
+                <div>
+                    <input type="checkbox" id="añadirHijos" name="añadirHijos" value="true" class="checkbox" />
+                    <label for="añadirHijos" class="form-label">¿Desea Añadir Hijos?</label>
+
+                    <div class="opcion-hijos">
+                        <input type="number" id="numeroHijos" name="numeroHijos" />
+                        <label for="numeroHijos">Numero de hijos</label>
+                    </div>
+                </div>
+
+                <br>
+
+                <div>
+                    <button type="submit" name="siguientePaso" value="finalizar">Finalizar Inscripción</button>
+                    <button type="submit" name="siguientePaso" value="continuarHijos">Continuar con el número de hijos</button>
+                </div>
+
+        </form>
+    </body>
+</html>

@@ -4,9 +4,11 @@ import ch.qos.logback.core.model.Model;
 import com.GM2.model.domain.Inscripcion;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/api/inscripciones")
@@ -29,5 +31,50 @@ public class InscripcionController {
         }
 
         return modelAndView;
+    }
+
+    @GetMapping("/updateInscripcion")
+    public ModelAndView updateInscripcionView() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("updateInscripcionView");
+        return modelAndView;
+    }
+
+    @PostMapping("/updateInscripcion")
+    public String updateInscripcion(
+            @RequestParam(name = "dniTitular") String dniTitular,
+            @RequestParam(name = "dniSegundoAdulto", required = false) String dniSegundoAdulto,
+            @RequestParam(name = "añadirHijos", required = false) String añadirHijos,
+            @RequestParam(name = "numeroHijos", required = false) Integer numeroHijos, // Integer es mejor para números
+            @RequestParam(name = "siguientePaso") String siguientePaso, // Recibimos el 'name="siguientePaso"' del botón pulsado
+            RedirectAttributes redirectAttributes) {
+
+        System.out.println("[InscripcionController] Informacion recivida: dniTitular=" + dniTitular +
+                " dniSegundoAdulto=" + dniSegundoAdulto +
+                " añadirHijos=" + añadirHijos +
+                " numeroHijos=" + numeroHijos +
+                " siguientePaso=" + siguientePaso);
+
+        if (siguientePaso.equals("continuarHijos")) {
+
+            // Si el usuario quiere añadir hijos
+            redirectAttributes.addFlashAttribute("dniTitular", dniTitular);
+            redirectAttributes.addFlashAttribute("dniSegundoAdulto", dniSegundoAdulto);
+            redirectAttributes.addFlashAttribute("numeroHijos", numeroHijos);
+
+            // Redirige a la vista de "Añadir Hijos"
+            return "redirect:/api/inscripciones/addHijosView"; // (Debes crear este controlador/vista)
+
+        } else {
+
+            String resultado = inscripcionService.updateInscripcioSinHijos(dniTitular, dniSegundoAdulto);
+
+            if (resultado.equals("EXITO")) {
+                redirectAttributes.addFlashAttribute("mensajeExito", "Inscripción (sin hijos) guardada.");
+            } else {
+                redirectAttributes.addFlashAttribute("mensajeError", resultado);
+            }
+            return "redirect:/api/inscripciones/updateInscripcion";
+        }
     }
 }
