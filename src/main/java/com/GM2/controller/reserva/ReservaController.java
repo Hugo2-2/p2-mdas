@@ -1,6 +1,5 @@
-package com.GM2.controller;
+package com.GM2.controller.reserva;
 
-import com.GM2.model.domain.Alquiler;
 import com.GM2.model.domain.Reserva;
 import com.GM2.model.domain.Embarcacion;
 import org.springframework.web.bind.annotation.*;

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -37,6 +38,8 @@ public class SocioController {
     public String addSocio(@ModelAttribute Socio socio,
                            @RequestParam(name = "ampliarInscripcion", required = false) String ampliarInscripcion,
                            RedirectAttributes redirectAttributes) {
+
+        socio.setFechaInscripcion(LocalDate.now());
 
         //Mensajes para depurar en terminal
         System.out.println("[SocioController] Informacion recivida: nombre=" + socio.getNombre() +

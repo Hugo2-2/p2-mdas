@@ -21,6 +21,7 @@ public class InscripcionController {
 
     public InscripcionController(InscripcionService inscripcionService, HijosRepository hijosRepository) {  this.inscripcionService = inscripcionService;
         this.hijosRepository = hijosRepository;
+        this.inscripcionService = inscripcionService;
     }
 
     @GetMapping("/upgradeInscripcion")
