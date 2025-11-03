@@ -66,7 +66,7 @@ public class SocioController {
             redirectAttributes.addFlashAttribute("dniSocioTitular", socio.getDni());
 
             // Redirigimos al nuevo formulario de inscripción familiar pasando el id de la inscripción como parámetro en el enlace
-            return "redirect:/api/inscripciones/upgradeInscripcion";
+            return "redirect:/api/inscripciones/updateInscripcion";
         } else {
             redirectAttributes.addFlashAttribute("mensajeExito", "Socio guardado exitosamente.");
             return "redirect:/api/socios/addSocio";
