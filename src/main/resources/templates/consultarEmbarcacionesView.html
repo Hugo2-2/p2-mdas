@@ -1,58 +1,104 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <title>Consultar Embarcaciones</title>
-    </head>
-    <body>
-
-        <h1>Buscar embarcación por tipo</h1>
-
-        <form method="GET" th:action="@{/api/embarcaciones/consultarEmbarcacionesPorTipo}">
-
-            <div>
-                <label for="tipo">Tipo:</label><br>
-                <select id="tipo" name="tipo" required>
-                    <option value="">-- Selecciona un tipo --</option>
-                    <option value="VELERO">Velero</option>
-                    <option value="YATE">Yate</option>
-                    <option value="LANCHA">Lancha</option>
-                    <option value="BARCA_PESCA">Barca de Pesca</option>
-                    <option value="CATAMARAN">Catamarán</option>
-                </select><br>
-            </div>
-
-            <br>
-            <div>
-                <input type="submit" value="Consultar">
-            </div>
-
-        </form>
-
-        <hr>
-
-        <div th:if="${listaEmbarcaciones != null}">
-
-            <h1>Resultados para: <span th:text="${tipoBuscado}">Tipo</span></h1>
-
-            <div th:if="${listaEmbarcaciones.isEmpty()}">
-                <p>No se encontraron embarcaciones de este tipo.</p>
-            </div>
-
-            <ul th:if="${!listaEmbarcaciones.isEmpty()}">
-                <li th:each="embarcacion : ${listaEmbarcaciones}">
-                    <span th:text="${embarcacion.nombre}">Nombre Barco</span>
-                    (<span th:text="${embarcacion.matricula}">Matrícula</span>) -
-                    Plazas: <span th:text="${embarcacion.plazas}"></span> -
-                    Patron: <span th:if="${embarcacion.idPatron != null}" th:text="Si"></span>
-                    <span th:unless="${embarcacion.idPatron != null}" th:text="No"></span>
-                </li>
-            </ul>
-
+<head>
+    <meta charset="UTF-8">
+    <title>Consultar Embarcaciones - Club Náutico</title>
+    <link th:href="@{/styles.css}" rel="stylesheet">
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo">🔍 Consultar Embarcaciones</div>
+        <div class="header-buttons">
+            <a th:href="@{/menu}" class="btn">Menú Principal</a>
         </div>
+    </div>
+</header>
 
+<div class="container">
+    <h1 class="titulo-principal">Buscar embarcación por tipo</h1>
 
-        <a th:href="@{/menu}">Volver al menú</a>
+    <div class="card mb-4">
+        <div class="card-header">
+            <span>Filtro de Búsqueda</span>
+        </div>
+        <div class="card-body">
+            <form method="GET" th:action="@{/api/embarcaciones/consultarEmbarcacionesPorTipo}">
+                <div class="form-group">
+                    <label for="tipo" class="form-label">Tipo:</label>
+                    <select id="tipo" name="tipo" class="form-control" required>
+                        <option value="">-- Selecciona un tipo --</option>
+                        <option value="VELERO">Velero</option>
+                        <option value="YATE">Yate</option>
+                        <option value="LANCHA">Lancha</option>
+                        <option value="BARCA_PESCA">Barca de Pesca</option>
+                        <option value="CATAMARAN">Catamarán</option>
+                    </select>
+                </div>
 
-    </body>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn">Consultar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    <div th:if="${listaEmbarcaciones != null}">
+        <div class="card">
+            <div class="card-header">
+                <span>Resultados para: <span th:text="${tipoBuscado}">Tipo</span></span>
+            </div>
+            <div class="card-body">
+                <div th:if="${listaEmbarcaciones.isEmpty()}" class="text-center py-4">
+                    <p class="text-muted">No se encontraron embarcaciones de este tipo.</p>
+                </div>
+
+                <div th:if="${!listaEmbarcaciones.isEmpty()}">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Matrícula</th>
+                                <th>Plazas</th>
+                                <th>Patrón</th>
+                                <th>Dimensiones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="embarcacion : ${listaEmbarcaciones}">
+                                <td>
+                                    <strong th:text="${embarcacion.nombre}">Nombre Barco</strong>
+                                </td>
+                                <td>
+                                    <span class="badge badge-primary" th:text="${embarcacion.matricula}">Matrícula</span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-warning" th:text="${embarcacion.plazas}"></span>
+                                </td>
+                                <td>
+                                    <span th:if="${embarcacion.idPatron != null}" class="badge badge-success">Sí</span>
+                                    <span th:unless="${embarcacion.idPatron != null}" class="badge badge-secondary">No</span>
+                                </td>
+                                <td th:text="${embarcacion.dimensiones}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p class="mb-0">Sistema de Gestión Club Náutico &copy; 2024</p>
+    </div>
+</footer>
+</body>
 </html>
