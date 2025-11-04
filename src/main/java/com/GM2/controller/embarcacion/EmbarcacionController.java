@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -16,10 +17,12 @@ import java.util.List;
 public class EmbarcacionController {
 
     EmbarcacionRepository embarcacionRepository;
+    EmbarcacionService embarcacionService;
     AssignPatronToEmbarcacion assignPatronToEmbarcacion;
 
-    public EmbarcacionController(EmbarcacionRepository embarcacionRepository, AssignPatronToEmbarcacion assignPatronToEmbarcacion) {
+    public EmbarcacionController(EmbarcacionRepository embarcacionRepository, AssignPatronToEmbarcacion assignPatronToEmbarcacion, EmbarcacionService embarcacionService) {
         this.embarcacionRepository = embarcacionRepository;
+        this.embarcacionService = embarcacionService;
         this.assignPatronToEmbarcacion = assignPatronToEmbarcacion;
 
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
@@ -34,17 +37,6 @@ public class EmbarcacionController {
     @ResponseBody
     public Embarcacion getEmbarcacionByMatricula(@PathVariable String matricula){ return embarcacionRepository.findEmbarcacionByMatricula(matricula); }
 
-//    @PostMapping()
-//    public String addEmbarcacion(@RequestBody Embarcacion embarcacion){
-//        boolean res = embarcacionRepository.addEmbarcacion(embarcacion);
-//
-//        if(res) {
-//            return "Embarcacion was added successfully";
-//        } else {
-//            return "Embarcacion could not be added";
-//        }
-//    }
-
     @GetMapping("/addEmbarcacion")
     public ModelAndView getAddEmbarcacionView() {
         ModelAndView modelAndView = new ModelAndView();
@@ -54,7 +46,9 @@ public class EmbarcacionController {
     }
 
     @PostMapping("/addEmbarcacion")
-    public String addEmbarcacion(@ModelAttribute Embarcacion newEmbarcacion, SessionStatus sessionStatus){
+    public String addEmbarcacion(@ModelAttribute Embarcacion newEmbarcacion,
+                                 SessionStatus sessionStatus,
+                                 RedirectAttributes redirectAttributes){
 
         System.out.println("[EmbarcacionController] Informacion recivida: matricula=" + newEmbarcacion.getMatricula() +
                 " nombre=" + newEmbarcacion.getNombre() +
@@ -62,26 +56,18 @@ public class EmbarcacionController {
                 " dimensiones=" + newEmbarcacion.getDimensiones() +
                 " id_patron=" + newEmbarcacion.getIdPatron() +
                 " plazas=" + newEmbarcacion.getPlazas());
-        boolean success = embarcacionRepository.addEmbarcacion(newEmbarcacion);
+        String resultado = embarcacionService.addEmbarcacion(newEmbarcacion);
         String nextPage;
 
-        if(success){
-            sessionStatus.setComplete();
-            nextPage = "redirect:/api/embarcaciones/addEmbarcacion";
+        if(resultado == "EXITO"){
+            redirectAttributes.addFlashAttribute("successMessage", "La embarcacion se ha ingresado correctamente");
         }
-        else
-            nextPage = "addEmbarcacionViewFail";
+        else {
+            redirectAttributes.addFlashAttribute("errorMessage", resultado);
+        }
+        nextPage = "redirect:/api/embarcaciones/addEmbarcacion";
 
         sessionStatus.setComplete();
         return nextPage;
     }
-
-    //TENGO QUE HACER AQUI LA DE OBTENER EMBARCACION POR TIPO
-
-//
-//    @PutMapping("/{matricula}/patron")
-//    @ResponseBody
-//    public String asociatePatronToEmbarcacion(@PathVariable String matricula, @RequestBody String patronDni){
-//        return assignPatronToEmbarcacion.asociatePatron(matricula, patronDni);
-//    }
 }

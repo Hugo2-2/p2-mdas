@@ -21,6 +21,13 @@
     </header>
 
     <div class="container">
+        <div th:if="${successMessage}" class="alert alert-success" style="color: green;">
+            <p th:text="${successMessage}"></p>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger" style="color: red;">
+            <p th:text="${errorMessage}"></p>
+        </div>
+
         <h1 class="titulo-principal">Añadir una nueva embarcación</h1>
 
         <form method="POST" th:action="@{/api/embarcaciones/addEmbarcacion}" th:object="${newEmbarcacion}" class="card">

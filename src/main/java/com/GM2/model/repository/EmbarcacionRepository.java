@@ -66,6 +66,21 @@ public class EmbarcacionRepository extends AbstractRepository {
         }
     }
 
+    public Embarcacion findEmbarcacionByNombre(String nombre) {
+        try {
+            String query = sqlQueries.getProperty("select-findEmbarcacionByNombre");
+            Embarcacion result = jdbcTemplate.query(query, this::mapRowToEmbarcacion, nombre);
+            if(result != null)
+                return result;
+            else
+                return null;
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to find embarcacion with nombre: " + nombre);
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
     public List<Embarcacion> findAllEmbarcacionesByTipo(String tipo) {
         try {
             String query = sqlQueries.getProperty("select-findAllEmbarcacionesByTipo");

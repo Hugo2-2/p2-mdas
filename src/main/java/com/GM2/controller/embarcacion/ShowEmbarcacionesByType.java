@@ -15,15 +15,15 @@ import java.util.List;
 @RequestMapping("/api/embarcaciones")
 public class ShowEmbarcacionesByType {
 
-    EmbarcacionRepository embarcacionRepository;
+    private final EmbarcacionService embarcacionService;
     PatronRepository patronRepository;
 
     private ModelAndView modelAndView = new ModelAndView();
 
-    public ShowEmbarcacionesByType(EmbarcacionRepository embarcacionRepository, PatronRepository patronRepository) {
-        this.embarcacionRepository = embarcacionRepository;
+    public ShowEmbarcacionesByType(PatronRepository patronRepository, EmbarcacionService embarcacionService) {
         this.patronRepository = patronRepository;
         this.modelAndView.setViewName("consultarEmbarcacionesView");
+        this.embarcacionService = embarcacionService;
     }
 
     @GetMapping("/consultarEmbarcacionesPorTipo")
@@ -33,7 +33,7 @@ public class ShowEmbarcacionesByType {
         //Comprobamos si el parámetro se ha proporcionado
         if (!tipo.equals("none")) {
             // Si SÍ se proporcionó, ejecutamos la búsqueda
-            List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcacionesByTipo(tipo);
+            List<Embarcacion> embarcaciones = embarcacionService.findAllEmbarcacionesByTipo(tipo);
 
             // Y añadimos los resultados al modelo
             this.modelAndView.addObject("listaEmbarcaciones", embarcaciones);
