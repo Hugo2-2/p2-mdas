@@ -64,23 +64,26 @@ public class ReservaController {
 
     // En ReservaController.java
     @GetMapping
-    public List<Reserva> getReservas(){ return reservaRepository.findAllReservas(); }
+    public ModelAndView getReserva() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("listReservaView");
 
+        List<Reserva> reservas = reservaService.findAllReservas();
+        modelAndView.addObject("reservas", reservas);
+
+        return modelAndView;
+    }
 
     @GetMapping("/{id}")
-    public Reserva getReservaById(@PathVariable Integer id) { return reservaService.findReservaById(id); };
+    public ModelAndView getReservasDetalles(@PathVariable Integer id) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("detallesReservaView");
 
-    @PostMapping
-    public String addReserva(@RequestBody Reserva reserva) {
-        boolean res = reservaService.addReserva(reserva);
+        Reserva reserva = reservaService.findReservaById(id);
+        modelAndView.addObject("reserva", reserva);
 
-        if(res) {
-            return "Reserva was added successfully";
-        } else {
-            return "Reserva could not be added";
-        }
+        return modelAndView;
     }
-    
     // GET /api/reserva/disponibles?fecha=2025-10-25&plazas=5
     @GetMapping("/disponibles")
     public List<Embarcacion> getEmbarcacionesDisponibles(

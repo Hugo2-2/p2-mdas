@@ -6,52 +6,60 @@
     <link th:href="@{/styles.css}" rel="stylesheet">
 </head>
 <body>
+
 <header class="header">
     <div class="header-content">
-        <div class="logo">📋 Lista de Reservas</div>
+        <div class="logo">Lista de Reservas</div>
         <div class="header-buttons">
             <a th:href="@{/menu}" class="btn">Volver al Menú</a>
-            <a th:href="@{/api/reserva/addReserva}" class="btn btn-guardar">
-                + Nueva Reserva
-            </a>
         </div>
     </div>
 </header>
 
 <div class="container">
 
+    <!-- Mensaje de éxito o error -->
     <div th:if="${mensaje}"
-         th:class="${mensaje.contains('éxito') ? 'alert alert-success mt-4' : 'alert alert-danger mt-4'}">
+         th:class="${mensaje.contains('éxito') ? 'alert alert-success' : 'alert alert-danger'} mt-3">
         <p th:text="${mensaje}"></p>
     </div>
 
-    <div class="stats-grid">
+    <!-- Resumen de estadísticas -->
+    <section class="stats-grid mt-4">
         <div class="stat-card info">
-            <div class="stat-number" th:text="${reservasList != null ? reservasList.size() : 0}">0</div>
+            <div class="stat-number" th:text="${reservas != null ? reservas.size() : 0}">0</div>
             <div class="stat-text">Total Reservas</div>
         </div>
         <div class="stat-card success">
             <div class="stat-number"
-                 th:text="${#numbers.formatDecimal(#aggregates.sum(reservasList != null ? reservasList.![precio] : {0}), 0, 'POINT', 2, 'COMMA') + ' €'}">0 €</div>
+                 th:text="${#numbers.formatDecimal(#aggregates.sum(reservas != null ? reservas.![precio] : {0}), 0, 'POINT', 2, 'COMMA') + ' €'}">
+                0 €
+            </div>
             <div class="stat-text">Ingresos Totales (€)</div>
         </div>
         <div class="stat-card warning">
             <div class="stat-number"
-                 th:text="${#aggregates.sum(reservasList != null ? reservasList.![plazas] : {0})}">0</div>
+                 th:text="${#aggregates.sum(reservas != null ? reservas.![plazas] : {0})}">0</div>
             <div class="stat-text">Total Plazas Reservadas</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number"
-                 th:with="activas=${reservasList != null ? #lists.size(#lists.select(reservasList, r -> #temporals.createToday().isBefore(r.fecha) or #temporals.createToday().equals(r.fecha))) : 0}"
-                 th:text="${activas}">0</div>
+            <div th:with="hoy=${T(java.time.LocalDate).now()}" class="stat-number">
+                <span th:text="${reservas != null ? reservas.?[fecha.isAfter(#vars.hoy) or fecha.isEqual(#vars.hoy)].size() : 0}">0</span>
+            </div>
             <div class="stat-text">Reservas Activas</div>
         </div>
-    </div>
+    </section>
 
-    <div class="card shadow">
+    <!-- Tabla de reservas -->
+    <div class="card">
+        <div class="card-header">
+            <h3>📋 Detalle de Reservas</h3>
+            <a th:href="@{/api/reserva/addReserva}" class="btn">+ Nueva Reserva</a>
+        </div>
+
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover table-striped">
                     <thead>
                     <tr>
                         <th>ID</th>
@@ -66,34 +74,30 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="reserva : ${reservasList}">
+                    <tr th:each="reserva : ${reservas}">
                         <td th:text="${reserva.id}">1</td>
-                        <td th:text="${reserva.socio_id}">Socio ID</td>
-                        <td th:text="${reserva.matricula_embarcacion}">Matricula Barco</td>
+                        <td th:text="${reserva.usuario_id}">Socio ID</td>
+                        <td th:text="${reserva.matricula_embarcacion}">Matricula</td>
                         <td th:text="${#temporals.format(reserva.fecha, 'dd-MM-yyyy')}">Fecha</td>
-                        <td th:text="${reserva.proposito}">Propósito de la reserva</td>
-                        <td class="text-center" th:text="${reserva.plazas}">Plazas</td>
-                        <td th:text="${#numbers.formatDecimal(reserva.precio, 0, 'POINT', 2, 'COMMA') + ' €'}">120.00 €</td>
+                        <td th:text="${reserva.descripcion}">Descripción</td>
+                        <td class="text-center" th:text="${reserva.plazas}">0</td>
+                        <td th:text="${#numbers.formatDecimal(reserva.precio, 0, 'POINT', 2, 'COMMA') + ' €'}">0 €</td>
 
                         <td class="text-center" th:with="esPasada=${#temporals.createToday().isAfter(reserva.fecha)}">
-                                    <span th:classappend="${esPasada} ? 'bg-secondary' : 'bg-success'"
-                                          class="estado-badge">
-                                        <span th:text="${esPasada} ? 'Finalizada' : 'Activa'"></span>
-                                    </span>
+                            <span th:classappend="${esPasada} ? 'bg-secondary' : 'bg-success'" class="estado-badge">
+                                <span th:text="${esPasada} ? 'Finalizada' : 'Activa'"></span>
+                            </span>
                         </td>
 
-                        <td>
-                            <div class="btn-group-sm">
-                                <a th:href="@{/api/reserva/{id}(id=${reserva.id})}" class="btn btn-info"
-                                   title="Ver detalle">
-                                    👁️
-                                </a>
-                                <button class="btn btn-danger" title="Cancelar" disabled>❌</button>
+                        <td class="text-center">
+                            <div class="btn-group-sm d-flex justify-content-center align-items-center">
+                                <a th:href="@{/api/reserva/{id}(id=${reserva.id})}" class="btn" title="Ver detalle">👁️</a>
                             </div>
                         </td>
+
                     </tr>
 
-                    <tr th:if="${reservasList == null or reservasList.empty}">
+                    <tr th:if="${reservas == null or reservas.empty}">
                         <td colspan="9" class="text-center text-muted py-4">
                             <h5>No hay reservas registradas.</h5>
                             <a th:href="@{/api/reserva/addReserva}" class="btn mt-2">Crear Primera Reserva</a>
@@ -105,14 +109,15 @@
         </div>
     </div>
 
-    <div class="mt-3">
-        <small class="text-muted">
+    <!-- Leyenda -->
+    <div class="card mt-3 small">
+        <p class="mb-0 text-center">
             <strong>Leyenda:</strong>
-            <span class="badge bg-success">Reserva Activa (Hoy o Futuro)</span> -
-            <span class="badge bg-secondary">Reserva Finalizada (Pasada)</span>
-            <span class="badge bg-warning">Total Plazas Reservadas</span> -
+            <span class="badge bg-success">Reserva Activa</span> -
+            <span class="badge bg-secondary">Reserva Finalizada</span> -
+            <span class="badge bg-warning">Total Plazas</span> -
             <span class="badge bg-info">Total Reservas</span>
-        </small>
+        </p>
     </div>
 </div>
 
@@ -121,5 +126,6 @@
         <p class="mb-0">Sistema de Gestión Club Náutico &copy; 2024</p>
     </div>
 </footer>
+
 </body>
 </html>
