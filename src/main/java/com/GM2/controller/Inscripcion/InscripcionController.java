@@ -24,21 +24,6 @@ public class InscripcionController {
         this.inscripcionService = inscripcionService;
     }
 
-    @GetMapping("/upgradeInscripcion")
-    public ModelAndView upgradeInscripcion(@RequestParam("id") int id) {
-
-        Inscripcion inscripcionBase = inscripcionService.findInscripcionById(id);
-        ModelAndView modelAndView = new ModelAndView();
-
-        if( inscripcionBase != null ) {
-            modelAndView.setViewName("upgradeInscripcion");
-
-            modelAndView.addObject("inscripcion", inscripcionBase);
-        }
-
-        return modelAndView;
-    }
-
     @GetMapping("/updateInscripcion")
     public ModelAndView updateInscripcionView() {
         ModelAndView modelAndView = new ModelAndView();

@@ -53,7 +53,8 @@ public class EmbarcacionService {
         if(patronRepository.findPatronByDNI(embarcacion.getIdPatron()) == null){
             return "Error: El patron no existe";
         }
-        if(!embarcacionRepository.isPatronAssignedToEmbarcacion(embarcacion.getIdPatron())) {
+
+        if(embarcacionRepository.isPatronAssignedToEmbarcacion(embarcacion.getIdPatron())) {
             return "Error: El patron ya se encuentra asignado a una embarcación";
         }
 

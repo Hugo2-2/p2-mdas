@@ -78,15 +78,15 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="dimensiones" class="form-label">Dimensiones:</label>
+                            <label for="dimensiones" class="form-label">Dimensiones(m2):</label>
                             <input type="text" id="dimensiones" th:field="*{dimensiones}" class="form-control" required>
                         </div>
                     </div>
                     
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="idPatron" class="form-label">ID del Patrón:</label>
-                            <input type="text" id="idPatron" th:field="*{idPatron}" class="form-control">
+                            <label for="idPatron" class="form-label">DNI del Patrón:</label>
+                            <input type="text" id="idPatron" th:field="*{idPatron}" class="form-control" minlength="9" maxlength="9">
                             <div class="form-text">Opcional - dejar vacío si no tiene patrón asignado</div>
                         </div>
                     </div>

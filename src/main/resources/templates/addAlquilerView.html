@@ -62,7 +62,7 @@
 
                 <div class="form-group mb-3">
                     <label for="usuario_dni" class="form-label">DNI del socio</label>
-                    <input type="text" id="usuario_dni" th:field="*{usuario_dni}" class="form-control" required>
+                    <input type="text" id="usuario_dni" th:field="*{usuario_dni}" class="form-control" minlength="9" maxlength="9" required>
                 </div>
 
                 <div class="text-center">
