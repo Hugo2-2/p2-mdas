@@ -83,7 +83,7 @@
                         <div class="mt-3">
                             <div class="form-group">
                                 <strong>Duración:</strong><br>
-                                <span class="badge badge-success" 
+                                <span class="badge badge-primary" 
                                       th:text="${(alquiler.fechafin.toEpochDay() - alquiler.fechainicio.toEpochDay() + 1) + ' días'}">
                                 </span>
                             </div>
@@ -163,15 +163,17 @@
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
                             <span>👥 Acompañantes</span>
-                            <span class="badge badge-light" 
-                                th:text="|${alquiler.acompanantes.size()} de ${alquiler.plazas} plazas|">
+                            <span class="badge badge-light"
+                                th:if="${alquiler.plazas > 1}"
+                                th:text="|${alquiler.acompanantes.size()} de ${alquiler.plazas - 1} plazas|">
                             </span>
                         </div>
                     </div>
                     <div class="card-body">
                         <div th:if="${alquiler.acompanantes.empty}">
                             <p class="text-muted text-center mb-0">
-                                <i>No hay acompañantes registrados</i>
+                                <i th:if="${alquiler.plazas == 1}">No se permiten acompañantes (solo 1 plaza)</i>
+                                <i th:if="${alquiler.plazas > 1}">No hay acompañantes registrados</i>
                             </p>
                         </div>
                         <div th:each="acomp : ${alquiler.acompanantes}" class="acompanante-item">
@@ -183,13 +185,21 @@
                             </a>
                         </div>
                         
-                        <!-- Botón para gestionar acompañantes -->
-                        <div th:if="${alquiler.fechainicio.isAfter(T(java.time.LocalDate).now()) or alquiler.fechainicio.isEqual(T(java.time.LocalDate).now())}" 
-                             class="mt-3">
+                        <!-- Botón para gestionar acompañantes (solo si el alquiler es futuro y tiene más de 1 plaza) -->
+                        <div th:if="${(alquiler.fechainicio.isAfter(T(java.time.LocalDate).now()) or alquiler.fechainicio.isEqual(T(java.time.LocalDate).now())) and alquiler.plazas > 1}" 
+                            class="mt-3">
                             <a th:href="@{/api/alquiler/acompanantes/{alquilerId}/{plazas}(alquilerId=${alquiler.id}, plazas=${alquiler.plazas})}" 
-                               class="btn w-100">
+                            class="btn w-100">
                                 🛠️ Gestionar Acompañantes
                             </a>
+                        </div>
+                        
+                        <!-- Mensaje cuando no se permiten acompañantes -->
+                        <div th:if="${(alquiler.fechainicio.isAfter(T(java.time.LocalDate).now()) or alquiler.fechainicio.isEqual(T(java.time.LocalDate).now())) and alquiler.plazas == 1}" 
+                            class="mt-3">
+                            <p class="text-muted text-center">
+                                <small>ℹ️ Este alquiler es para 1 persona (no se permiten acompañantes)</small>
+                            </p>
                         </div>
                     </div>
                 </div>

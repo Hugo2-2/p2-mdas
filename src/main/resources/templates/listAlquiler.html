@@ -23,15 +23,15 @@
                 <div class="stat-number" th:text="${alquileres.size()}">0</div>
                 <div class="stat-text">Total Alquileres</div>
             </div>
-            <div class="stat-card success">
+            <div class="stat-card info">
                 <div class="stat-number" th:text="${#aggregates.sum(alquileres.![precio])}">0</div>
                 <div class="stat-text">Ingresos Totales (€)</div>
             </div>
-            <div class="stat-card warning">
+            <div class="stat-card info">
                 <div class="stat-number" th:text="${#aggregates.sum(alquileres.![plazas])}">0</div>
                 <div class="stat-text">Total Plazas</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card info">
                 <div class="stat-number" th:text="${#aggregates.sum(alquileres.![acompanantes.size()])}">0</div>
                 <div class="stat-text">Total Acompañantes</div>
             </div>
@@ -124,7 +124,7 @@
                                            title="Ver detalles">
                                             👁️
                                         </a>
-                                        <a th:if="${alquiler.fechainicio.isAfter(T(java.time.LocalDate).now())}"
+                                        <a th:if="${alquiler.fechainicio.isAfter(T(java.time.LocalDate).now()) and alquiler.plazas > 1}"
                                            th:href="@{/api/alquiler/acompanantes/{alquilerId}/{plazas}(alquilerId=${alquiler.id}, plazas=${alquiler.plazas})}"
                                            class="btn"
                                            title="Gestionar acompañantes">
