@@ -99,11 +99,11 @@
                                     <td th:text="${embarcacion.dimensiones}"></td>
                                     <td>
                                         <span th:if="${embarcacion.idPatron != null and embarcacion.idPatron != ''}" 
-                                              class="badge badge-success" 
+                                              class="badge badge-primary" 
                                               th:text="${embarcacion.idPatron}">
                                         </span>
                                         <span th:if="${embarcacion.idPatron == null or embarcacion.idPatron == ''}" 
-                                              class="badge badge-secondary">
+                                              class="badge badge-warning">
                                             Sin patrón
                                         </span>
                                     </td>

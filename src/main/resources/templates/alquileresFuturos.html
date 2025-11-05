@@ -19,11 +19,11 @@
     <div class="container">
         <!-- Resumen -->
         <div class="stats-grid">
-            <div class="stat-card warning">
+            <div class="stat-card info">
                 <div class="stat-number" th:text="${alquileresFuturos.size()}">0</div>
                 <div class="stat-text">Total Alquileres Futuros</div>
             </div>
-            <div class="stat-card success">
+            <div class="stat-card info">
                 <div class="stat-number" th:text="${#aggregates.sum(alquileresFuturos.![precio])}">0</div>
                 <div class="stat-text">Ingresos Futuros (€)</div>
             </div>
@@ -141,7 +141,8 @@
                                            title="Ver detalles">
                                             👁️
                                         </a>
-                                        <a th:href="@{/api/alquiler/acompanantes/{alquilerId}/{plazas}(alquilerId=${alquiler.id}, plazas=${alquiler.plazas})}" 
+                                        <a th:if="${alquiler.plazas > 1}"
+                                           th:href="@{/api/alquiler/acompanantes/{alquilerId}/{plazas}(alquilerId=${alquiler.id}, plazas=${alquiler.plazas})}" 
                                            class="btn" 
                                            title="Gestionar acompañantes">
                                             👥

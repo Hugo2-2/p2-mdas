@@ -4,6 +4,7 @@ package com.GM2.controller;
 import com.GM2.model.domain.Acompañantes;
 import com.GM2.model.repository.AcompañantesRepository;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -25,9 +26,14 @@ public class AcompañantesController {
     @GetMapping("/{dni}")
     public Acompañantes getAcompañanteByDni(@PathVariable String dni){ return acompañantesRepository.findAcompañanteByDni(dni); }
 
+    @GetMapping("/{id}")
+    public List<Acompañantes> getAcompañanteById(@PathVariable Integer id){ return acompañantesRepository.findAcompañantesByAlquiler(id); }
+
     @PostMapping
     public String addAcompañantes(@RequestParam("alquilerId") Integer alquilerId,
-                          @RequestParam("dni") List<String> dnis) {
+                      @RequestParam("dni") List<String> dnis,
+                      RedirectAttributes redirectAttributes) {
+
         boolean ok = true;
         
         for (String dni : dnis) {
@@ -42,8 +48,15 @@ public class AcompañantesController {
             }
         }
 
-        return ok ? "Acompañantes añadidos correctamente al alquiler " + alquilerId
-                : "Error al insertar algunos acompañantes.";
+        if (ok) {
+            redirectAttributes.addFlashAttribute("mensajeExito", 
+                "✅ Acompañantes añadidos correctamente al alquiler " + alquilerId);
+        } else {
+            redirectAttributes.addFlashAttribute("mensajeError", 
+                "❌ Error al insertar algunos acompañantes.");
+        }
+
+        return "redirect:/api/alquiler";
     }
 
 }

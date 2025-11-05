@@ -3,6 +3,7 @@ package com.GM2.controller.alquiler;
 import com.GM2.model.domain.Acompañantes;
 import com.GM2.model.domain.Alquiler;
 import com.GM2.model.domain.Embarcacion;
+import com.GM2.model.repository.AcompañantesRepository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,9 +18,11 @@ import java.util.List;
 public class AlquilerController {
 
     AlquilerService alquilerService;
+    AcompañantesRepository acompanantesRepository;
 
-    public AlquilerController(AlquilerService alquilerService) {
-        this.alquilerService = alquilerService;        
+    public AlquilerController(AlquilerService alquilerService, AcompañantesRepository acompanantesRepository) {
+        this.alquilerService = alquilerService;    
+        this.acompanantesRepository = acompanantesRepository;
     }
 
 
@@ -62,15 +65,29 @@ public class AlquilerController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("addAcompanante");
 
-        // Creamos una lista vacía de acompañantes según el número de plazas - 1
-        List<Acompañantes> acompanantes = new ArrayList<>();
-        for (int i = 0; i < plazas - 1; i++) {
-            acompanantes.add(new Acompañantes());
+        // 1. Cargar acompañantes existentes de la base de datos
+        List<Acompañantes> acompanantesExistentes = acompanantesRepository.findAcompañantesByAlquiler(alquilerId);
+        
+        // Si es null, crear lista vacía
+        if (acompanantesExistentes == null) {
+            acompanantesExistentes = new ArrayList<>();
         }
 
-        modelAndView.addObject("alquilerId", alquilerId);
-        modelAndView.addObject("acompanantes", acompanantes);
+        // 2. Calcular cuántos acompañantes nuevos se pueden añadir
+        int plazasDisponibles = plazas - 1 - acompanantesExistentes.size();
+        
+        // 3. Crear lista para nuevos acompañantes (solo los que caben)
+        List<Acompañantes> nuevosAcompanantes = new ArrayList<>();
+        for (int i = 0; i < plazasDisponibles; i++) {
+            nuevosAcompanantes.add(new Acompañantes());
+        }
 
+        // 4. Pasar todos los datos al modelo
+        modelAndView.addObject("alquilerId", alquilerId);
+        modelAndView.addObject("plazas", plazas);
+        modelAndView.addObject("acompanantesExistentes", acompanantesExistentes);
+        modelAndView.addObject("acompanantes", nuevosAcompanantes); // Los nuevos que se pueden añadir
+        modelAndView.addObject("plazasDisponibles", plazasDisponibles);
 
         return modelAndView;
     }
