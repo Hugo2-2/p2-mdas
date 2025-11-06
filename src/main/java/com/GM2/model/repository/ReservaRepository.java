@@ -112,4 +112,20 @@ public class ReservaRepository extends AbstractRepository{
         return false; 
     }
 
+    public boolean existeReservaParaEmbarcacionEnFecha(String matricula, java.time.LocalDate fecha) {
+        try {
+            String query = sqlQueries.getProperty("select-countReservaByMatriculaAndFecha");
+            if (query != null) {
+                // Se usa el Date de SQL para asegurar que el formato de fecha coincida con la BBDD
+                Integer count = jdbcTemplate.queryForObject(query, Integer.class, matricula, Date.valueOf(fecha));
+                // Si count es null, asumimos 0. Si es > 0, es que existe una reserva.
+                return count != null && count > 0;
+            } else return false;
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to check for existing reservation.");
+            exception.printStackTrace();
+            return true; // Asumir 'true' (ocupada) en caso de error para evitar dobles reservas accidentales.
+        }
+    }
+
 }
