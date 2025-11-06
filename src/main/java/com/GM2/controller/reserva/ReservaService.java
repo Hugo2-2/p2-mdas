@@ -118,11 +118,24 @@ public class ReservaService {
             return String.format("No se pudo realizar la reserva (capacidad insuficiente: Plazas disponibles %d, Plazas solicitadas %d, más 1 para el patrón).", (capacidadTotal - 1), plazasSolicitadas);
         }
 
-        // 2.4. Validación de Ocupación/Disponibilidad (Patrón)
-        // Este método debe verificar el solapamiento en las tablas 'reserva' y 'alquiler'
+        // 2.4. Validación de Ocupación/Disponibilidad (Embarcación)
+        // ******* VALIDACIÓN CLAVE PARA EVITAR LA DUPLICIDAD *******
+        boolean yaReservada = reservaRepository.existeReservaParaEmbarcacionEnFecha(matriculaElegida, fechaReserva);
+        if (yaReservada) {
+            return String.format("La embarcación con matrícula %s ya tiene una reserva activa para la fecha %s. Por favor, elija otra embarcación o fecha.", matriculaElegida, fechaReserva.toString());
+        }
+
+        // A PARTIR DE AQUÍ, LA LÓGICA DE TU MÉTODO EXISTENTE ES CORRECTA
+        // Si la embarcación no está reservada en la tabla `reserva` ese día,
+        // comprobamos si el patrón está ocupado por un alquiler o si no cumple con la capacidad (aunque ya se comprobó):
         List<Embarcacion> disponibles = buscarEmbarcacionesConPatronDisponibles(reserva.getFecha(), reserva.getPlazas());
-        if (disponibles.isEmpty()){
-            return "Embarcación no disponible"; // No hay embarcaciones disponibles
+
+        // Verificamos si la embarcación elegida está en la lista de las que cumplen *todos* los requisitos
+        // (Capacidad, patrón asignado y patrón/barco no ocupado por alquiler/reserva).
+        // Aunque la reserva ya se comprobó antes (para evitar la carrera), esta lista también verifica el alquiler.
+        if (!disponibles.contains(embarcacion)){
+            // Nota: Aquí el mensaje puede ser más específico si puedes diferenciar si es por patrón (alquiler) o capacidad.
+            return "No se pudo realizar la reserva. La embarcación no cumple todos los requisitos de disponibilidad (Patrón ocupado, o capacidad insuficiente).";
         }
 
         // 3. Persistencia (Guardado en BBDD)
