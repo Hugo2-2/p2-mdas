@@ -11,6 +11,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
+/**
+ * Controlador web (MVC) para la funcionalidad de consultar embarcaciones.
+ * * Maneja la lógica para mostrar la vista "consultarEmbarcacionesView"
+ * y procesar la búsqueda de embarcaciones por tipo.
+ * * @author gm2equipo1
+ * @version 1.0
+ */
 @Controller
 @RequestMapping("/api/embarcaciones")
 public class ShowEmbarcacionesByType {
@@ -20,12 +27,25 @@ public class ShowEmbarcacionesByType {
 
     private ModelAndView modelAndView = new ModelAndView();
 
+    /**
+     * Constructor para la inyección de dependencias del servicio de embarcaciones.
+     *
+     * @param embarcacionService El servicio que contiene la lógica de negocio.
+     */
     public ShowEmbarcacionesByType(PatronRepository patronRepository, EmbarcacionService embarcacionService) {
         this.patronRepository = patronRepository;
         this.modelAndView.setViewName("consultarEmbarcacionesView");
         this.embarcacionService = embarcacionService;
     }
 
+    /**
+     * Muestra la página para consultar embarcaciones y procesa la búsqueda por tipo.
+     * Cumple con el requisito B.4 (Consultar embarcación por tipo)
+     *
+     * @param tipo El tipo de embarcación a buscar (ej. "VELERO").
+     * Es opcional; si no se provee, se usa "none".
+     * @return Un objeto {@link ModelAndView} con la vista y los datos del modelo.
+     */
     @GetMapping("/consultarEmbarcacionesPorTipo")
     public ModelAndView showEmbarcacionesByType(
             @RequestParam(value = "tipo", defaultValue = "none") String tipo) {
