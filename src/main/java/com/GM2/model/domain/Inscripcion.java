@@ -70,8 +70,8 @@ public class Inscripcion {
         return fechaCreacion;
     }
 
-    public void setFechaCreacion(LocalDate fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
+    public void setFechaCreacion() {
+        this.fechaCreacion = LocalDate.now();
     }
 
     public String getSegundoAudlto() {

@@ -55,6 +55,8 @@ public class InscripcionService {
             return "No puedes actualizar la inscripcion porque no existe";
         }
 
+        inscripcion.setFechaCreacion();
+
         boolean res = inscripcionRepository.updateInscripcion(inscripcion);
 
         if(res) {

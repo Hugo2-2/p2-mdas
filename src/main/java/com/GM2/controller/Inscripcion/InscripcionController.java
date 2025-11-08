@@ -107,7 +107,7 @@ public class InscripcionController {
         return modelAndView;
     }
 
-    @PostMapping("/addHijosView")
+    /*@PostMapping("/addHijosView")
     public String addHijos(
             @RequestParam("dniTitular") String dniTitular,
             @RequestParam("hijo_dni") List<String> dnisHijos,
@@ -121,5 +121,18 @@ public class InscripcionController {
             redirectAttributes.addFlashAttribute("mensajeError", resultado);
         }
         return "redirect:/api/inscripciones/updateInscripcion";
+    }*/
+
+    @PostMapping("/upgradeInscripcion")
+    public String upgradeInscripcion(@ModelAttribute("inscripcion") Inscripcion inscripcion, RedirectAttributes redirectAttributes) {
+        String resultado = inscripcionService.updateInscripcion(inscripcion);
+
+        if (resultado.equals("EXITO")) {
+            redirectAttributes.addFlashAttribute("mensaje", "Inscripción guardada exitosamente");
+        } else {
+            redirectAttributes.addFlashAttribute("mensaje", resultado);
+        }
+
+        return "redirect:/api/inscripciones/upgradeInscripcion?id=" + String.valueOf(inscripcion.getId()) ;
     }
 }
