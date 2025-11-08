@@ -1,4 +1,4 @@
-package com.GM2.controller;
+package com.GM2.controller.reserva;
 
 import com.GM2.model.domain.Embarcacion;
 import com.GM2.model.domain.Reserva;
@@ -145,6 +145,7 @@ public class ReservaService {
             return "Error interno al intentar guardar la reserva en la base de datos.";
         }
     }
+
 
     // Listar todas las reservas
     public List<Reserva> findAllReservas() {

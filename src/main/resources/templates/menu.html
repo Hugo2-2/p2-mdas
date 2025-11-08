@@ -2,253 +2,98 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menú Principal - Club Náutico</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <link th:href="@{/styles.css}" rel="stylesheet">
 </head>
-<body class="bg-light">
-    <!-- Header -->
-    <nav class="navbar navbar-dark bg-primary mb-4">
-        <div class="container">
-            <span class="navbar-brand mb-0 h1">Menú Principal - Club Náutico</span>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Club Náutico</div>
+            <div class="fecha" th:text="${#temporals.format(#temporals.createToday(), 'dd/MM/yyyy')}"></div>
         </div>
-    </nav>
+    </header>
 
-    <div class="container">
-        <!-- ALQUILERES -->
-        <div class="card mb-4">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">📅 Gestión de Alquileres</h4>
+    <main class="container">
+        <h1 class="titulo-principal">Panel de Control</h1>
+        <p class="subtitulo">Sistema de Gestión Integral del Club</p>
+
+        <div class="menu-grid">
+            <div class="modulo-card">
+                <div class="modulo-header">
+                    <div class="modulo-icono">📅</div>
+                    <h2 class="modulo-titulo">Gestión de Alquileres</h2>
+                </div>
+                <div class="botones-grid">
+                    <a th:href="@{/api/alquiler/addAlquiler}" class="btn">Nuevo Alquiler</a>
+                    <a th:href="@{/api/alquiler}" class="btn">Ver Alquileres</a>
+                    <a th:href="@{/api/alquiler/futuros}" class="btn">Alquileres Futuros</a>
+                    <a th:href="@{/api/alquiler/disponibles}" class="btn">Disponibilidad</a>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Nuevo Alquiler</h5>
-                                <p class="card-text">Registrar nuevo alquiler</p>
-                                <a th:href="@{/api/alquiler/addAlquiler}" class="btn btn-primary">Acceder</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Ver Alquileres</h5>
-                                <p class="card-text">Todos los alquileres</p>
-                                <a th:href="@{/api/alquiler}" class="btn btn-info">Ver Lista</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Alquileres Futuros</h5>
-                                <p class="card-text">Alquileres programados</p>
-                                <a th:href="@{/api/alquiler/futuros}" class="btn btn-warning">Consultar</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Disponibilidad</h5>
-                                <p class="card-text">Embarcaciones disponibles</p>
-                                <a th:href="@{/api/alquiler/disponibles}" class="btn btn-success">Consultar</a>
-                            </div>
-                        </div>
-                    </div>
+
+            <div class="modulo-card">
+                <div class="modulo-header">
+                    <div class="modulo-icono">⛵</div>
+                    <h2 class="modulo-titulo">Embarcaciones</h2>
+                </div>
+                <div class="botones-grid">
+                    <a th:href="@{/api/embarcaciones}" class="btn">Todas las Embarcaciones</a>
+                    <a th:href="@{/api/embarcaciones/addEmbarcacion}" class="btn">Añadir Embarcación</a>
+                    <a th:href="@{/api/embarcaciones/consultarEmbarcacionesPorTipo}" class="btn">Buscar por Tipo</a>
+                </div>
+            </div>
+
+            <div class="modulo-card">
+                <div class="modulo-header">
+                    <div class="modulo-icono">👥</div>
+                    <h2 class="modulo-titulo">Gestión de Socios</h2>
+                </div>
+                <div class="botones-grid">
+                    <a th:href="@{/api/socios}" class="btn">Todos los Socios</a>
+                    <a th:href="@{/api/socios/addSocio}" class="btn">Añadir Socio</a>
+                    <a th:href="@{/api/inscripciones/updateInscripcion}" class="btn">Ampliar inscripción</a>
+                </div>
+            </div>
+
+            <div class="modulo-card">
+                <div class="modulo-header">
+                    <div class="modulo-icono">👨‍👩‍👧‍👦</div>
+                    <h2 class="modulo-titulo">Acompañantes</h2>
+                </div>
+                <div class="botones-grid">
+                    <a th:href="@{/api/acompanhantes}" class="btn">Todos los Acompañantes</a>
+                    <a th:href="@{/api/acompanhantes/{dni}}" class="btn">Buscar por DNI</a>
+                </div>
+            </div>
+
+            <div class="modulo-card">
+                <div class="modulo-header">
+                    <div class="modulo-icono">🧭</div>
+                    <h2 class="modulo-titulo">Patrones</h2>
+                </div>
+                <div class="botones-grid">
+                    <a th:href="@{/api/patrones}" class="btn">Todos los Patrones</a>
+                    <a th:href="@{/api/patrones/addPatron}" class="btn">Añadir Patrón</a>
+                    <a th:href="@{/api/embarcaciones/asociarPatron}" class="btn">Asignar Patron a Embarcación</a>
+                </div>
+            </div>
+
+            <div class="modulo-card">
+                <div class="modulo-header">
+                    <div class="modulo-icono">📋</div>
+                    <h2 class="modulo-titulo">Reservas</h2>
+                </div>
+                <div class="botones-grid">
+                    <a th:href="@{/api/reserva}" class="btn">Todas las Reservas</a>
+                    <a th:href="@{/api/reserva/addReserva}" class="btn">Nueva Reserva</a>
                 </div>
             </div>
         </div>
+    </main>
 
-        <!-- EMBARCACIONES -->
-        <div class="card mb-4">
-            <div class="card-header bg-success text-white">
-                <h4 class="mb-0">⛵ Gestión de Embarcaciones</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Todas las Embarcaciones</h5>
-                                <p class="card-text">Lista completa</p>
-                                <a th:href="@{/api/embarcaciones}" class="btn btn-info">Ver Lista</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Consultar embarcaciones por tipo</h5>
-                                <p class="card-text">Buscar específica</p>
-                                <a th:href="@{/api/embarcaciones/consultarEmbarcacionesPorTipo}" class="btn btn-secondary">Buscar</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Añadir Embarcación</h5>
-                                <p class="card-text">Nueva embarcación</p>
-                                <a th:href="@{/api/embarcaciones/addEmbarcacion}" class="btn btn-primary">Añadir</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SOCIOS -->
-        <div class="card mb-4">
-            <div class="card-header bg-warning text-dark">
-                <h4 class="mb-0">👥 Gestión de Socios</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Todos los Socios</h5>
-                                <p class="card-text">Lista completa</p>
-                                <a th:href="@{/api/socios}" class="btn btn-info">Ver Lista</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Buscar por DNI</h5>
-                                <p class="card-text">Buscar socio específico</p>
-                                <a th:href="@{/api/socio/{dni}}" class="btn btn-secondary">Buscar</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Añadir Socio</h5>
-                                <p class="card-text">Nuevo socio</p>
-                                <a th:href="@{/api/socios/addSocio}" class="btn btn-primary">Añadir</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ACOMPAÑANTES -->
-        <div class="card mb-4">
-            <div class="card-header bg-info text-white">
-                <h4 class="mb-0">👨‍👩‍👧‍👦 Gestión de Acompañantes</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Todos los Acompañantes</h5>
-                                <p class="card-text">Lista completa</p>
-                                <a th:href="@{/api/acompanhantes}" class="btn btn-info">Ver Lista</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Buscar por DNI</h5>
-                                <p class="card-text">Buscar acompañante</p>
-                                <a th:href="@{/api/acompanhantes/{dni}}" class="btn btn-secondary">Buscar</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- PATRONES -->
-        <div class="card mb-4">
-            <div class="card-header bg-secondary text-white">
-                <h4 class="mb-0">🧭 Gestión de Patrones</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Todos los Patrones</h5>
-                                <p class="card-text">Lista completa</p>
-                                <a th:href="@{/api/patrones}" class="btn btn-info">Ver Lista</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Patrones Disponibles</h5>
-                                <p class="card-text">Sin embarcación asignada</p>
-                                <a th:href="@{/api/patron/free}" class="btn btn-success">Consultar</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Añadir Patrón</h5>
-                                <p class="card-text">Nuevo patrón</p>
-                                <a th:href="@{/api/patrones/addPatron}" class="btn btn-primary">Añadir</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- RESERVAS -->
-        <div class="card mb-4">
-            <div class="card-header bg-dark text-white">
-                <h4 class="mb-0">📋 Gestión de Reservas</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Todas las Reservas</h5>
-                                <p class="card-text">Lista completa</p>
-                                <a th:href="@{/api/reserva}" class="btn btn-info">Ver Lista</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Buscar por ID</h5>
-                                <p class="card-text">Buscar reserva</p>
-                                <a th:href="@{/api/reserva/{id}}" class="btn btn-secondary">Buscar</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Nueva Reserva</h5>
-                                <p class="card-text">Crear reserva</p>
-                                <a th:href="@{/api/reserva/add}" class="btn btn-primary">Añadir</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-4 mt-5 footer">
-        <div class="container">
-            <p class="mb-0">Sistema de Gestión Club Náutico &copy; 2024</p>
-        </div>
+    <footer class="footer">
+        <p>Sistema de Gestión Club Náutico &copy; 2024</p>
     </footer>
 </body>
 </html>

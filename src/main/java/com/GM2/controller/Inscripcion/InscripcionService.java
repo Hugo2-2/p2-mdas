@@ -76,6 +76,10 @@ public class InscripcionService {
             return "El segundo adulto no está registrado como socio.";
         }
 
+        if(!socioRepository.findSocioByDNI(dniTitular).getEsTitular()) {
+            return "El socio introducido como titular no es titular de ninguna inscripción";
+        }
+
         Inscripcion inscripcion = findInscripcionByDNITitular(dniTitular);
 
         if (inscripcion == null) {

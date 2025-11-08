@@ -1,41 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Añadir Patron</title>
-    </head>
-    <body>
-        <h1>Añadir Patron</h1>
-        <form method="POST" th:action="@{/api/patrones/addPatron}" th:object="${newPatron}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Añadir Patrón - Club Náutico</title>
+    <link th:href="@{/styles.css}" rel="stylesheet">
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo">🧭 Añadir Patrón</div>
+        <div class="header-buttons">
+            <a th:href="@{/menu}" class="btn">Menú Principal</a>
+        </div>
+    </div>
+</header>
 
-            <div>
-                <label for="nombre"> Nombre</label><br>
-                <input type="text" id="nombre" th:field="*{nombre}"><br>
+<div class="container">
+
+    <div th:if="${successMessage}" class="alert alert-success" style="color: green;">
+        <p th:text="${successMessage}"></p>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger" style="color: red;">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <h1 class="titulo-principal">Añadir Nuevo Patrón</h1>
+
+    <form method="POST" th:action="@{/api/patrones/addPatron}" th:object="${newPatron}" class="card">
+        <div class="card-header">
+            <span>Información del Patrón</span>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="nombre" class="form-label">Nombre:</label>
+                        <input type="text" id="nombre" th:field="*{nombre}" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="apellidos" class="form-label">Apellidos:</label>
+                        <input type="text" id="apellidos" th:field="*{apellidos}" class="form-control" required>
+                    </div>
+                </div>
             </div>
 
-            <div>
-                <label for="apellidos"> Apellidos</label><br>
-                <input type="text" id="apellidos" th:field="*{apellidos}"><br>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="dni" class="form-label">DNI:</label>
+                        <input type="text" id="dni" th:field="*{dni}" class="form-control" minlength="9" maxlength="9" required>
+                        <div class="form-text">Formato: 8 dígitos y 1 letra (ej: 12345678A)</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento:</label>
+                        <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}" class="form-control" required>
+                    </div>
+                </div>
             </div>
 
-            <div>
-                <label for="dni"> DNI</label><br>
-                <input type="text" id="dni" th:field="*{dni}"><br>
-            </div>
-            <div>
-                <label for="fechaNacimiento"> Fecha de nacimiento</label><br>
-                <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}"><br>
-            </div>
-            <div>
-                <label for="fechaExpedicionTitulo"> Fecha de expedicion del título</label><br>
-                <input type="date" id="fechaExpedicionTitulo" th:field="*{fechaExpedicionTitulo}"><br>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="fechaExpedicionTitulo" class="form-label">Fecha de Expedición del Título:</label>
+                        <input type="date" id="fechaExpedicionTitulo" th:field="*{fechaExpedicionTitulo}" class="form-control" required>
+                    </div>
+                </div>
             </div>
 
-            <br>
-
-            <div>
-                <input type="submit" value="Guardar Patrón">
+            <div class="text-center mt-4">
+                <button type="submit" class="btn">Guardar Patrón</button>
             </div>
-            </form>
-    </body>
+        </div>
+    </form>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p class="mb-0">Sistema de Gestión Club Náutico &copy; 2024</p>
+    </div>
+</footer>
+</body>
 </html>

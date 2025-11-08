@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -38,6 +39,8 @@ public class SocioController {
                            @RequestParam(name = "ampliarInscripcion", required = false) String ampliarInscripcion,
                            RedirectAttributes redirectAttributes) {
 
+        socio.setFechaInscripcion(LocalDate.now());
+
         //Mensajes para depurar en terminal
         System.out.println("[SocioController] Informacion recivida: nombre=" + socio.getNombre() +
                 " apellidos=" + socio.getApellidos() +
@@ -63,7 +66,7 @@ public class SocioController {
 
         if(socio.getEsTitular() && quiereAmpliar) {
             // Pasamos el DNI del socio recién creado a la siguiente página
-            redirectAttributes.addFlashAttribute("dniSocioTitular", socio.getDni());
+            redirectAttributes.addFlashAttribute("dniTitular", socio.getDni());
 
             // Redirigimos al nuevo formulario de inscripción familiar pasando el id de la inscripción como parámetro en el enlace
             return "redirect:/api/inscripciones/updateInscripcion";

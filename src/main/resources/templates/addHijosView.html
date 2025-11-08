@@ -4,37 +4,87 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Añadir Hijos a Inscripción</title>
+    <title>Añadir Hijos a Inscripción - Club Náutico</title>
+    <link th:href="@{/styles.css}" rel="stylesheet">
 </head>
 
 <body>
-<h1>Añadir Hijos</h1>
-<p>
-    Estás añadiendo hijos a la inscripción del titular: <b th:text="${dniTitular}"></b>
-</p>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo">👨‍👧‍👦 Añadir Hijos</div>
+        <div class="header-buttons">
+            <a th:href="@{/menu}" class="btn">Menú Principal</a>
+        </div>
+    </div>
+</header>
 
-<form method="POST" th:action="@{/api/inscripciones/addHijosView}">
+<div class="container">
+    <h1 class="titulo-principal">Añadir Hijos a la Inscripción</h1>
 
-    <input type="hidden" name="dniTitular" th:value="${dniTitular}" />
-
-    <div th:each="i : ${#numbers.sequence(1, numeroHijos)}">
-
-        <hr>
-        <h3 th:text="'Datos del Hijo ' + ${i}"></h3>
-
-        <div>
-            <label th:for="${'hijo_dni' + i}">DNI:</label><br>
-            <input type="text" th:id="${'hijo_dni' + i}" name="hijo_dni" required><br>
+    <div class="card mb-4">
+        <div class="card-header">
+            <span>Información del Titular</span>
+        </div>
+        <div class="card-body">
+            <p class="mb-0">
+                Estás añadiendo hijos a la inscripción del titular:
+                <b th:text="${dniTitular}"></b>
+            </p>
         </div>
     </div>
 
-    <hr>
-    <br>
+    <form method="POST" th:action="@{/api/inscripciones/addHijosView}" class="card">
+        <div class="card-header">
+            <span>Datos de los Hijos</span>
+        </div>
 
-    <div>
-        <button type="submit">Guardar Hijos y Finalizar</button>
+        <div class="card-body">
+            <input type="hidden" name="dniTitular" th:value="${dniTitular}" />
+
+            <div th:each="i : ${#numbers.sequence(1, numeroHijos)}">
+                <div class="card acompanante-card mb-4">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">👶 Hijo <span th:text="${i}"></span></h5>
+                            <span class="badge badge-primary" th:text="'Nº ' + ${i}"></span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label th:for="${'hijo_dni' + i}" class="form-label">
+                                <strong>DNI del Hijo *</strong>
+                            </label>
+                            <input type="text"
+                                   th:id="${'hijo_dni' + i}"
+                                   name="hijo_dni"
+                                   class="form-control"
+                                   placeholder="Ej: 12345678A"
+                                   required
+                                   maxlength="9"
+                                   pattern="[0-9]{8}[A-Za-z]"
+                                   title="Formato: 8 dígitos seguidos de 1 letra"
+                                   minlength="9">
+                            <div class="form-text">
+                                Introduce el DNI con 8 dígitos y 1 letra (ej: 12345678A)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn">💾 Guardar Hijos y Finalizar</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p class="mb-0">Sistema de Gestión Club Náutico &copy; 2024</p>
     </div>
-
-</form>
+</footer>
 </body>
 </html>

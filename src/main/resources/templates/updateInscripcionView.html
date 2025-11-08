@@ -2,59 +2,108 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 
-    <head>
-        <meta charset="UTF-8">
-        <title>Mejorar Inscripción</title>
+<head>
+    <meta charset="UTF-8">
+    <title>Mejorar Inscripción - Club Náutico</title>
+    <link th:href="@{/styles.css}" rel="stylesheet">
 
-        <style>
-            /* (Tu CSS para ocultar/mostrar está bien) */
-            .opcion-hijos {
-                display: none;
-            }
-            #añadirHijos:checked ~ .opcion-hijos {
-                display: block;
-            }
-        </style>
-    </head>
+    <style>
+        .opcion-hijos {
+            display: none;
+        }
+        .boton-continuar-hijos {
+            display: none;
+        }
+        #añadirHijos:checked ~ .opcion-hijos {
+            display: block;
+        }
+        #añadirHijos:checked ~ .boton-continuar-hijos {
+            display: inline-block;
+        }
+    </style>
+</head>
 
-    <body>
-        <h1>Completar Inscripcion Familiar</h1>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo">👨‍👩‍👧‍👦 Mejorar Inscripción</div>
+        <div class="header-buttons">
+            <a th:href="@{/menu}" class="btn">Menú Principal</a>
+        </div>
+    </div>
+</header>
 
-            <div th:if="${mensajeExito}" class="alert alert-success" style="color: green;">
-                <p th:text="${mensajeExito}"></p>
-            </div>
-            <div th:if="${mensajeError}" class="alert alert-danger" style="color: red;">
-                <p th:text="${mensajeError}"></p>
-            </div>
-            <form method="POST" th:action="@{/api/inscripciones/updateInscripcion}">
+<div class="container">
+    <h1 class="titulo-principal">Completar Inscripción Familiar</h1>
 
-                <div>
-                    <label for="dniTitular">DNI Titular:</label><br>
-                    <input type="text" id="dniTitular" name="dniTitular" required><br>
-                </div>
+    <!-- Mensajes -->
+    <div th:if="${mensajeExito}" class="alert alert-success">
+        <p th:text="${mensajeExito}"></p>
+    </div>
+    <div th:if="${mensajeError}" class="alert alert-danger">
+        <p th:text="${mensajeError}"></p>
+    </div>
 
-                <div>
-                    <label for="dniSegundoAdulto">DNI segundo acompañante</label><br>
-                    <input type="text" id="dniSegundoAdulto" name="dniSegundoAdulto"><br>
-                </div>
+    <!-- Formulario -->
+    <form method="POST" th:action="@{/api/inscripciones/updateInscripcion}" class="card">
+        <div class="card-header">
+            <span>Información Familiar</span>
+        </div>
 
-                <div>
-                    <input type="checkbox" id="añadirHijos" name="añadirHijos" value="true" class="checkbox" />
-                    <label for="añadirHijos" class="form-label">¿Desea Añadir Hijos?</label>
-
-                    <div class="opcion-hijos">
-                        <input type="number" id="numeroHijos" name="numeroHijos" />
-                        <label for="numeroHijos">Numero de hijos</label>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="dniTitular" class="form-label">DNI Titular:</label>
+                        <input type="text" id="dniTitular" name="dniTitular" class="form-control" required>
                     </div>
                 </div>
 
-                <br>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="dniSegundoAdulto" class="form-label">DNI segundo acompañante:</label>
+                        <input type="text" id="dniSegundoAdulto" name="dniSegundoAdulto" class="form-control" minlength="9" maxlength="9">
+                        <div class="form-text">Opcional - máximo 9 caracteres</div>
+                    </div>
+                </div>
+            </div>
 
-                <div>
-                    <button type="submit" name="siguientePaso" value="finalizar">Finalizar Inscripción</button>
-                    <button type="submit" name="siguientePaso" value="continuarHijos">Continuar con el número de hijos</button>
+
+
+            <div class="form-group">
+                <label for="añadirHijos" class="form-label mb-0">¿Desea Añadir Hijos?</label>
+                <input type="checkbox" id="añadirHijos" name="añadirHijos" value="true" class="me-2" />
+
+                <div class="opcion-hijos mt-2">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="numeroHijos" class="form-label">Número de hijos:</label>
+                                <input type="number" id="numeroHijos" name="numeroHijos" class="form-control" min="0">
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-        </form>
-    </body>
+                    <button type="submit" name="siguientePaso" value="finalizar" class="btn d-flex justify-content-end gap-2 mt-4">
+                        Finalizar Inscripción
+                    </button>
+                    <button type="submit" name="siguientePaso" value="continuarHijos" class="btn boton-continuar-hijos d-flex justify-content-end gap-2 mt-4">
+                        Continuar con el número de hijos
+                    </button>
+            </div>
+
+
+        </div>
+    </form>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p class="mb-0">Sistema de Gestión Club Náutico &copy; 2024</p>
+    </div>
+</footer>
+</body>
 </html>

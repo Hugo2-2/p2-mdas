@@ -21,21 +21,7 @@ public class InscripcionController {
 
     public InscripcionController(InscripcionService inscripcionService, HijosRepository hijosRepository) {  this.inscripcionService = inscripcionService;
         this.hijosRepository = hijosRepository;
-    }
-
-    @GetMapping("/upgradeInscripcion")
-    public ModelAndView upgradeInscripcion(@RequestParam("id") int id) {
-
-        Inscripcion inscripcionBase = inscripcionService.findInscripcionById(id);
-        ModelAndView modelAndView = new ModelAndView();
-
-        if( inscripcionBase != null ) {
-            modelAndView.setViewName("upgradeInscripcion");
-
-            modelAndView.addObject("inscripcion", inscripcionBase);
-        }
-
-        return modelAndView;
+        this.inscripcionService = inscripcionService;
     }
 
     @GetMapping("/updateInscripcion")
@@ -66,6 +52,14 @@ public class InscripcionController {
             redirectAttributes.addFlashAttribute("dniTitular", dniTitular);
             redirectAttributes.addFlashAttribute("dniSegundoAdulto", dniSegundoAdulto);
             redirectAttributes.addFlashAttribute("numeroHijos", numeroHijos);
+
+            //Guardamos el segundo adulto
+            String resultado = inscripcionService.updateInscripcioSinHijos(dniTitular, dniSegundoAdulto);
+            if (resultado.equals("EXITO")) {
+                redirectAttributes.addFlashAttribute("mensajeExito", "Inscripción (sin hijos) guardada.");
+            } else {
+                redirectAttributes.addFlashAttribute("mensajeError", resultado);
+            }
 
             // Redirige a la vista de "Añadir Hijos"
             return "redirect:/api/inscripciones/addHijosView";

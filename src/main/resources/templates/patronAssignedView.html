@@ -1,24 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Title</title>
-    </head>
-    <body>
-        <h1>Confirmar Reemplazo</h1>
-        <p>
-            La embarcación <span th:text="${matricula}"></span> ya tiene al patrón <span th:text="${dniPatronAntiguo}"></span>.
-            ¿Deseas reemplazarlo por el patrón <span th:text="${dniPatronNuevo}"></span>?
-        </p>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmar Reemplazo - Club Náutico</title>
+    <link th:href="@{/styles.css}" rel="stylesheet">
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo">🔄 Confirmar Reemplazo</div>
+        <div class="header-buttons">
+            <a th:href="@{/menu}" class="btn">Menú Principal</a>
+        </div>
+    </div>
+</header>
 
-        <form method="POST" th:action="@{/api/embarcaciones/confirmarReemplazoPatron}">
-            <input type="hidden" name="matricula" th:value="${matricula}" />
-            <input type="hidden" name="dniPatronNuevo" th:value="${dniPatronNuevo}" />
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <span>Confirmar Reemplazo de Patrón</span>
+                </div>
 
-            <div>
-                <input type="submit" value="Si reemplazar patron">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <h2 class="titulo-principal">Confirmar Reemplazo</h2>
+                        <div class="alert alert-warning">
+                            <p class="mb-2">
+                                La embarcación <strong th:text="${matricula}"></strong> ya tiene al patrón
+                                <strong th:text="${dniPatronAntiguo}"></strong> asignado.
+                            </p>
+                            <p class="mb-0">
+                                ¿Deseas reemplazarlo por el patrón <strong th:text="${dniPatronNuevo}"></strong>?
+                            </p>
+                        </div>
+                    </div>
+
+                    <form method="POST" th:action="@{/api/embarcaciones/confirmarReemplazoPatron}">
+                        <input type="hidden" name="matricula" th:value="${matricula}" />
+                        <input type="hidden" name="dniPatronNuevo" th:value="${dniPatronNuevo}" />
+
+                        <div class="d-flex justify-content-center gap-2">
+                            <a th:href="@{/api/embarcaciones/asociarPatron}" class="btn">Cancelar</a>
+                            <button type="submit" class="btn">Sí, Reemplazar Patrón</button>
+                        </div>
+                    </form>
+                </div>
             </div>
+        </div>
+    </div>
+</div>
 
-        </form>
-    </body>
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p class="mb-0">Sistema de Gestión Club Náutico &copy; 2024</p>
+    </div>
+</footer>
+</body>
 </html>

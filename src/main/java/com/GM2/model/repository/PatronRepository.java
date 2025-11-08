@@ -91,12 +91,11 @@ public class PatronRepository extends AbstractRepository {
         try {
 
             if(row.first()) {
-                String id = row.getString("id");
                 String nombre = row.getString("nombre");
                 String apellidos = row.getString("apellidos");
                 String dni = row.getString("dni");
                 Date fechaNacimiento = row.getDate("fecha_nacimiento");
-                Date fechaExpedicionTitulo = row.getDate("fecha_inscripcion");
+                Date fechaExpedicionTitulo = row.getDate("fecha_expedicion_titulo");
 
                 Patron patron = new Patron(nombre, apellidos, dni,
                                     fechaNacimiento.toLocalDate(), fechaExpedicionTitulo.toLocalDate());
