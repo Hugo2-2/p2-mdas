@@ -78,6 +78,9 @@ CREATE TABLE IF NOT EXISTS `inscripcion` (
 
 CREATE TABLE IF NOT EXISTS `hijos` (
     `dni` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    `nombre` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    `apellidos` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
+    `fecha_nacimiento` DATE DEFAULT NULL,
     `id_inscripcion` INT(11) NOT NULL,
     PRIMARY KEY (`dni`),
     FOREIGN KEY (`id_inscripcion`) REFERENCES inscripcion(`id`)

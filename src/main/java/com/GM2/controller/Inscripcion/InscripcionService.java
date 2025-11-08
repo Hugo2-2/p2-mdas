@@ -110,6 +110,7 @@ public class InscripcionService {
             if (dni != null && !dni.trim().isEmpty()) {
                 Hijos hijo = new Hijos();
                 hijo.setDni(dni);
+
                 hijo.setId_inscripcion(inscripcion.getId());
 
                 hijosRepository.addHijo(hijo);

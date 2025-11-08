@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,9 @@ public class HijosRepository extends AbstractRepository {
                     public Hijos mapRow(ResultSet rs, int rowNum) throws SQLException {
                         return new Hijos(
                                 rs.getString("dni"),
+                                rs.getString("nombre"),
+                                rs.getString("apellidos"),
+                                rs.getDate("fecha_nacimiento").toLocalDate(),
                                 rs.getInt("id_inscripcion")
                         );
                     };
@@ -60,9 +64,12 @@ public class HijosRepository extends AbstractRepository {
 
             if(row.first()) {
                 String dni = row.getString("dni");
+                String nombre = row.getString("nombre");
+                String apellidos = row.getString("apellidos");
+                LocalDate fechaNacimiento = row.getDate("fecha_nacimiento").toLocalDate();
                 int id_inscripcion = row.getInt("id_inscripcion");
 
-                Hijos hijo = new Hijos(dni, id_inscripcion);
+                Hijos hijo = new Hijos(dni, nombre, apellidos, fechaNacimiento, id_inscripcion);
                 return hijo;
             } else {
                 return null;
@@ -92,9 +99,18 @@ public class HijosRepository extends AbstractRepository {
 
     private Hijos mapRowFromInscripcion(ResultSet row, int rowNum) throws SQLException {
         String dni = row.getString("dni");
+        String nombre = row.getString("nombre");
+        String apellidos = row.getString("apellidos");
+        LocalDate fechaNacimiento = row.getDate("fecha_nacimiento").toLocalDate();
         int id_inscripcion = row.getInt("id_inscripcion");
 
-        return new Hijos(dni, id_inscripcion);
+        Hijos hijo = new Hijos(dni, nombre, apellidos, fechaNacimiento, id_inscripcion);
+
+        if(hijo != null) {
+            return hijo;
+        }
+
+        return null;
 
     }
 
@@ -104,6 +120,9 @@ public class HijosRepository extends AbstractRepository {
             if(query != null) {
                 int result = jdbcTemplate.update(query,
                         hijo.getDni(),
+                        hijo.getNombre(),
+                        hijo.getApellidos(),
+                        hijo.getFechaNacimiento(),
                         hijo.getId_inscripcion()
                 );
 
