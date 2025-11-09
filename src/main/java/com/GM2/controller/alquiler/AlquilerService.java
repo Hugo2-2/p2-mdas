@@ -2,10 +2,12 @@ package com.GM2.controller.alquiler;
 
 import com.GM2.model.domain.Alquiler;
 import com.GM2.model.domain.Embarcacion;
+import com.GM2.model.domain.Reserva;
 import com.GM2.model.domain.Socio;
 import com.GM2.model.repository.AlquilerRepository;
 import com.GM2.model.repository.EmbarcacionRepository;
 import com.GM2.model.repository.SocioRepository;
+import com.GM2.model.repository.ReservaRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,6 +28,7 @@ public class AlquilerService {
     private AlquilerRepository alquilerRepository;
     private EmbarcacionRepository embarcacionRepository;
     private SocioRepository socioRepository;
+    private ReservaRepository reservaRepository;
 
     /**
      * Constructor con inyección de dependencias.
@@ -33,17 +36,20 @@ public class AlquilerService {
      * @param alquilerRepository Repositorio de alquileres
      * @param embarcacionRepository Repositorio de embarcaciones
      * @param socioRepository Repositorio de socios
+     * @param reservaRepository Repositorio de reservas
      */
-    public AlquilerService(AlquilerRepository alquilerRepository, EmbarcacionRepository embarcacionRepository, SocioRepository socioRepository) {
+    public AlquilerService(AlquilerRepository alquilerRepository, EmbarcacionRepository embarcacionRepository, SocioRepository socioRepository, ReservaRepository reservaRepository) {
         this.alquilerRepository = alquilerRepository;
         this.embarcacionRepository = embarcacionRepository;
         this.socioRepository = socioRepository;
+        this.reservaRepository = reservaRepository;
 
         // Configurar las rutas de los .properties si es necesario
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
         this.alquilerRepository.setSqlQueriesFileName(sqlQueriesFileName);
         this.embarcacionRepository.setSqlQueriesFileName(sqlQueriesFileName);
         this.socioRepository.setSqlQueriesFileName(sqlQueriesFileName);
+        this.reservaRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
 
@@ -87,14 +93,17 @@ public class AlquilerService {
         List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcaciones();
         List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
         List<Embarcacion> disponibles = new ArrayList<>();
+        List<Reserva> reservas = reservaRepository.findAllReservas();
 
         // Comprobar null
         if (embarcaciones == null) embarcaciones = new ArrayList<>();
         if (alquileres == null) alquileres = new ArrayList<>();
+        if (reservas == null) reservas = new ArrayList<>();
 
 
         for (Embarcacion e : embarcaciones) {
             boolean ocupada = false;
+
             for (Alquiler a : alquileres) {
                 if (a.getMatricula_embarcacion().equals(e.getMatricula())) {
                     if (!(fechaFin.isBefore(a.getFechainicio()) || fechaInicio.isAfter(a.getFechafin()))) {
@@ -103,6 +112,21 @@ public class AlquilerService {
                     }
                 }
             }
+
+            if (!ocupada) {
+                for (Reserva r : reservas) {
+                    if (r.getMatricula_embarcacion().equals(e.getMatricula())) {
+                        // Una reserva ocupa la embarcación por UN DÍA específico
+                        // Verificar si alguna fecha del rango de alquiler coincide con la fecha de reserva
+                        LocalDate fechaReserva = r.getFecha();
+                        if (!fechaReserva.isBefore(fechaInicio) && !fechaReserva.isAfter(fechaFin)) {
+                            ocupada = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            
             if (!ocupada) {
                 disponibles.add(e);
             }

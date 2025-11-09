@@ -120,8 +120,15 @@ public class ReservaService {
 
         // 2.4. Validación de Ocupación/Disponibilidad (Patrón)
         // Este método debe verificar el solapamiento en las tablas 'reserva' y 'alquiler'
-        List<Embarcacion> disponibles = buscarEmbarcacionesConPatronDisponibles(reserva.getFecha(), reserva.getPlazas());
-        if (disponibles.isEmpty()){
+        List<Embarcacion> disponibles = buscarEmbarcacionesConPatronDisponibles(fechaReserva, plazasSolicitadas);
+        boolean disponible = false;
+        for (Embarcacion e : disponibles) {
+            if (e.getMatricula().equals(matriculaElegida)) {
+                disponible = true;
+                break;
+            }
+        }
+        if (!disponible) {
             return "Embarcación no disponible"; // No hay embarcaciones disponibles
         }
 
