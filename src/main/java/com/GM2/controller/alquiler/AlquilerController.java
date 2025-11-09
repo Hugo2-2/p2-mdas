@@ -1,9 +1,9 @@
 package com.GM2.controller.alquiler;
 
-import com.GM2.model.domain.Acompañantes;
+import com.GM2.model.domain.Acompanante;
 import com.GM2.model.domain.Alquiler;
 import com.GM2.model.domain.Embarcacion;
-import com.GM2.model.repository.AcompañantesRepository;
+import com.GM2.model.repository.AcompananteRepository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
@@ -13,19 +13,41 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controlador web (MVC) para la gestión de Alquileres.
+ * Maneja las peticiones web para mostrar formularios y procesar la
+ * creación de nuevos alquileres.
+ * 
+ * @author gm2equipo1
+ * @version 1.0
+ */
 @Controller
 @RequestMapping("/api/alquiler")
 public class AlquilerController {
 
     AlquilerService alquilerService;
-    AcompañantesRepository acompanantesRepository;
+    AcompananteRepository acompanantesRepository;
 
-    public AlquilerController(AlquilerService alquilerService, AcompañantesRepository acompanantesRepository) {
+
+    /**
+     * Constructor para la inyección de dependencias.
+     * Spring Boot inyectará automáticamente las instancias de los repositorios
+     * y servicios necesarios.
+     * 
+     * @param alquilerService Servicio para la lógica de negocio de Alquileres.
+     * @param acompanantesRepository Repositorio para el acceso a datos de Acompañantes.
+     */
+    public AlquilerController(AlquilerService alquilerService, AcompananteRepository acompanantesRepository) {
         this.alquilerService = alquilerService;    
         this.acompanantesRepository = acompanantesRepository;
     }
 
 
+    /**
+     * Muestra el formulario para agregar un nuevo alquiler.
+     * 
+     * @return ModelAndView con el formulario de alquiler
+     */
     @GetMapping("/addAlquiler")
     public ModelAndView mostrarFormularioAlquiler() {
         ModelAndView modelAndView = new ModelAndView();
@@ -34,6 +56,13 @@ public class AlquilerController {
         return modelAndView; 
     }
 
+    /**
+     * Procesa el formulario para agregar un nuevo alquiler.
+     * 
+     * @param alquiler Objeto Alquiler con los datos del formulario
+     * @param status Controlador de estado de la sesión para limpiarla tras el envío.
+     * @return ModelAndView con el mensaje de éxito o error
+     */
     @PostMapping("/addAlquiler")
     public ModelAndView procesarFormularioAlquiler(@ModelAttribute Alquiler alquiler, SessionStatus status) {
     
@@ -60,13 +89,20 @@ public class AlquilerController {
         return modelAndView;
     }
 
+    /**
+     * Muestra el formulario para gestionar acompañantes de un alquiler.
+     * 
+     * @param alquilerId ID del alquiler
+     * @param plazas Número de plazas disponibles
+     * @return ModelAndView con el formulario de acompañantes
+     */
     @GetMapping("/acompanantes/{alquilerId}/{plazas}")
     public ModelAndView mostrarFormularioAcompanantes(@PathVariable Integer alquilerId, @PathVariable int plazas) {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("addAcompanante");
 
         // 1. Cargar acompañantes existentes de la base de datos
-        List<Acompañantes> acompanantesExistentes = acompanantesRepository.findAcompañantesByAlquiler(alquilerId);
+        List<Acompanante> acompanantesExistentes = acompanantesRepository.findAcompananteByAlquiler(alquilerId);
         
         // Si es null, crear lista vacía
         if (acompanantesExistentes == null) {
@@ -77,9 +113,9 @@ public class AlquilerController {
         int plazasDisponibles = plazas - 1 - acompanantesExistentes.size();
         
         // 3. Crear lista para nuevos acompañantes (solo los que caben)
-        List<Acompañantes> nuevosAcompanantes = new ArrayList<>();
+        List<Acompanante> nuevosAcompanantes = new ArrayList<>();
         for (int i = 0; i < plazasDisponibles; i++) {
-            nuevosAcompanantes.add(new Acompañantes());
+            nuevosAcompanantes.add(new Acompanante());
         }
 
         // 4. Pasar todos los datos al modelo
@@ -93,6 +129,11 @@ public class AlquilerController {
     }
 
 
+    /**
+     * Obtiene todos los alquileres del sistema.
+     * 
+     * @return ModelAndView con la lista de alquileres
+     */
     @GetMapping
     public ModelAndView getAlquileres() {
         ModelAndView modelAndView = new ModelAndView();
@@ -104,6 +145,12 @@ public class AlquilerController {
         return modelAndView;
     }
 
+    /**
+     * Obtiene los detalles de un alquiler específico.
+     * 
+     * @param id ID del alquiler
+     * @return ModelAndView con los detalles del alquiler
+     */
     @GetMapping("/{id}")
     public ModelAndView getAlquilerDetalles(@PathVariable Integer id) {
         ModelAndView modelAndView = new ModelAndView();
@@ -115,7 +162,13 @@ public class AlquilerController {
         return modelAndView;
     }
 
-    // Buscar embarcaciones disponibles entre dos fechas
+    /**
+     * Busca embarcaciones disponibles entre dos fechas.
+     * 
+     * @param inicio Fecha de inicio en formato String (opcional)
+     * @param fin Fecha de fin en formato String (opcional)
+     * @return ModelAndView con el formulario o resultados de búsqueda
+     */
     @GetMapping("/disponibles")
     public ModelAndView getEmbarcacionesDisponibles(
         @RequestParam(value = "inicio", required = false) String inicio,
@@ -148,16 +201,12 @@ public class AlquilerController {
         return modelAndView;
     }
     
-    // Registrar un nuevo alquiler (alquilar embarcación)
-    // Ejemplo: POST /api/alquiler/alquilar
-    @PostMapping("/alquilar")
-    public String alquilarEmbarcacion(@RequestBody Alquiler alquiler) {
-        return alquilerService.alquilarEmbarcacion(alquiler);
 
-    }
-
-    // Listar solo los alquileres futuros
-    // Ejemplo: GET /api/alquiler/futuros
+    /**
+     * Obtiene todos los alquileres futuros.
+     * 
+     * @return ModelAndView con la lista de alquileres futuros
+     */
     @GetMapping("/futuros")
     public ModelAndView getAlquileresFuturos() {
         ModelAndView modelAndView = new ModelAndView();

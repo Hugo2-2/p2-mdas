@@ -13,6 +13,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Servicio para gestionar la lógica de negocio relacionada con los alquileres.
+ * Proporciona métodos para buscar, validar y procesar alquileres de embarcaciones.
+ * 
+ * @author gm2equipo1
+ * @version 1.0
+ */
 @Service
 public class AlquilerService {
 
@@ -20,7 +27,13 @@ public class AlquilerService {
     private EmbarcacionRepository embarcacionRepository;
     private SocioRepository socioRepository;
 
-    // Constructor con inyección de dependencias
+    /**
+     * Constructor con inyección de dependencias.
+     * 
+     * @param alquilerRepository Repositorio de alquileres
+     * @param embarcacionRepository Repositorio de embarcaciones
+     * @param socioRepository Repositorio de socios
+     */
     public AlquilerService(AlquilerRepository alquilerRepository, EmbarcacionRepository embarcacionRepository, SocioRepository socioRepository) {
         this.alquilerRepository = alquilerRepository;
         this.embarcacionRepository = embarcacionRepository;
@@ -34,22 +47,42 @@ public class AlquilerService {
     }
 
 
-    // Listar todos los alquileres
+    /**
+     * Lista todos los alquileres.
+     * 
+     * @return Lista de todos los objetos {@link Alquiler} o null si ocurre un error.
+     */
     public List<Alquiler> findAllAlquileres() {
         return alquilerRepository.findAllAlquileres();
     }
 
-    // Buscar alquiler por ID
+    /**
+     * Busca alquiler por ID.
+     * 
+     * @param id ID del alquiler a buscar
+     * @return El objeto {@link Alquiler} encontrado o null si no existe.
+     */
     public Alquiler findAlquilerById(int id) {
         return alquilerRepository.findAlquilerById(id);
     }
 
-    // Agregar alquiler
+    /**
+     * Agrega un nuevo alquiler a la base de datos.
+     * 
+     * @param alquiler Objeto Alquiler a agregar
+     * @return true si se agregó correctamente, false en caso contrario
+     */
     public boolean addAlquiler(Alquiler alquiler) {
         return alquilerRepository.addAlquiler(alquiler);
     }
 
-    //  Buscar embarcaciones disponibles
+    /**
+     * Busca embarcaciones disponibles entre dos fechas.
+     * 
+     * @param fechaInicio Fecha de inicio de la búsqueda
+     * @param fechaFin Fecha de fin de la búsqueda
+     * @return Lista de objetos {@link Embarcacion} disponibles entre las dos fechas o null si ocurre un error.
+     */
     public List<Embarcacion> buscarEmbarcacionesDisponibles(LocalDate fechaInicio, LocalDate fechaFin) {
         List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcaciones();
         List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
@@ -78,8 +111,14 @@ public class AlquilerService {
     }
 
 
-    // Alquilar embarcación
-        public String alquilarEmbarcacion(Alquiler nuevoAlquiler) {
+    /**
+     * Procesa el alquiler de una embarcación.
+     * Comprueba que el alquiler sea válido y se registre en la base de datos.
+     * 
+     * @param nuevoAlquiler Objeto Alquiler a alquilar
+     * @return Mensaje de éxito o error al alquilar la embarcación. 
+     */
+    public String alquilarEmbarcacion(Alquiler nuevoAlquiler) {
         Socio socio = socioRepository.findSocioByDNI(nuevoAlquiler.getUsuario_dni());
 
         if (socio == null) return "El socio no existe.";
@@ -126,7 +165,11 @@ public class AlquilerService {
     }
 
 
-    // Listar alquileres futuros
+    /**
+     * Obtiene todos los alquileres que tienen fecha de inicio en el futuro.
+     * 
+     * @return Lista de todos los objetos {@link Alquiler} futuros o null si ocurre un error.   
+     */
     public List<Alquiler> listarAlquileresFuturos() {
         LocalDate hoy = LocalDate.now();
         List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();

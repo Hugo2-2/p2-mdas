@@ -1,7 +1,7 @@
 package com.GM2.controller.Inscripcion;
 
 import ch.qos.logback.core.model.Model;
-import com.GM2.model.domain.Acompañantes;
+import com.GM2.model.domain.Acompanante;
 import com.GM2.model.domain.Hijos;
 import com.GM2.model.domain.Inscripcion;
 import com.GM2.model.repository.HijosRepository;
@@ -35,14 +35,14 @@ public class InscripcionController {
     public String updateInscripcion(
             @RequestParam(name = "dniTitular") String dniTitular,
             @RequestParam(name = "dniSegundoAdulto", required = false) String dniSegundoAdulto,
-            @RequestParam(name = "añadirHijos", required = false) String añadirHijos,
+            @RequestParam(name = "anadirHijos", required = false) String anadirHijos,
             @RequestParam(name = "numeroHijos", required = false) Integer numeroHijos, // Integer es mejor para números
             @RequestParam(name = "siguientePaso") String siguientePaso, // Recibimos el 'name="siguientePaso"' del botón pulsado
             RedirectAttributes redirectAttributes) {
 
         System.out.println("[InscripcionController] Informacion recivida: dniTitular=" + dniTitular +
                 " dniSegundoAdulto=" + dniSegundoAdulto +
-                " añadirHijos=" + añadirHijos +
+                " anadirHijos=" + anadirHijos +
                 " numeroHijos=" + numeroHijos +
                 " siguientePaso=" + siguientePaso);
 
