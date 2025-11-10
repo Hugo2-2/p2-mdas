@@ -1,6 +1,7 @@
 package com.GM2.model.domain;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 public class Hijos {
     private String dni;

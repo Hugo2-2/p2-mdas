@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -105,9 +106,12 @@ public class InscripcionController {
     public String addHijos(
             @RequestParam("dniTitular") String dniTitular,
             @RequestParam("hijo_dni") List<String> dnisHijos,
+            @RequestParam("nombre") List<String> nombreHijos,
+            @RequestParam("apellidos") List<String> apellidosHijos,
+            @RequestParam("fechaNacimiento") List<Date> fechaNacimientoHijos,
             RedirectAttributes redirectAttributes) {
 
-        String resultado = inscripcionService.updateInscripcioConHijos(dniTitular, dnisHijos);
+        String resultado = inscripcionService.updateInscripcioConHijos(dniTitular, dnisHijos, nombreHijos, apellidosHijos, fechaNacimientoHijos);
 
         if (resultado.equals("EXITO")) {
             redirectAttributes.addFlashAttribute("mensajeExito", "Inscripción (con hijos) guardada.");

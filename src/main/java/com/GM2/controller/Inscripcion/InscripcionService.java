@@ -7,6 +7,8 @@ import com.GM2.model.repository.InscripcionRepository;
 import com.GM2.model.repository.SocioRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -98,12 +100,23 @@ public class InscripcionService {
         }
     }
 
-    public String updateInscripcioConHijos(String dniTitular, List<String> dnisHijos){
+    public String updateInscripcioConHijos(String dniTitular, List<String> dnisHijos, List<String> nombreHijos, List<String> apellidosHijos, List<Date> fechaNacimientoHijos){
 
         Inscripcion inscripcion = findInscripcionByDNITitular(dniTitular);
 
         if (inscripcion == null) {
             return "No puedes actualizar la inscripcion porque no existe";
+        }
+
+        for(int i = 0; i < dnisHijos.size(); i++){
+            if(dnisHijos.get(i) != null && !dnisHijos.get(i).trim().isEmpty()){
+                Hijos hijo = new Hijos();
+                hijo.setDni(dnisHijos.get(i));
+                hijo.setNombre(nombreHijos.get(i));
+                hijo.setApellidos(apellidosHijos.get(i));
+                hijo.setFechaNacimiento();
+
+            }
         }
 
         for (String dni : dnisHijos) {
