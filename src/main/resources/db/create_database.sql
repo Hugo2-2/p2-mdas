@@ -87,9 +87,10 @@ CREATE TABLE IF NOT EXISTS `hijos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `acompanantes` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
     `dni` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
     `id_alquiler` INT(11) NOT NULL,
-    PRIMARY KEY (`dni`),
+    PRIMARY KEY (`id`),
     FOREIGN KEY (`id_alquiler`) REFERENCES alquiler(`id`),
     FOREIGN KEY (`dni`) REFERENCES socios(`dni`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

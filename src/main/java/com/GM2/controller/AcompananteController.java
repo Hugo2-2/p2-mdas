@@ -3,8 +3,11 @@ package com.GM2.controller;
 
 import com.GM2.model.domain.Acompanante;
 import com.GM2.model.repository.AcompananteRepository;
+
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 
 import java.util.List;
 
@@ -16,7 +19,7 @@ import java.util.List;
  * @author gm2equipo1
  * @version 1.0
  */
-@RestController
+@Controller
 @RequestMapping("/api/acompanantes")
 public class AcompananteController {
 
@@ -33,32 +36,7 @@ public class AcompananteController {
         this.acompanantesRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
-    /**
-     * Obtiene todos los acompañantes registrados en el sistema.
-     * 
-     * @return Lista de todos los objetos {@link Acompanante} en formato JSON
-     */
-    @GetMapping
-    public List<Acompanante> getAcompanantes() { return acompanantesRepository.findAllAcompanantes(); }
-
-    /**
-     * Obtiene un acompañante por su DNI.
-     * 
-     * @param dni DNI del acompañante a buscar
-     * @return El objeto {@link Acompanante} encontrado o null si no existe.
-     */
-    @GetMapping("/{dni}")
-    public Acompanante getAcompananteByDni(@PathVariable String dni){ return acompanantesRepository.findAcompananteByDni(dni); }
-
-    /**
-     * Obtiene todos los acompañantes de un alquiler.
-     * 
-     * @param id ID del alquiler
-     * @return Lista de todos los objetos {@link Acompanante} de un alquiler en formato JSON
-     */
-    @GetMapping("/{id}")
-    public List<Acompanante> getAcompanantesById(@PathVariable Integer id){ return acompanantesRepository.findAcompananteByAlquiler(id); }
-
+    
     /**
      * Agrega acompañantes a un alquiler.
      * 
