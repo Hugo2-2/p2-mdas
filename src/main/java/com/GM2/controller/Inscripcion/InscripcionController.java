@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -108,7 +109,7 @@ public class InscripcionController {
             @RequestParam("hijo_dni") List<String> dnisHijos,
             @RequestParam("nombre") List<String> nombreHijos,
             @RequestParam("apellidos") List<String> apellidosHijos,
-            @RequestParam("fechaNacimiento") List<Date> fechaNacimientoHijos,
+            @RequestParam("fechaNacimiento") List<LocalDate> fechaNacimientoHijos,
             RedirectAttributes redirectAttributes) {
 
         String resultado = inscripcionService.updateInscripcioConHijos(dniTitular, dnisHijos, nombreHijos, apellidosHijos, fechaNacimientoHijos);
@@ -119,18 +120,5 @@ public class InscripcionController {
             redirectAttributes.addFlashAttribute("mensajeError", resultado);
         }
         return "redirect:/api/inscripciones/updateInscripcion";
-    }
-
-    @PostMapping("/upgradeInscripcion")
-    public String upgradeInscripcion(@ModelAttribute("inscripcion") Inscripcion inscripcion, RedirectAttributes redirectAttributes) {
-        String resultado = inscripcionService.updateInscripcion(inscripcion);
-
-        if (resultado.equals("EXITO")) {
-            redirectAttributes.addFlashAttribute("mensaje", "Inscripción guardada exitosamente");
-        } else {
-            redirectAttributes.addFlashAttribute("mensaje", resultado);
-        }
-
-        return "redirect:/api/inscripciones/upgradeInscripcion?id=" + String.valueOf(inscripcion.getId()) ;
     }
 }

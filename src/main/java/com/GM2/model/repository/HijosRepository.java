@@ -133,7 +133,7 @@ public class HijosRepository extends AbstractRepository {
             } else return false;
 
          } catch (DataAccessException exception) {
-            System.err.println("Unable to insert patron in the database");
+            System.err.println("Unable to insert hijo in the database");
             exception.printStackTrace();
             return false;
          }
@@ -153,7 +153,7 @@ public class HijosRepository extends AbstractRepository {
                         return false;
                 } else return false;
             } catch (DataAccessException exception) {
-                System.err.println("Unable to insert patron in the database");
+                System.err.println("Unable to insert hijo in the database");
                 exception.printStackTrace();
                 return false;
             }

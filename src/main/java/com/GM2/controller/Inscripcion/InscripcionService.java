@@ -8,6 +8,7 @@ import com.GM2.model.repository.SocioRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -100,33 +101,39 @@ public class InscripcionService {
         }
     }
 
-    public String updateInscripcioConHijos(String dniTitular, List<String> dnisHijos, List<String> nombreHijos, List<String> apellidosHijos, List<Date> fechaNacimientoHijos){
-
+    public String updateInscripcioConHijos(String dniTitular, List<String> dnisHijos, List<String> nombreHijos, List<String> apellidosHijos, List<LocalDate> fechaNacimientoHijos){
         Inscripcion inscripcion = findInscripcionByDNITitular(dniTitular);
 
         if (inscripcion == null) {
             return "No puedes actualizar la inscripcion porque no existe";
         }
 
-        for(int i = 0; i < dnisHijos.size(); i++){
-            if(dnisHijos.get(i) != null && !dnisHijos.get(i).trim().isEmpty()){
-                Hijos hijo = new Hijos();
-                hijo.setDni(dnisHijos.get(i));
-                hijo.setNombre(nombreHijos.get(i));
-                hijo.setApellidos(apellidosHijos.get(i));
-                hijo.setFechaNacimiento();
+        for (int i = 0; i < dnisHijos.size(); i++) {
 
-            }
-        }
+            String dni = dnisHijos.get(i);
 
-        for (String dni : dnisHijos) {
+            // Solo procesamos si el DNI no está vacío
             if (dni != null && !dni.trim().isEmpty()) {
+
                 Hijos hijo = new Hijos();
                 hijo.setDni(dni);
+                hijo.setNombre(nombreHijos.get(i));
+                hijo.setApellidos(apellidosHijos.get(i));
 
+                // Asignamos el ID de la inscripción principal
                 hijo.setId_inscripcion(inscripcion.getId());
 
+                // Parseamos y validamos la fecha
+                try {
+                    hijo.setFechaNacimiento(fechaNacimientoHijos.get(i));
+                } catch (DateTimeParseException e) {
+                    return "Error: El formato de fecha del hijo " + (i + 1) + " no es válido (use AAAA-MM-DD).";
+                }
+
+                // Guardamos el hijo completo en la base de datos
                 hijosRepository.addHijo(hijo);
+
+                // Actualizamos la cuota en el objeto de inscripción (100€ por hijo)
                 inscripcion.setCuotaAnual(inscripcion.getCuotaAnual() + 100);
             }
         }
@@ -136,7 +143,7 @@ public class InscripcionService {
         if(res) {
             return "EXITO";
         } else  {
-            return "No se ha podido actualizar la inscripcion";
-        }
+            return "No se ha podido actualizar la cuota de la inscripcion";
+        }    
     }
 }
