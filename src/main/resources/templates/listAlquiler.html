@@ -16,7 +16,11 @@
         </div>
     </header>
 
+    
+
     <div class="container">
+        <div th:if="${mensajeExito}" class="alert alert-success" th:text="${mensajeExito}"></div>
+        <div th:if="${mensajeError}" class="alert alert-danger" th:text="${mensajeError}"></div>
         <!-- Resumen -->
         <div class="stats-grid">
             <div class="stat-card info">
@@ -124,8 +128,7 @@
                                            title="Ver detalles">
                                             👁️
                                         </a>
-                                        <a th:if="${alquiler.fechainicio.isAfter(T(java.time.LocalDate).now()) and alquiler.plazas > 1}"
-                                           th:href="@{/api/alquiler/acompanantes/{alquilerId}/{plazas}(alquilerId=${alquiler.id}, plazas=${alquiler.plazas})}"
+                                        <a th:href="@{/api/alquiler/acompanantes/{alquilerId}/{plazas}(alquilerId=${alquiler.id}, plazas=${alquiler.plazas})}"
                                            class="btn"
                                            title="Gestionar acompañantes">
                                             👥

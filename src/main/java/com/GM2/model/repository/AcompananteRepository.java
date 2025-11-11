@@ -43,6 +43,7 @@ public class AcompananteRepository extends AbstractRepository {
                 List<Acompanante> result = jdbcTemplate.query(query, new RowMapper<Acompanante>() {
                     public Acompanante mapRow(ResultSet rs, int rowNum) throws SQLException {
                         return new Acompanante(
+                                rs.getInt("id"),
                                 rs.getString("dni"),
                                 rs.getInt("id_alquiler")
                         );
@@ -111,10 +112,11 @@ public class AcompananteRepository extends AbstractRepository {
      * o null si el ResultSet está vacío o si ocurre una SQLException.
      */
     private Acompanante mapRowFromAlquiler(ResultSet row, int rowNum) throws SQLException {
+                int id = row.getInt("id");
                 String dni = row.getString("dni");
                 int id_alquiler = row.getInt("id_alquiler");
 
-                return new Acompanante(dni, id_alquiler);
+                return new Acompanante(id, dni, id_alquiler);
             
     }
     
@@ -131,10 +133,11 @@ public class AcompananteRepository extends AbstractRepository {
         try {
 
             if(row.first()) {
+                int id = row.getInt("id");
                 String dni = row.getString("dni");
                 int id_alquiler = row.getInt("id_alquiler");
 
-                Acompanante acompanante = new Acompanante(dni, id_alquiler);
+                Acompanante acompanante = new Acompanante(id, dni, id_alquiler);
                 return acompanante;
             } else {
                 return null;

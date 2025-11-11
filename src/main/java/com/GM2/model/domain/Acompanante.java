@@ -9,6 +9,7 @@ package com.GM2.model.domain;
  * @version 1.0
  */
 public class Acompanante {
+    private int id;
     private String dni;
     private int id_alquiler;
 
@@ -21,14 +22,34 @@ public class Acompanante {
     /**
      * Constructor completo para crear un acompanante con todos sus datos.
      * 
+     * @param id ID del acompanante
      * @param dni DNI del acompanante
      * @param idAlquiler ID del alquiler al que pertenece
      */
-    public Acompanante(String dni, int id_alquiler) {
+    public Acompanante(int id, String dni, int id_alquiler) {
+        this.id = id;
         this.dni = dni;
         this.id_alquiler = id_alquiler;
     }
 
+    /**
+     * Obtiene el ID del acompanante.
+     * 
+     * @return ID del acompanante
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * Establece el ID del acompanante.
+     * 
+     * @param id ID del acompanante
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
+    
     /**
      * Obtiene el DNI del acompanante.
      * 

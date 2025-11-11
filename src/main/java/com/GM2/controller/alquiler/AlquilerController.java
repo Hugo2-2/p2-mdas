@@ -4,6 +4,8 @@ import com.GM2.model.domain.Acompanante;
 import com.GM2.model.domain.Alquiler;
 import com.GM2.model.domain.Embarcacion;
 import com.GM2.model.repository.AcompananteRepository;
+import com.GM2.model.repository.AlquilerRepository;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,7 +27,7 @@ import java.util.List;
 @RequestMapping("/api/alquiler")
 public class AlquilerController {
 
-    AlquilerService alquilerService;
+    AlquilerRepository alquilerRepository;
     AcompananteRepository acompanantesRepository;
 
 
@@ -34,12 +36,16 @@ public class AlquilerController {
      * Spring Boot inyectará automáticamente las instancias de los repositorios
      * y servicios necesarios.
      * 
-     * @param alquilerService Servicio para la lógica de negocio de Alquileres.
+     * @param alquilerRepository Repositorio para operaciones de base de datos relacionadas con los alquileres.
      * @param acompanantesRepository Repositorio para el acceso a datos de Acompañantes.
      */
-    public AlquilerController(AlquilerService alquilerService, AcompananteRepository acompanantesRepository) {
-        this.alquilerService = alquilerService;    
+    public AlquilerController(AlquilerRepository alquilerRepository, AcompananteRepository acompanantesRepository) {
+        this.alquilerRepository = alquilerRepository;    
         this.acompanantesRepository = acompanantesRepository;
+
+        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        this.alquilerRepository.setSqlQueriesFileName(sqlQueriesFileName);  
+        this.acompanantesRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
 
@@ -68,7 +74,7 @@ public class AlquilerController {
     
         ModelAndView modelAndView = new ModelAndView();
 
-        String resultado = alquilerService.alquilarEmbarcacion(alquiler);
+        String resultado = alquilerRepository.alquilarEmbarcacion(alquiler);
 
         if (resultado.startsWith("OK:") ){
 
@@ -139,7 +145,7 @@ public class AlquilerController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("listAlquiler");
         
-        List<Alquiler> alquileres = alquilerService.findAllAlquileres();
+        List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
         modelAndView.addObject("alquileres", alquileres);
         
         return modelAndView;
@@ -156,7 +162,7 @@ public class AlquilerController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("detallesAlquiler");
         
-        Alquiler alquiler = alquilerService.findAlquilerById(id);
+        Alquiler alquiler = alquilerRepository.findAlquilerById(id);
         modelAndView.addObject("alquiler", alquiler);
         
         return modelAndView;
@@ -187,7 +193,7 @@ public class AlquilerController {
             LocalDate fechaInicio = LocalDate.parse(inicio);
             LocalDate fechaFin = LocalDate.parse(fin);
             
-            List<Embarcacion> disponibles = alquilerService.buscarEmbarcacionesDisponibles(fechaInicio, fechaFin);
+            List<Embarcacion> disponibles = alquilerRepository.buscarEmbarcacionesDisponibles(fechaInicio, fechaFin);
             
             modelAndView.addObject("disponibles", disponibles);
             modelAndView.addObject("fechaInicio", fechaInicio);
@@ -212,7 +218,7 @@ public class AlquilerController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("alquileresFuturos");
         
-        List<Alquiler> alquileresFuturos = alquilerService.listarAlquileresFuturos();
+        List<Alquiler> alquileresFuturos = alquilerRepository.listarAlquileresFuturos();
         modelAndView.addObject("alquileresFuturos", alquileresFuturos);
         
         return modelAndView;
