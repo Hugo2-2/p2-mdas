@@ -22,20 +22,32 @@ import java.util.List;
 @RequestMapping("/api/embarcaciones")
 public class ShowEmbarcacionesByType {
 
-    private final EmbarcacionService embarcacionService;
+    private final EmbarcacionRepository embarcacionRepository;
     PatronRepository patronRepository;
 
     private ModelAndView modelAndView = new ModelAndView();
 
     /**
-     * Constructor para la inyección de dependencias del servicio de embarcaciones.
+     * Constructor para la inyección de dependencias de los repositorios.
      *
-     * @param embarcacionService El servicio que contiene la lógica de negocio.
+     * Siguiendo la arquitectura MVC estricta del proyecto, este constructor
+     * recibe las instancias de los repositorios (el Modelo) y es
+     * responsable de configurarlas, como indicar la ruta al archivo
+     * de consultas SQL.
+     *
+     * @param embarcacionRepository El repositorio para acceder a los datos de Embarcacion.
+     * @param patronRepository El repositorio para acceder a los datos de Patron (necesario
+     * para las validaciones de EmbarcacionRepository).
      */
-    public ShowEmbarcacionesByType(PatronRepository patronRepository, EmbarcacionService embarcacionService) {
+    public ShowEmbarcacionesByType(EmbarcacionRepository embarcacionRepository, PatronRepository patronRepository) {
+        this.embarcacionRepository = embarcacionRepository;
         this.patronRepository = patronRepository;
         this.modelAndView.setViewName("consultarEmbarcacionesView");
-        this.embarcacionService = embarcacionService;
+
+        // Configuración del archivo de propiedades SQL desde el Controlador
+        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        this.embarcacionRepository.setSqlQueriesFileName(sqlQueriesFileName);
+        this.patronRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
     /**
@@ -53,7 +65,7 @@ public class ShowEmbarcacionesByType {
         //Comprobamos si el parámetro se ha proporcionado
         if (!tipo.equals("none")) {
             // Si SÍ se proporcionó, ejecutamos la búsqueda
-            List<Embarcacion> embarcaciones = embarcacionService.findAllEmbarcacionesByTipo(tipo);
+            List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcacionesByTipo(tipo);
 
             // Y añadimos los resultados al modelo
             this.modelAndView.addObject("listaEmbarcaciones", embarcaciones);

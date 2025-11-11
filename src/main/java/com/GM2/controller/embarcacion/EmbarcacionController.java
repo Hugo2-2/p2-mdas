@@ -27,7 +27,6 @@ import java.util.List;
 public class EmbarcacionController {
 
     EmbarcacionRepository embarcacionRepository;
-    EmbarcacionService embarcacionService;
     AssignPatronToEmbarcacion assignPatronToEmbarcacion;
 
     /**
@@ -37,11 +36,9 @@ public class EmbarcacionController {
      *
      * @param embarcacionRepository Repositorio para el acceso a datos de Embarcacion.
      * @param assignPatronToEmbarcacion Servicio para la lógica de asignación de patrones.
-     * @param embarcacionService Servicio para la lógica de negocio de Embarcacion.
      */
-    public EmbarcacionController(EmbarcacionRepository embarcacionRepository, AssignPatronToEmbarcacion assignPatronToEmbarcacion, EmbarcacionService embarcacionService) {
+    public EmbarcacionController(EmbarcacionRepository embarcacionRepository, AssignPatronToEmbarcacion assignPatronToEmbarcacion) {
         this.embarcacionRepository = embarcacionRepository;
-        this.embarcacionService = embarcacionService;
         this.assignPatronToEmbarcacion = assignPatronToEmbarcacion;
 
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
@@ -103,7 +100,8 @@ public class EmbarcacionController {
                 " dimensiones=" + newEmbarcacion.getDimensiones() +
                 " id_patron=" + newEmbarcacion.getIdPatron() +
                 " plazas=" + newEmbarcacion.getPlazas());
-        String resultado = embarcacionService.addEmbarcacion(newEmbarcacion);
+
+        String resultado = embarcacionRepository.addEmbarcacionValidado(newEmbarcacion);
         String nextPage;
 
         if(resultado.equals("EXITO")){

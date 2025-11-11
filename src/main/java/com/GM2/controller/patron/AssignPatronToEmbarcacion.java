@@ -21,6 +21,10 @@ public class AssignPatronToEmbarcacion {
     public AssignPatronToEmbarcacion(EmbarcacionRepository embarcacionRepository, PatronRepository patronRepository) {
         this.embarcacionRepository = embarcacionRepository;
         this.patronRepository = patronRepository;
+
+        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        this.embarcacionRepository.setSqlQueriesFileName(sqlQueriesFileName);
+        this.patronRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
     @GetMapping("/asociarPatron")
