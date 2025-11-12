@@ -1,11 +1,8 @@
 package com.GM2.controller.Socio;
 
-import com.GM2.controller.Inscripcion.InscripcionService;
-import com.GM2.model.domain.Alquiler;
-import com.GM2.model.domain.Inscripcion;
 import com.GM2.model.domain.Socio;
+import com.GM2.model.repository.SocioRepository;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -18,14 +15,14 @@ import java.util.List;
 @RequestMapping("/api/socios")
 public class SocioController {
 
-    SocioService socioService;
+    SocioRepository socioRepository;
 
-    public SocioController(SocioService socioService, InscripcionService inscripcionService) {
-        this.socioService = socioService;
+    public SocioController(SocioRepository socioRepository) {
+        this.socioRepository = socioRepository;
     }
     @GetMapping
     @ResponseBody
-    public List<Socio> getSocios() { return socioService.findAll(); }
+    public List<Socio> getSocios() { return socioRepository.findAllSocios(); }
 
     @GetMapping("/addSocio")
     public ModelAndView mostrarFormularioSocio() {
@@ -52,7 +49,7 @@ public class SocioController {
                 " tieneLicenciaPatron=" + socio.getTieneLicenciaPatron());
 
         //Usaremos estas funciones para añadir al socio y mostrar mensajes de error
-        String mensaje = socioService.addSocio(socio);
+        String mensaje = socioRepository.addSocio(socio);
 
         //Evaluamos el mensaje que se mostrará en las flashcards de error
         if(mensaje.equals("EXITO")) {

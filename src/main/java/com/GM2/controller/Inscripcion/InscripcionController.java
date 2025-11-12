@@ -1,17 +1,13 @@
 package com.GM2.controller.Inscripcion;
 
-import ch.qos.logback.core.model.Model;
-import com.GM2.model.domain.Acompanante;
-import com.GM2.model.domain.Hijos;
-import com.GM2.model.domain.Inscripcion;
 import com.GM2.model.repository.HijosRepository;
+import com.GM2.model.repository.InscripcionRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -19,11 +15,11 @@ import java.util.List;
 public class InscripcionController {
 
     private final HijosRepository hijosRepository;
-    InscripcionService inscripcionService;
+    InscripcionRepository inscripcionRepository;
 
-    public InscripcionController(InscripcionService inscripcionService, HijosRepository hijosRepository) {  this.inscripcionService = inscripcionService;
+    public InscripcionController(InscripcionRepository inscripcionRepository, HijosRepository hijosRepository) {
         this.hijosRepository = hijosRepository;
-        this.inscripcionService = inscripcionService;
+        this.inscripcionRepository = inscripcionRepository;
     }
 
     @GetMapping("/updateInscripcion")
@@ -56,7 +52,7 @@ public class InscripcionController {
             redirectAttributes.addFlashAttribute("numeroHijos", numeroHijos);
 
             //Guardamos el segundo adulto
-            String resultado = inscripcionService.updateInscripcioSinHijos(dniTitular, dniSegundoAdulto);
+            String resultado = inscripcionRepository.updateInscripcioSinHijos(dniTitular, dniSegundoAdulto);
             if (resultado.equals("EXITO")) {
                 redirectAttributes.addFlashAttribute("mensajeExito", "Inscripción (sin hijos) guardada.");
             } else {
@@ -68,7 +64,7 @@ public class InscripcionController {
 
         } else {
 
-            String resultado = inscripcionService.updateInscripcioSinHijos(dniTitular, dniSegundoAdulto);
+            String resultado = inscripcionRepository.updateInscripcioSinHijos(dniTitular, dniSegundoAdulto);
 
             if (resultado.equals("EXITO")) {
                 redirectAttributes.addFlashAttribute("mensajeExito", "Inscripción (sin hijos) guardada.");
@@ -112,7 +108,7 @@ public class InscripcionController {
             @RequestParam("fechaNacimiento") List<LocalDate> fechaNacimientoHijos,
             RedirectAttributes redirectAttributes) {
 
-        String resultado = inscripcionService.updateInscripcioConHijos(dniTitular, dnisHijos, nombreHijos, apellidosHijos, fechaNacimientoHijos);
+        String resultado = inscripcionRepository.updateInscripcioConHijos(dniTitular, dnisHijos, nombreHijos, apellidosHijos, fechaNacimientoHijos);
 
         if (resultado.equals("EXITO")) {
             redirectAttributes.addFlashAttribute("mensajeExito", "Inscripción (con hijos) guardada.");
