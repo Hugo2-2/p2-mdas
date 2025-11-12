@@ -138,7 +138,7 @@ public class AlquilerRepository extends AbstractRepository{
     /**
      * Agrega un nuevo alquiler a la base de datos.
      * 
-     * @param alquiler Objeto Alquiler a agregar
+     * @param alquiler Objeto {@link Alquiler} a agregar
      * @return true si se agregó correctamente, false en caso contrario
      */
     public boolean addAlquiler(Alquiler alquiler) {
