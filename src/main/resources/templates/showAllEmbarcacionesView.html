@@ -52,11 +52,11 @@
                                 <span th:text="${embarcacion.tipo}">VELERO</span>
                             </td>
                             <td>
-                                <span class="badge" style="background: var(--naranja); color: var(--blanco);" th:text="${embarcacion.plazas}"></span>
+                                <span class="badge" th:text="${embarcacion.plazas}"></span>
                             </td>
                             <td>
                                 <span th:if="${embarcacion.idPatron != null and !embarcacion.idPatron.isEmpty()}" class="badge badge-success">Sí</span>
-                                <span th:unless="${embarcacion.idPatron != null and !embarcacion.idPatron.isEmpty()}" class="badge" style="background: var(--gris); color: var(--blanco);">No</span>
+                                <span th:unless="${embarcacion.idPatron != null and !embarcacion.idPatron.isEmpty()}" class="badge bg-secondary">No</span>
                             </td>
                             <td th:text="${embarcacion.dimensiones}"></td>
                         </tr>

@@ -31,7 +31,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/api/alquiler")
-public class AlquilerController {
+public class AddAlquilerController {
 
     AlquilerRepository alquilerRepository;
     AcompananteRepository acompanantesRepository;
@@ -52,7 +52,7 @@ public class AlquilerController {
      * @param socioRepository Repositorio para el acceso a datos de Socios.
      * @param embarcacionRepository Repositorio para el acceso a datos de Embarcaciones.
      */
-    public AlquilerController(AlquilerRepository alquilerRepository, AcompananteRepository acompanantesRepository, ReservaRepository reservaRepository, SocioRepository socioRepository, EmbarcacionRepository embarcacionRepository) {
+    public AddAlquilerController(AlquilerRepository alquilerRepository, AcompananteRepository acompanantesRepository, ReservaRepository reservaRepository, SocioRepository socioRepository, EmbarcacionRepository embarcacionRepository) {
         this.alquilerRepository = alquilerRepository;    
         this.acompanantesRepository = acompanantesRepository;
         this.reservaRepository = reservaRepository;
@@ -236,135 +236,4 @@ public class AlquilerController {
 
         return modelAndView;
     }
-
-
-    /**
-     * Obtiene todos los alquileres del sistema.
-     * 
-     * @return ModelAndView con la lista de alquileres
-     */
-    @GetMapping
-    public ModelAndView getAlquileres() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("listAlquiler");
-        
-        List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
-        modelAndView.addObject("alquileres", alquileres);
-        
-        return modelAndView;
-    }
-
-    /**
-     * Obtiene los detalles de un alquiler específico.
-     * 
-     * @param id ID del alquiler
-     * @return ModelAndView con los detalles del alquiler
-     */
-    @GetMapping("/{id}")
-    public ModelAndView getAlquilerDetalles(@PathVariable Integer id) {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("detallesAlquiler");
-        
-        Alquiler alquiler = alquilerRepository.findAlquilerById(id);
-        modelAndView.addObject("alquiler", alquiler);
-        
-        return modelAndView;
-    }
-
-    /**
-     * Busca embarcaciones disponibles entre dos fechas.
-     * 
-     * @param inicio Fecha de inicio en formato String (opcional)
-     * @param fin Fecha de fin en formato String (opcional)
-     * @return ModelAndView con el formulario o resultados de búsqueda
-     */
-    @GetMapping("/disponibles")
-    public ModelAndView getEmbarcacionesDisponibles(
-        @RequestParam(value = "inicio", required = false) String inicio,
-        @RequestParam(value = "fin", required = false) String fin) {
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("alquilerDisponible");
-        
-        // Si no hay parámetros, mostrar solo el formulario
-        if (inicio == null || fin == null) {
-            return modelAndView;
-        }
-        
-        // Si hay parámetros, procesar y mostrar resultados
-        try {
-            LocalDate fechaInicio = LocalDate.parse(inicio);
-            LocalDate fechaFin = LocalDate.parse(fin);
-        
-        // Buscar embarcaciones disponibles entre dos fechas
-        List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcaciones();
-        List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
-        List<Embarcacion> disponibles = new ArrayList<>();
-        List<Reserva> reservas = reservaRepository.findAllReservas();
-
-        // Comprobar null
-        if (embarcaciones == null) embarcaciones = new ArrayList<>();
-        if (alquileres == null) alquileres = new ArrayList<>();
-        if (reservas == null) reservas = new ArrayList<>();
-
-
-        for (Embarcacion e : embarcaciones) {
-            boolean ocupada = false;
-
-            for (Alquiler a : alquileres) {
-                if (a.getMatricula_embarcacion().equals(e.getMatricula())) {
-                    if (!(fechaFin.isBefore(a.getFechainicio()) || fechaInicio.isAfter(a.getFechafin()))) {
-                        ocupada = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!ocupada) {
-                for (Reserva r : reservas) {
-                    if (r.getMatricula_embarcacion().equals(e.getMatricula())) {
-                        // Una reserva ocupa la embarcación por UN DÍA específico
-                        // Verificar si alguna fecha del rango de alquiler coincide con la fecha de reserva
-                        LocalDate fechaReserva = r.getFecha();
-                        if (!fechaReserva.isBefore(fechaInicio) && !fechaReserva.isAfter(fechaFin)) {
-                            ocupada = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            
-            if (!ocupada) {
-                disponibles.add(e);
-            }
-        }            
-            modelAndView.addObject("disponibles", disponibles);
-            modelAndView.addObject("fechaInicio", fechaInicio);
-            modelAndView.addObject("fechaFin", fechaFin);
-            modelAndView.addObject("mostrarResultados", true);
-            
-        } catch (Exception e) {
-            modelAndView.addObject("error", "Formato de fecha incorrecto");
-        }
-        
-        return modelAndView;
-    }
-    
-
-    /**
-     * Obtiene todos los alquileres futuros.
-     * 
-     * @return ModelAndView con la lista de alquileres futuros
-     */
-    @GetMapping("/futuros")
-    public ModelAndView getAlquileresFuturos() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("alquileresFuturos");
-        
-        List<Alquiler> alquileresFuturos = alquilerRepository.listarAlquileresFuturos();
-        modelAndView.addObject("alquileresFuturos", alquileresFuturos);
-        
-        return modelAndView;
-    }
-
 }
