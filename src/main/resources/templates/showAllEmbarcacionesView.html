@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Flota Completa - Club Náutico</title>
+    <link th:href="@{/styles.css}" rel="stylesheet">
+</head>
+<body>
+<header class="header">
+    <div class="header-content">
+        <div class="logo">🛥️ Flota Completa</div>
+        <div class="header-buttons">
+            <a th:href="@{/menu}" class="btn">Menú Principal</a>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <h1 class="titulo-principal">Listado de Todas las Embarcaciones</h1>
+
+    <div class="card">
+        <div class="card-header">
+            <span>Todas las embarcaciones registradas</span>
+        </div>
+        <div class="card-body">
+
+            <div th:if="${listaEmbarcaciones == null or listaEmbarcaciones.isEmpty()}" class="text-center py-4">
+                <p class="text-muted">No hay ninguna embarcación registrada en el sistema.</p>
+            </div>
+
+            <div th:if="${listaEmbarcaciones != null and !listaEmbarcaciones.isEmpty()}">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Matrícula</th>
+                            <th>Tipo</th> <th>Plazas</th>
+                            <th>Patrón Asignado</th>
+                            <th>Dimensiones(m2)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="embarcacion : ${listaEmbarcaciones}">
+                            <td>
+                                <strong th:text="${embarcacion.nombre}">Nombre Barco</strong>
+                            </td>
+                            <td>
+                                <span class="badge badge-primary" th:text="${embarcacion.matricula}">Matrícula</span>
+                            </td>
+                            <td>
+                                <span th:text="${embarcacion.tipo}">VELERO</span>
+                            </td>
+                            <td>
+                                <span class="badge" style="background: var(--naranja); color: var(--blanco);" th:text="${embarcacion.plazas}"></span>
+                            </td>
+                            <td>
+                                <span th:if="${embarcacion.idPatron != null and !embarcacion.idPatron.isEmpty()}" class="badge badge-success">Sí</span>
+                                <span th:unless="${embarcacion.idPatron != null and !embarcacion.idPatron.isEmpty()}" class="badge" style="background: var(--gris); color: var(--blanco);">No</span>
+                            </td>
+                            <td th:text="${embarcacion.dimensiones}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p class="mb-0">Sistema de Gestión Club Náutico &copy; 2024</p>
+    </div>
+</footer>
+</body>
+</html>

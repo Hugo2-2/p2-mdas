@@ -14,11 +14,11 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/api/patrones")
-public class PatronController {
+public class AddPatronController {
 
     PatronRepository patronRepository;
 
-    public PatronController(PatronRepository patronRepository) {
+    public AddPatronController(PatronRepository patronRepository) {
         this.patronRepository = patronRepository;
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
         this.patronRepository.setSqlQueriesFileName(sqlQueriesFileName);
@@ -49,7 +49,7 @@ public class PatronController {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: El patron ya existe.");
         }else {
             System.out.println("[PatronController] Informacion recivida: Nombre=" + newPatron.getNombre() +
-                    " Apellidos=" + newPatron.getNombre() +
+                    " Apellidos=" + newPatron.getApellidos() +
                     " DNI=" + newPatron.getDni() +
                     " fechaNacimiento=" + newPatron .getFechaNacimiento() +
                     " fecha_expedicion_titulo=" + newPatron.getFechaExpedicionTitulo());

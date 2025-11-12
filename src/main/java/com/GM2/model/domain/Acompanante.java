@@ -24,7 +24,7 @@ public class Acompanante {
      * 
      * @param id ID del acompanante
      * @param dni DNI del acompanante
-     * @param idAlquiler ID del alquiler al que pertenece
+     * @param id_alquiler ID del alquiler al que pertenece
      */
     public Acompanante(int id, String dni, int id_alquiler) {
         this.id = id;

@@ -1,6 +1,6 @@
 package com.GM2.controller.embarcacion;
 
-import com.GM2.controller.patron.AssignPatronToEmbarcacion;
+import com.GM2.controller.patron.AssignPatronToEmbarcacionController;
 import com.GM2.model.domain.Embarcacion;
 import com.GM2.model.repository.EmbarcacionRepository;
 
@@ -24,10 +24,10 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/api/embarcaciones")
-public class EmbarcacionController {
+public class AddEmbarcacionController {
 
     EmbarcacionRepository embarcacionRepository;
-    AssignPatronToEmbarcacion assignPatronToEmbarcacion;
+    AssignPatronToEmbarcacionController assignPatronToEmbarcacionController;
 
     /**
      * Constructor para la inyección de dependencias.
@@ -35,11 +35,11 @@ public class EmbarcacionController {
      * y servicios necesarios.
      *
      * @param embarcacionRepository Repositorio para el acceso a datos de Embarcacion.
-     * @param assignPatronToEmbarcacion Servicio para la lógica de asignación de patrones.
+     * @param assignPatronToEmbarcacionController Servicio para la lógica de asignación de patrones.
      */
-    public EmbarcacionController(EmbarcacionRepository embarcacionRepository, AssignPatronToEmbarcacion assignPatronToEmbarcacion) {
+    public AddEmbarcacionController(EmbarcacionRepository embarcacionRepository, AssignPatronToEmbarcacionController assignPatronToEmbarcacionController) {
         this.embarcacionRepository = embarcacionRepository;
-        this.assignPatronToEmbarcacion = assignPatronToEmbarcacion;
+        this.assignPatronToEmbarcacionController = assignPatronToEmbarcacionController;
 
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
         this.embarcacionRepository.setSqlQueriesFileName(sqlQueriesFileName);

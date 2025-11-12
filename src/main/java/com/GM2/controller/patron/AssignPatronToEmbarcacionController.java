@@ -1,6 +1,5 @@
 package com.GM2.controller.patron;
 
-import com.GM2.model.domain.Embarcacion;
 import com.GM2.model.repository.EmbarcacionRepository;
 import com.GM2.model.repository.PatronRepository;
 import org.springframework.stereotype.Controller;
@@ -10,15 +9,13 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-
 @Controller
 @RequestMapping("/api/embarcaciones")
-public class AssignPatronToEmbarcacion {
+public class AssignPatronToEmbarcacionController {
     EmbarcacionRepository embarcacionRepository;
     PatronRepository patronRepository;
 
-    public AssignPatronToEmbarcacion(EmbarcacionRepository embarcacionRepository, PatronRepository patronRepository) {
+    public AssignPatronToEmbarcacionController(EmbarcacionRepository embarcacionRepository, PatronRepository patronRepository) {
         this.embarcacionRepository = embarcacionRepository;
         this.patronRepository = patronRepository;
 
@@ -78,25 +75,5 @@ public class AssignPatronToEmbarcacion {
             sessionStatus.setComplete(); // Solo limpiamos si el flujo termina
             return "redirect:/api/embarcaciones/asociarPatron"; // Vuelve al formulario
         }
-    }
-
-    //Este Post será llamado en la vista patronAssignedView, en caso de que en el
-    //post anterior querramos reemplazar el patrón
-    @PostMapping("/confirmarReemplazoPatron")
-    public String confirmarReemplazo(@RequestParam String matricula,
-                                     @RequestParam String dniPatronNuevo,
-                                     RedirectAttributes redirectAttributes) {
-
-        // Ejecutamos la actualización
-        boolean success = embarcacionRepository.updatePatron(dniPatronNuevo, matricula);
-
-        if(success) {
-            redirectAttributes.addFlashAttribute("successMessage", "Patrón reemplazado con éxito.");
-        } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error al reemplazar el patrón.");
-        }
-
-        // Redirigimos de vuelta al formulario principal
-        return "redirect:/api/embarcaciones/asociarPatron";
     }
 }

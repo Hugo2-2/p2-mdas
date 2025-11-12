@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/api/embarcaciones")
-public class ShowEmbarcacionesByType {
+public class ShowEmbarcacionesByTypeController {
 
     private final EmbarcacionRepository embarcacionRepository;
     PatronRepository patronRepository;
@@ -39,7 +39,7 @@ public class ShowEmbarcacionesByType {
      * @param patronRepository El repositorio para acceder a los datos de Patron (necesario
      * para las validaciones de EmbarcacionRepository).
      */
-    public ShowEmbarcacionesByType(EmbarcacionRepository embarcacionRepository, PatronRepository patronRepository) {
+    public ShowEmbarcacionesByTypeController(EmbarcacionRepository embarcacionRepository, PatronRepository patronRepository) {
         this.embarcacionRepository = embarcacionRepository;
         this.patronRepository = patronRepository;
         this.modelAndView.setViewName("consultarEmbarcacionesView");
