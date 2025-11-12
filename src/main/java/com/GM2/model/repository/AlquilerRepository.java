@@ -201,8 +201,4 @@ public class AlquilerRepository extends AbstractRepository{
         return futuros;
     
     }
-
-
-
-
 }
