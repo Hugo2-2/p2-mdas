@@ -4,11 +4,12 @@ import com.GM2.model.domain.Alquiler;
 import com.GM2.model.domain.Reserva;
 import com.GM2.model.domain.Embarcacion;
 import com.GM2.model.repository.ReservaRepository;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.ui.Model;
+import org.springframework.stereotype.Controller;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,12 +19,14 @@ import java.util.List;
 @RequestMapping("/api/reserva")
 public class ReservaController {
 
-    private final ReservaRepository reservaRepository;
-    ReservaService reservaService;
+    ReservaRepository reservaRepository;
 
-    public ReservaController(ReservaService reservaService, ReservaRepository reservaRepository) {
-        this.reservaService = reservaService;
+
+    public ReservaController(ReservaRepository reservaRepository) {
         this.reservaRepository = reservaRepository;
+
+        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        this.reservaRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
 
@@ -49,7 +52,7 @@ public class ReservaController {
                 " descripción=" + reserva.getDescripcion());
 
 
-        String mensaje = reservaService.reservarEmbarcacion(reserva);
+        String mensaje = reservaRepository.reservarEmbarcacion(reserva);
         status.setComplete();
 
         if(mensaje.equals("EXITO")) {
@@ -68,7 +71,7 @@ public class ReservaController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("listReservaView");
 
-        List<Reserva> reservas = reservaService.findAllReservas();
+        List<Reserva> reservas = reservaRepository.findAllReservas();
         modelAndView.addObject("reservas", reservas);
 
         return modelAndView;
@@ -79,7 +82,7 @@ public class ReservaController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("detallesReservaView");
 
-        Reserva reserva = reservaService.findReservaById(id);
+        Reserva reserva = reservaRepository.findReservaById(id);
         modelAndView.addObject("reserva", reserva);
 
         return modelAndView;
@@ -91,7 +94,7 @@ public class ReservaController {
             @RequestParam("plazas") int plazas) {
 
         LocalDate fechaReserva = LocalDate.parse(fecha);
-        return reservaService.buscarEmbarcacionesConPatronDisponibles(fechaReserva, plazas);
+        return reservaRepository.buscarEmbarcacionesConPatronDisponibles(fechaReserva, plazas);
     }
 
 }
