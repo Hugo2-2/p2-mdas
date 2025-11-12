@@ -1,9 +1,6 @@
 package com.GM2.model.repository;
 
 import com.GM2.model.domain.Alquiler;
-import com.GM2.model.domain.Embarcacion;
-import com.GM2.model.domain.Reserva;
-import com.GM2.model.domain.Socio;
 import com.GM2.model.domain.Acompanante;
 
 import org.springframework.dao.DataAccessException;
@@ -15,7 +12,6 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,31 +26,20 @@ import java.util.List;
 public class AlquilerRepository extends AbstractRepository{
 
     private AcompananteRepository acompanantesRepository;
-    private ReservaRepository reservaRepository;
-    private SocioRepository socioRepository;
-    private EmbarcacionRepository embarcacionRepository;
+    
 
     /**
      * Constructor del repositorio de alquileres.
      * 
      * @param jdbcTemplate Template JDBC para operaciones de base de datos
      * @param acompanantesRepository Repositorio de acompañantes para cargar relaciones
-     * @param reservaRepository Repositorio de reservas para cargar relaciones
-     * @param socioRepository Repositorio de socios para cargar relaciones
-     * @param embarcacionRepository Repositorio de embarcaciones para cargar relaciones
      */
-    public AlquilerRepository(JdbcTemplate jdbcTemplate, AcompananteRepository acompanantesRepository, ReservaRepository reservaRepository, SocioRepository socioRepository, EmbarcacionRepository embarcacionRepository) {
+    public AlquilerRepository(JdbcTemplate jdbcTemplate, AcompananteRepository acompanantesRepository) {
         this.jdbcTemplate = jdbcTemplate;
         this.acompanantesRepository = acompanantesRepository;
-        this.reservaRepository = reservaRepository;
-        this.socioRepository = socioRepository;
-        this.embarcacionRepository = embarcacionRepository;
 
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
         this.setSqlQueriesFileName(sqlQueriesFileName);
-        this.embarcacionRepository.setSqlQueriesFileName(sqlQueriesFileName);
-        this.socioRepository.setSqlQueriesFileName(sqlQueriesFileName);
-        this.reservaRepository.setSqlQueriesFileName(sqlQueriesFileName);
         this.acompanantesRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
@@ -192,112 +177,6 @@ public class AlquilerRepository extends AbstractRepository{
         }
 
         return false;
-    }
-
-    /**
-     * Busca embarcaciones disponibles entre dos fechas.
-     * 
-     * @param fechaInicio Fecha de inicio de la búsqueda
-     * @param fechaFin Fecha de fin de la búsqueda
-     * @return Lista de objetos {@link Embarcacion} disponibles entre las dos fechas o null si ocurre un error.
-     */
-    public List<Embarcacion> buscarEmbarcacionesDisponibles(LocalDate fechaInicio, LocalDate fechaFin) {
-        List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcaciones();
-        List<Alquiler> alquileres = findAllAlquileres();
-        List<Embarcacion> disponibles = new ArrayList<>();
-        List<Reserva> reservas = reservaRepository.findAllReservas();
-
-        // Comprobar null
-        if (embarcaciones == null) embarcaciones = new ArrayList<>();
-        if (alquileres == null) alquileres = new ArrayList<>();
-        if (reservas == null) reservas = new ArrayList<>();
-
-
-        for (Embarcacion e : embarcaciones) {
-            boolean ocupada = false;
-
-            for (Alquiler a : alquileres) {
-                if (a.getMatricula_embarcacion().equals(e.getMatricula())) {
-                    if (!(fechaFin.isBefore(a.getFechainicio()) || fechaInicio.isAfter(a.getFechafin()))) {
-                        ocupada = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!ocupada) {
-                for (Reserva r : reservas) {
-                    if (r.getMatricula_embarcacion().equals(e.getMatricula())) {
-                        // Una reserva ocupa la embarcación por UN DÍA específico
-                        // Verificar si alguna fecha del rango de alquiler coincide con la fecha de reserva
-                        LocalDate fechaReserva = r.getFecha();
-                        if (!fechaReserva.isBefore(fechaInicio) && !fechaReserva.isAfter(fechaFin)) {
-                            ocupada = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            
-            if (!ocupada) {
-                disponibles.add(e);
-            }
-        }
-        return disponibles;
-    }
-
-
-    /**
-     * Procesa el alquiler de una embarcación.
-     * Comprueba que el alquiler sea válido y se registre en la base de datos.
-     * 
-     * @param nuevoAlquiler Objeto Alquiler a alquilar
-     * @return Mensaje de éxito o error al alquilar la embarcación. 
-     */
-    public String alquilarEmbarcacion(Alquiler nuevoAlquiler) {
-        Socio socio = socioRepository.findSocioByDNI(nuevoAlquiler.getUsuario_dni());
-
-        if (socio == null) return "El socio no existe.";
-        if (!socio.getTieneLicenciaPatron()) return "El socio no tiene título de patrón.";
-
-        LocalDate inicio = nuevoAlquiler.getFechainicio();
-        LocalDate fin = nuevoAlquiler.getFechafin();
-        long dias = ChronoUnit.DAYS.between(inicio, fin) + 1;
-
-        if (inicio.isAfter(fin)) return "La fecha de inicio no puede ser posterior a la de fin.";
-
-        int mesInicio = inicio.getMonthValue();
-        if (mesInicio >= 10 || mesInicio <= 4) {
-            if (dias > 3) return "Solo se permiten hasta 3 días entre octubre y abril.";
-        } else if (mesInicio >= 5 && mesInicio <= 9) {
-            if (dias != 7 && dias != 14) return "Solo se permiten alquileres de 7 o 14 días entre mayo y septiembre.";
-        }
-
-        Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(nuevoAlquiler.getMatricula_embarcacion());
-        if (embarcacion == null) return "Embarcación no encontrada.";
-        if (nuevoAlquiler.getPlazas() > embarcacion.getPlazas()) return "No hay suficientes plazas.";
-
-        List<Embarcacion> disponibles = buscarEmbarcacionesDisponibles(inicio, fin);
-        boolean disponible = false;
-        for (Embarcacion e : disponibles) {
-            if (e.getMatricula().equals(nuevoAlquiler.getMatricula_embarcacion())) {
-                disponible = true;
-                break;
-            }
-        }
-        if (!disponible) return "La embarcación no está disponible en esas fechas.";
-
-
-
-        double precio = 20.0 * nuevoAlquiler.getPlazas() * dias;
-        nuevoAlquiler.setPrecio(precio);
-
-        boolean insertado = addAlquiler(nuevoAlquiler);
-        if (insertado) {
-            return "OK:" + nuevoAlquiler.getId(); // devolvemos ID de alquiler para el siguiente paso
-        } else {
-            return "Error al registrar el alquiler.";
-        }    
     }
 
 

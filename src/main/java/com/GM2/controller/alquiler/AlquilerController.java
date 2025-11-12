@@ -3,8 +3,13 @@ package com.GM2.controller.alquiler;
 import com.GM2.model.domain.Acompanante;
 import com.GM2.model.domain.Alquiler;
 import com.GM2.model.domain.Embarcacion;
+import com.GM2.model.domain.Reserva;
+import com.GM2.model.domain.Socio;
 import com.GM2.model.repository.AcompananteRepository;
 import com.GM2.model.repository.AlquilerRepository;
+import com.GM2.model.repository.EmbarcacionRepository;
+import com.GM2.model.repository.ReservaRepository;
+import com.GM2.model.repository.SocioRepository;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
@@ -12,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.stereotype.Controller;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +35,10 @@ public class AlquilerController {
 
     AlquilerRepository alquilerRepository;
     AcompananteRepository acompanantesRepository;
+    ReservaRepository reservaRepository;
+    SocioRepository socioRepository;
+    EmbarcacionRepository embarcacionRepository;
+
 
 
     /**
@@ -38,14 +48,23 @@ public class AlquilerController {
      * 
      * @param alquilerRepository Repositorio para operaciones de base de datos relacionadas con los alquileres.
      * @param acompanantesRepository Repositorio para el acceso a datos de Acompañantes.
+     * @param reservaRepository Repositorio para el acceso a datos de Reservas.
+     * @param socioRepository Repositorio para el acceso a datos de Socios.
+     * @param embarcacionRepository Repositorio para el acceso a datos de Embarcaciones.
      */
-    public AlquilerController(AlquilerRepository alquilerRepository, AcompananteRepository acompanantesRepository) {
+    public AlquilerController(AlquilerRepository alquilerRepository, AcompananteRepository acompanantesRepository, ReservaRepository reservaRepository, SocioRepository socioRepository, EmbarcacionRepository embarcacionRepository) {
         this.alquilerRepository = alquilerRepository;    
         this.acompanantesRepository = acompanantesRepository;
+        this.reservaRepository = reservaRepository;
+        this.socioRepository = socioRepository;
+        this.embarcacionRepository = embarcacionRepository;
 
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
         this.alquilerRepository.setSqlQueriesFileName(sqlQueriesFileName);  
         this.acompanantesRepository.setSqlQueriesFileName(sqlQueriesFileName);
+        this.reservaRepository.setSqlQueriesFileName(sqlQueriesFileName);
+        this.socioRepository.setSqlQueriesFileName(sqlQueriesFileName);
+        this.embarcacionRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
 
@@ -74,7 +93,91 @@ public class AlquilerController {
     
         ModelAndView modelAndView = new ModelAndView();
 
-        String resultado = alquilerRepository.alquilarEmbarcacion(alquiler);
+        String resultado;
+        Socio socio = socioRepository.findSocioByDNI(alquiler.getUsuario_dni());
+
+        if (socio == null) resultado = "El socio no existe.";
+        if (!socio.getTieneLicenciaPatron()) resultado = "El socio no tiene título de patrón.";
+
+        LocalDate inicio = alquiler.getFechainicio();
+        LocalDate fin = alquiler.getFechafin();
+        long dias = ChronoUnit.DAYS.between(inicio, fin) + 1;
+
+        if (inicio.isAfter(fin)) resultado = "La fecha de inicio no puede ser posterior a la de fin.";
+
+        int mesInicio = inicio.getMonthValue();
+        if (mesInicio >= 10 || mesInicio <= 4) {
+            if (dias > 3) resultado = "Solo se permiten hasta 3 días entre octubre y abril.";
+        } else if (mesInicio >= 5 && mesInicio <= 9) {
+            if (dias != 7 && dias != 14) resultado = "Solo se permiten alquileres de 7 o 14 días entre mayo y septiembre.";
+        }
+
+        Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(alquiler.getMatricula_embarcacion());
+        if (embarcacion == null) resultado = "Embarcación no encontrada.";
+        if (alquiler.getPlazas() > embarcacion.getPlazas()) resultado = "No hay suficientes plazas.";
+
+        List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcaciones();
+        List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
+        List<Embarcacion> disponibles = new ArrayList<>();
+        List<Reserva> reservas = reservaRepository.findAllReservas();
+
+        // Comprobar null
+        if (embarcaciones == null) embarcaciones = new ArrayList<>();
+        if (alquileres == null) alquileres = new ArrayList<>();
+        if (reservas == null) reservas = new ArrayList<>();
+
+
+        for (Embarcacion e : embarcaciones) {
+            boolean ocupada = false;
+
+            for (Alquiler a : alquileres) {
+                if (a.getMatricula_embarcacion().equals(e.getMatricula())) {
+                    if (!(fin.isBefore(a.getFechainicio()) || inicio.isAfter(a.getFechafin()))) {
+                        ocupada = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!ocupada) {
+                for (Reserva r : reservas) {
+                    if (r.getMatricula_embarcacion().equals(e.getMatricula())) {
+                        // Una reserva ocupa la embarcación por UN DÍA específico
+                        // Verificar si alguna fecha del rango de alquiler coincide con la fecha de reserva
+                        LocalDate fechaReserva = r.getFecha();
+                        if (!fechaReserva.isBefore(inicio) && !fechaReserva.isAfter(fin)) {
+                            ocupada = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (!ocupada) {
+                disponibles.add(e);
+            }
+        }
+        
+        boolean disponible = false;
+        for (Embarcacion e : disponibles) {
+            if (e.getMatricula().equals(alquiler.getMatricula_embarcacion())) {
+                disponible = true;
+                break;
+            }
+        }
+        if (!disponible) resultado = "La embarcación no está disponible en esas fechas.";
+
+
+
+        double precio = 20.0 * alquiler.getPlazas() * dias;
+        alquiler.setPrecio(precio);
+
+        boolean insertado = alquilerRepository.addAlquiler(alquiler);
+        if (insertado) {
+            resultado = "OK:" + alquiler.getId(); // devolvemos ID de alquiler para el siguiente paso
+        } else {
+            resultado = "Error al registrar el alquiler.";
+        }
 
         if (resultado.startsWith("OK:") ){
 
@@ -192,9 +295,49 @@ public class AlquilerController {
         try {
             LocalDate fechaInicio = LocalDate.parse(inicio);
             LocalDate fechaFin = LocalDate.parse(fin);
+        
+        // Buscar embarcaciones disponibles entre dos fechas
+        List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcaciones();
+        List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
+        List<Embarcacion> disponibles = new ArrayList<>();
+        List<Reserva> reservas = reservaRepository.findAllReservas();
+
+        // Comprobar null
+        if (embarcaciones == null) embarcaciones = new ArrayList<>();
+        if (alquileres == null) alquileres = new ArrayList<>();
+        if (reservas == null) reservas = new ArrayList<>();
+
+
+        for (Embarcacion e : embarcaciones) {
+            boolean ocupada = false;
+
+            for (Alquiler a : alquileres) {
+                if (a.getMatricula_embarcacion().equals(e.getMatricula())) {
+                    if (!(fechaFin.isBefore(a.getFechainicio()) || fechaInicio.isAfter(a.getFechafin()))) {
+                        ocupada = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!ocupada) {
+                for (Reserva r : reservas) {
+                    if (r.getMatricula_embarcacion().equals(e.getMatricula())) {
+                        // Una reserva ocupa la embarcación por UN DÍA específico
+                        // Verificar si alguna fecha del rango de alquiler coincide con la fecha de reserva
+                        LocalDate fechaReserva = r.getFecha();
+                        if (!fechaReserva.isBefore(fechaInicio) && !fechaReserva.isAfter(fechaFin)) {
+                            ocupada = true;
+                            break;
+                        }
+                    }
+                }
+            }
             
-            List<Embarcacion> disponibles = alquilerRepository.buscarEmbarcacionesDisponibles(fechaInicio, fechaFin);
-            
+            if (!ocupada) {
+                disponibles.add(e);
+            }
+        }            
             modelAndView.addObject("disponibles", disponibles);
             modelAndView.addObject("fechaInicio", fechaInicio);
             modelAndView.addObject("fechaFin", fechaFin);
