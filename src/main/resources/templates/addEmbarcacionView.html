@@ -4,50 +4,106 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Añadir Embarcación</title>
+    <title>Añadir Embarcación - Club Náutico</title>
+    <link th:href="@{/styles.css}" rel="stylesheet">
 </head>
 
 <body>
-<h1>Añadir una nueva embarcación</h1>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">⛵ Añadir Embarcación</div>
+            <div class="header-buttons">
+                <a th:href="@{/api/embarcaciones}" class="btn">← Volver a Embarcaciones</a>
+                <a th:href="@{/menu}" class="btn">Menú Principal</a>
+            </div>
+        </div>
+    </header>
 
-<form method="POST" th:action="@{/api/embarcaciones/addEmbarcacion}" th:object="${newEmbarcacion}">
+    <div class="container">
+        <div th:if="${successMessage}" class="alert alert-success" style="color: green;">
+            <p th:text="${successMessage}"></p>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger" style="color: red;">
+            <p th:text="${errorMessage}"></p>
+        </div>
 
-    <div>
-        <label for="matricula">Matrícula:</label><br>
-        <input type="text" id="matricula" th:field="*{matricula}"><br>
+        <h1 class="titulo-principal">Añadir una nueva embarcación</h1>
+
+        <form method="POST" th:action="@{/api/embarcaciones/addEmbarcacion}" th:object="${newEmbarcacion}" class="card">
+            <div class="card-header">
+                <span>Información de la Embarcación</span>
+            </div>
+            
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="matricula" class="form-label">Matrícula:</label>
+                            <input type="text" id="matricula" th:field="*{matricula}" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="nombre" class="form-label">Nombre:</label>
+                            <input type="text" id="nombre" th:field="*{nombre}" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="tipo" class="form-label">Tipo:</label>
+                            <select id="tipo" th:field="*{tipo}" class="form-control" required>
+                                <option value="">-- Selecciona un tipo --</option>
+                                <option value="VELERO">Velero</option>
+                                <option value="YATE">Yate</option>
+                                <option value="LANCHA">Lancha</option>
+                                <option value="BARCA_PESCA">Barca de Pesca</option>
+                                <option value="CATAMARAN">Catamarán</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="plazas" class="form-label">Plazas:</label>
+                            <input type="number" id="plazas" th:field="*{plazas}" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="dimensiones" class="form-label">Dimensiones(m2):</label>
+                            <input type="text" id="dimensiones" th:field="*{dimensiones}" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="idPatron" class="form-label">DNI del Patrón:</label>
+                            <input type="text" id="idPatron" th:field="*{idPatron}" class="form-control" minlength="9" maxlength="9">
+                            <div class="form-text">Opcional - dejar vacío si no tiene patrón asignado</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn">Guardar Embarcación</button>
+                </div>
+            </div>
+        </form>
     </div>
 
-    <div>
-        <label for="nombre">Nombre:</label><br>
-        <input type="text" id="nombre" th:field="*{nombre}"><br>
-    </div>
-
-    <div>
-        <label for="tipo">Tipo:</label><br>
-        <input type="text" id="tipo" th:field="*{tipo}"><br>
-    </div>
-
-    <div>
-        <label for="plazas">Plazas:</label><br>
-        <input type="number" id="plazas" th:field="*{plazas}"><br>
-    </div>
-
-    <div>
-        <label for="dimensiones">Dimensiones:</label><br>
-        <input type="text" id="dimensiones" th:field="*{dimensiones}"><br>
-    </div>
-
-    <div>
-        <label for="idPatron">ID del Patrón:</label><br>
-        <input type="text" id="idPatron" th:field="*{idPatron}"><br>
-    </div>
-
-    <br>
-
-    <div>
-        [cite_start]<input type="submit" value="Guardar Embarcación"> [cite: 403]
-    </div>
-
-</form>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">Sistema de Gestión Club Náutico &copy; 2024</p>
+        </div>
+    </footer>
 </body>
 </html>

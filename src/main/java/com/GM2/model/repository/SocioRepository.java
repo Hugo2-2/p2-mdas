@@ -1,6 +1,8 @@
 package com.GM2.model.repository;
 
+import com.GM2.model.domain.Inscripcion;
 import com.GM2.model.domain.Socio;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,8 +16,13 @@ import java.util.List;
 @Repository
 public class SocioRepository extends AbstractRepository {
 
-    public SocioRepository(JdbcTemplate jdbcTemplate) {
+    InscripcionRepository inscripcionRepository;
+
+    public SocioRepository(JdbcTemplate jdbcTemplate, @Lazy InscripcionRepository inscripcionRepository) {
         this.jdbcTemplate = jdbcTemplate;
+        this.inscripcionRepository = inscripcionRepository;
+        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        setSqlQueriesFileName(sqlQueriesFileName);
     }
 
     public List<Socio> findAllSocios() {
@@ -89,7 +96,15 @@ public class SocioRepository extends AbstractRepository {
         }
     }
 
-    public boolean addSocio(Socio socio) {
+    public String addSocio(Socio socio) {
+
+        boolean sqlRes;
+
+        if( socio == null ) return "No se ha ingresado el socio";
+
+        if( socio.getFechaNacimiento().getYear() > 2007 && socio.getEsTitular() )
+            return "Debes de ser mayor de edad para realizar esta inscripcion";
+
         try {
             String query = sqlQueries.getProperty("insert-addSocio");
             if(query != null) {
@@ -105,16 +120,37 @@ public class SocioRepository extends AbstractRepository {
                 );
 
                 if (result > 0)
-                    return true;
-                else return false;
+                    sqlRes = true;
+                else sqlRes = false;
 
-            } else return false;
+            } else sqlRes = false;
 
         } catch (DataAccessException exception) {
             System.err.println("Unable to insert socios in the database");
+            exception.printStackTrace();
+            sqlRes = false;
         }
 
-        return false;
+        // Creamos su inscripcion simple que posteriormente podrá se ampliada
+        if(socio.getEsTitular()) {
+
+            Inscripcion inscripcion = new Inscripcion(socio.getDni());
+
+            boolean resInscripcion = inscripcionRepository.addInscripcion(inscripcion);
+
+            if( sqlRes & resInscripcion ) {
+                return "EXITO";
+            } else {
+                return "No se ha podido guardar el socio";
+            }
+        }
+
+
+        if( sqlRes ) {
+            return "EXITO";
+        } else {
+            return "No se ha podido guardar el socio";
+        }
     }
 }
 

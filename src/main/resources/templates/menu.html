@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Principal - Club Náutico</title>
+    <link th:href="@{/styles.css}" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Club Náutico</div>
+            <div class="fecha" th:text="${#temporals.format(#temporals.createToday(), 'dd/MM/yyyy')}"></div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1 class="titulo-principal">Panel de Control</h1>
+        <p class="subtitulo">Sistema de Gestión Integral del Club</p>
+
+        <div class="menu-grid">
+            <div class="modulo-card">
+                <div class="modulo-header">
+                    <div class="modulo-icono">📅</div>
+                    <h2 class="modulo-titulo">Gestión de Alquileres</h2>
+                </div>
+                <div class="botones-grid">
+                    <a th:href="@{/api/alquiler/addAlquiler}" class="btn">Nuevo Alquiler</a>
+                    <a th:href="@{/api/alquiler}" class="btn">Ver Alquileres</a>
+                    <a th:href="@{/api/alquiler/futuros}" class="btn">Alquileres Futuros</a>
+                </div>
+            </div>
+
+            <div class="modulo-card">
+                <div class="modulo-header">
+                    <div class="modulo-icono">⛵</div>
+                    <h2 class="modulo-titulo">Embarcaciones</h2>
+                </div>
+                <div class="botones-grid">
+                    <a th:href="@{/api/embarcaciones/showAllEmbarcaciones}" class="btn">Todas las Embarcaciones</a>
+                    <a th:href="@{/api/embarcaciones/addEmbarcacion}" class="btn">Añadir Embarcación</a>
+                    <a th:href="@{/api/embarcaciones/consultarEmbarcacionesPorTipo}" class="btn">Buscar por Tipo</a>
+                    <a th:href="@{/api/embarcaciones/disponibles}" class="btn">Disponibilidad</a>
+                </div>
+            </div>
+
+            <div class="modulo-card">
+                <div class="modulo-header">
+                    <div class="modulo-icono">👥</div>
+                    <h2 class="modulo-titulo">Gestión de Socios</h2>
+                </div>
+                <div class="botones-grid">
+                    <a th:href="@{/api/socios/}" class="btn">Todos los Socios</a>
+                    <a th:href="@{/api/socios/addSocio}" class="btn">Añadir Socio</a>
+                    <a th:href="@{/api/inscripciones/}" class="btn">Todas las Inscripciones</a>
+                    <a th:href="@{/api/inscripciones/updateInscripcion}" class="btn">Ampliar inscripción</a>
+                </div>
+            </div>
+
+            <div class="modulo-card">
+                <div class="modulo-header">
+                    <div class="modulo-icono">🧭</div>
+                    <h2 class="modulo-titulo">Patrones</h2>
+                </div>
+                <div class="botones-grid">
+                    <a th:href="@{/api/patrones}" class="btn">Todos los Patrones</a>
+                    <a th:href="@{/api/patrones/addPatron}" class="btn">Añadir Patrón</a>
+                    <a th:href="@{/api/embarcaciones/asociarPatron}" class="btn">Asignar Patron a Embarcación</a>
+                </div>
+            </div>
+
+            <div class="modulo-card">
+                <div class="modulo-header">
+                    <div class="modulo-icono">📋</div>
+                    <h2 class="modulo-titulo">Reservas</h2>
+                </div>
+                <div class="botones-grid">
+                    <a th:href="@{/api/reserva}" class="btn">Todas las Reservas</a>
+                    <a th:href="@{/api/reserva/addReserva}" class="btn">Nueva Reserva</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Sistema de Gestión Club Náutico &copy; 2024</p>
+    </footer>
+</body>
+</html>

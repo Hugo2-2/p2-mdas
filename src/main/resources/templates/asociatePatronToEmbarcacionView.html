@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Asociar Patrón a Embarcación - Club Náutico</title>
+    <link th:href="@{/styles.css}" rel="stylesheet">
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo">🔗 Asociar Patrón a Embarcación</div>
+        <div class="header-buttons">
+            <a th:href="@{/menu}" class="btn">Menú Principal</a>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <h1 class="titulo-principal">Asociar Patrón a Embarcación</h1>
+
+    <!-- Mensajes -->
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <form method="POST" th:action="@{/api/embarcaciones/asociarPatron}" class="card">
+        <div class="card-header">
+            <span>Asignación de Patrón</span>
+        </div>
+
+        <div class="card-body">
+            <div class="form-group mb-4">
+                <label for="matricula" class="form-label">1. Seleccione la Embarcación:</label>
+                <select id="matricula" name="matricula" class="form-control" required>
+                    <option value="">-- Elija una embarcación --</option>
+                    <option th:each="embarcacion : ${todasLasEmbarcaciones}"
+                            th:value="${embarcacion.matricula}"
+                            th:text="${embarcacion.nombre} + ' (' + ${embarcacion.matricula} + ')'">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="dniPatronNuevo" class="form-label">2. Seleccione el Patrón (sólo libres):</label>
+                <select id="dniPatronNuevo" name="dniPatronNuevo" class="form-control" required>
+                    <option value="">-- Elija un patrón --</option>
+                    <option th:each="patron : ${patronesLibres}"
+                            th:value="${patron.dni}"
+                            th:text="${patron.nombre} + ' ' + ${patron.apellidos} + ' (' + ${patron.dni} + ')'">
+                    </option>
+                </select>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn">Asociar Patrón</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p class="mb-0">Sistema de Gestión Club Náutico &copy; 2024</p>
+    </div>
+</footer>
+</body>
+</html>

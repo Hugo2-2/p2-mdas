@@ -1,6 +1,7 @@
 package com.GM2.model.repository;
 
 import com.GM2.model.domain.Reserva;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,11 +14,13 @@ import java.util.List;
 
 @Repository
 public class ReservaRepository extends AbstractRepository{
-    
+
     public ReservaRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        // Configurar las rutas de los .properties si es necesario
+        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        this.setSqlQueriesFileName(sqlQueriesFileName);
     }
-
 
     public List<Reserva> findAllReservas() {
         try {
@@ -91,8 +94,6 @@ public class ReservaRepository extends AbstractRepository{
             String query = sqlQueries.getProperty("insert-addReserva");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
-                   
-                   reserva.getId(),
                    reserva.getFecha(),
                    reserva.getPlazas(),
                    reserva.getPrecio(),

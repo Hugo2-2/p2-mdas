@@ -13,13 +13,31 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Repositorio para gestionar las operaciones CRUD (Crear, Leer, Actualizar, Borrar)
+ * de la entidad {@link Embarcacion} en la base de datos.
+ *
+ * @author gm2equipo1
+ * @version 2.0 (Refactorizado para eliminar clases de servicio)
+ */
 @Repository
 public class EmbarcacionRepository extends AbstractRepository {
 
-    PatronRepository patronRepository;
+    private final PatronRepository patronRepository;
 
-    public EmbarcacionRepository(JdbcTemplate jdbcTemplate) { this.jdbcTemplate = jdbcTemplate; }
+    /**
+     * Constructor para la inyección de dependencias de JdbcTemplate.
+     * @param jdbcTemplate El bean de JdbcTemplate gestionado por Spring.
+     */
+    public EmbarcacionRepository(JdbcTemplate jdbcTemplate, PatronRepository patronRepository) {
+        this.patronRepository = patronRepository;
+        this.jdbcTemplate = jdbcTemplate; }
 
+    /**
+     * Recupera una lista de todas las embarcaciones de la base de datos.
+     *
+     * @return Una lista de {@link Embarcacion}.
+     */
     public List<Embarcacion> findAllEmbarcaciones() {
         try {
             String query = sqlQueries.getProperty("select-findAllEmbarcaciones");
@@ -51,6 +69,12 @@ public class EmbarcacionRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Busca una embarcación específica por su matrícula (clave primaria).
+     *
+     * @param matricula La matrícula única de la embarcación.
+     * @return El objeto {@link Embarcacion} si se encuentra, o null si no existe.
+     */
     public Embarcacion findEmbarcacionByMatricula(String matricula) {
         try {
             String query = sqlQueries.getProperty("select-findEmbarcacionByMatricula");
@@ -66,6 +90,75 @@ public class EmbarcacionRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Busca una embarcación específica por su nombre (que debe ser único).
+     *
+     * @param nombre El nombre único de la embarcación.
+     * @return El objeto {@link Embarcacion} si se encuentra, o null si no existe.
+     */
+    public Embarcacion findEmbarcacionByNombre(String nombre) {
+        try {
+            String query = sqlQueries.getProperty("select-findEmbarcacionByNombre");
+            Embarcacion result = jdbcTemplate.query(query, this::mapRowToEmbarcacion, nombre);
+            if(result != null)
+                return result;
+            else
+                return null;
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to find embarcacion with nombre: " + nombre);
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Recupera una lista de todas las embarcaciones que coinciden con un tipo.
+     *
+     * @param tipo El tipo de embarcación a buscar (ej. "VELERO").
+     * @return Una lista de {@link Embarcacion}.
+     */
+    public List<Embarcacion> findAllEmbarcacionesByTipo(String tipo) {
+        try {
+            String query = sqlQueries.getProperty("select-findAllEmbarcacionesByTipo");
+
+            if (query != null) {
+                List<Embarcacion> result = jdbcTemplate.query(
+                        query, new RowMapper<Embarcacion>() {
+                            @Override
+                            public Embarcacion mapRow(ResultSet rs, int rowNum) throws SQLException {
+                                return new Embarcacion(
+                                        rs.getString("id_patron"),
+                                        rs.getString("dimensiones"),
+                                        rs.getInt("plazas"),
+                                        rs.getString("tipo"),
+                                        rs.getString("nombre"),
+                                        rs.getString("matricula")
+                                );
+                            }
+                        },
+                        tipo
+                );
+                return result;
+            } else {
+                return null;
+            }
+
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to find embarcaciones.");
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Extrae y mapea la *primera* fila de un ResultSet a un objeto Embarcacion.
+     * Este método funciona como un ResultSetExtractor que solo procesa un resultado.
+     * Mueve el cursor a la primera fila; si no hay filas, devuelve null.
+     *
+     * @param row El conjunto de resultados (ResultSet) completo devuelto por la consulta JDBC.
+     * @return Un objeto {@link Embarcacion} si se encuentra una fila,
+     * o null si el ResultSet está vacío o si ocurre una SQLException.
+     */
     private Embarcacion mapRowToEmbarcacion(ResultSet row) {
         try {
 
@@ -90,6 +183,59 @@ public class EmbarcacionRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Valida y añade una nueva embarcación a la base de datos.
+     * Contiene toda la lógica de negocio de las validaciones.
+     *
+     * @param embarcacion El objeto {@link Embarcacion} con los datos a insertar.
+     * @return Un String que indica "EXITO" o un mensaje de error específico.
+     */
+    public String addEmbarcacionValidado(Embarcacion embarcacion) {
+
+        if (findEmbarcacionByMatricula(embarcacion.getMatricula()) != null) {
+            return "Error: Ya existe una embarcación con esa matrícula";
+        }
+        if (findEmbarcacionByNombre(embarcacion.getNombre()) != null) {
+            return "Error: Ya existe una embarcación con dicho nombre asociado";
+        }
+        if (embarcacion.getPlazas() < 2) {
+            return "Error: El número mínimo de plazas debe ser 2";
+        }
+        try {
+            double dimensiones = Double.parseDouble(embarcacion.getDimensiones());
+            if (dimensiones < 1) {
+                return "Error: La embarcación debe tener al menos 1m2";
+            }
+        } catch (NumberFormatException e) {
+            return "Error: El formato de las dimensiones no es válido.";
+        }
+
+        // Validación de Patrón
+        String patronDni = embarcacion.getIdPatron();
+        if (patronDni != null && !patronDni.trim().isEmpty()) {
+            if (patronRepository.findPatronByDNI(patronDni) == null) {
+                return "Error: El patron no existe";
+            }
+            if (isPatronAssignedToEmbarcacion(patronDni)) {
+                return "Error: El patron ya se encuentra asignado a una embarcación";
+            }
+        }
+
+        boolean resultado = addEmbarcacion(embarcacion); // Llama al método de inserción simple
+        if (!resultado) {
+            return "Error: No se pudo añadir la embarcación";
+        }
+
+        return "EXITO";
+    }
+
+
+    /**
+     * Inserta una nueva embarcación en la base de datos.
+     *
+     * @param embarcacion El objeto {@link Embarcacion} a insertar.
+     * @return true si la inserción fue exitosa (1 fila afectada), false en caso contrario.
+     */
     public boolean addEmbarcacion(Embarcacion embarcacion) {
         try {
             String query = sqlQueries.getProperty("insert-addEmbarcacion");
@@ -111,12 +257,18 @@ public class EmbarcacionRepository extends AbstractRepository {
 
         } catch (DataAccessException exception) {
             System.err.println("Unable to insert embarcacion in the database");
+            exception.printStackTrace();
         }
 
         return false;
     }
 
-    //Funcion para comprobar si la embarcacion tiene un patron asignado
+    /**
+     * Comprueba si un patrón ya está asignado a cualquier embarcación.
+     *
+     * @param patronDni El DNI del patrón a verificar.
+     * @return true si el patrón ya tiene una embarcación, false en caso contrario.
+     */
     public boolean isPatronAssignedToEmbarcacion(String patronDni) {
         try {
             // Esta consulta cuenta cuántas embarcaciones tienen este DNI de patrón.
@@ -136,7 +288,12 @@ public class EmbarcacionRepository extends AbstractRepository {
         }
     }
 
-    //Funcion para obtener el patron de la embarcacion
+    /**
+     * Obtiene el DNI del patrón actualmente asignado a una embarcación.
+     *
+     * @param matricula La matrícula de la embarcación a consultar.
+     * @return El DNI del patrón como un String, o null si no hay ningún patrón asignado.
+     */
     public String getPatronAssignedToEmbarcacion(String matricula) {
         try {
             String query = sqlQueries.getProperty("select-getPatronAssignedToEmbarcacion");
@@ -150,7 +307,13 @@ public class EmbarcacionRepository extends AbstractRepository {
         }
     }
 
-    //Funcion para cambiar el patron de la embarcacion
+    /**
+     * Asigna o actualiza el patrón de una embarcación.
+     *
+     * @param patronDni El DNI del nuevo patrón (o null para desasignar).
+     * @param matricula La matrícula de la embarcación a actualizar.
+     * @return true si la actualización fue exitosa, false en caso contrario.
+     */
     public boolean updatePatron(String patronDni,  String matricula) {
         String query = sqlQueries.getProperty("update-updatePatron");
         if(query != null) {

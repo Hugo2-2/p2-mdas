@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nueva Reserva de Actividad - Club Náutico</title>
+    <link th:href="@{/styles.css}" rel="stylesheet">
+
+    <script>
+        // Calcula el precio automáticamente (40 € por plaza)
+        function actualizarPrecio() {
+            // Obtiene el valor de las plazas
+            const plazas = document.getElementById("plazas").value;
+
+            // Calcula el precio (40 € por plaza)
+            const precio = plazas ? plazas * 40 : 0;
+
+            // Asigna el valor calculado al campo oculto 'precio' para que Spring lo reciba
+            document.getElementById("precio").value = precio.toFixed(2);
+
+            // Opcional: Si quieres mostrar el precio al usuario en un campo de solo lectura
+            const precioDisplay = document.getElementById("precio_display");
+            if (precioDisplay) {
+                precioDisplay.value = precio.toFixed(2);
+            }
+        }
+    </script>
+</head>
+
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo">📋 Nueva Reserva de Actividad</div>
+        <div class="header-buttons">
+            <a th:href="@{/api/reserva}" class="btn">← Volver a Reservas</a>
+            <a th:href="@{/menu}" class="btn">Menú Principal</a>
+        </div>
+    </div>
+</header>
+
+<div class="container mt-5">
+    <!-- Mensajes -->
+    <div th:if="${mensaje}"
+         th:class="${mensaje.startsWith('Reserva realizada con exito') ? 'alert alert-success' : 'alert alert-danger'}"
+         th:text="${mensaje}">
+    </div>
+
+    <h1 class="titulo-principal">Registrar nueva reserva de actividad</h1>
+
+    <!-- Formulario -->
+    <form th:action="@{/api/reserva/addReserva}" th:object="${reserva}" method="post" class="card">
+        <div class="card-header">
+            <span>Información de la Reserva</span>
+        </div>
+
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="fecha" class="form-label">Fecha de la actividad</label>
+                        <input type="date" id="fecha" th:field="*{fecha}" class="form-control" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="plazas" class="form-label">Plazas solicitadas</label>
+                        <input type="number" id="plazas" th:field="*{plazas}" class="form-control" min="1"
+                               required oninput="actualizarPrecio()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="usuario_id" class="form-label">UID del socio solicitante</label>
+                        <input type="text" id="usuario_id" th:field="*{usuario_id}" class="form-control"
+                               placeholder="Ej: 12345678A" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="matricula_embarcacion" class="form-label">Matrícula de la embarcación</label>
+                        <input type="text" id="matricula_embarcacion" th:field="*{matricula_embarcacion}"
+                               class="form-control" placeholder="Ej: ABC-1234" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="descripcion" class="form-label">Descripción / propósito de la actividad</label>
+                <textarea id="descripcion" th:field="*{descripcion}" rows="3"
+                          class="form-control"
+                          placeholder="Ej: excursión a la isla, comida en alta mar..." required></textarea>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn">Guardar Reserva</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p class="mb-0">Sistema de Gestión Club Náutico &copy; 2024</p>
+    </div>
+</footer>
+</body>
+</html>

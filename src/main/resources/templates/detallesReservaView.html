@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalles de la Reserva</title>
+    <link th:href="@{/styles.css}" rel="stylesheet">
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo">📋 Detalles de la Reserva</div>
+        <div class="header-buttons">
+            <a th:href="@{/api/reserva}" class="btn">← Volver a Lista</a>
+            <a th:href="@{/menu}" class="btn">Menú Principal</a>
+        </div>
+    </div>
+</header>
+
+<div class="container" th:if="${reserva}">
+    <!-- Encabezado con ID y Estado -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h2 class="mb-0">Reserva #<span th:text="${reserva.id}"></span></h2>
+                            <p class="text-muted mb-0">Información detallada de la reserva</p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <!-- Estado de la reserva -->
+                            <span th:if="${reserva.fecha.isAfter(T(java.time.LocalDate).now())}"
+                                  class="badge bg-success estado-badge">✅ Activa</span>
+                            <span th:if="${reserva.fecha.isEqual(T(java.time.LocalDate).now())}"
+                                  class="badge bg-warning estado-badge">📅 Hoy</span>
+                            <span th:if="${reserva.fecha.isBefore(T(java.time.LocalDate).now())}"
+                                  class="badge bg-secondary estado-badge">⌛ Finalizada</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección principal con dos columnas -->
+    <div class="row">
+        <!-- Columna izquierda -->
+        <div class="col-md-6 mb-4">
+            <!-- Información General -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <span>📅 Información de la Reserva</span>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <strong>Fecha de la Reserva:</strong><br>
+                        <span class="badge badge-primary"
+                              th:text="${#temporals.format(reserva.fecha, 'dd/MM/yyyy')}"></span>
+                    </div>
+                    <div class="mt-3 form-group">
+                        <strong>Descripción:</strong><br>
+                        <span th:text="${reserva.descripcion}">Sin descripción</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del Socio -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <span>👤 Información del Socio</span>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <strong>ID del Socio:</strong><br>
+                        <code th:text="${reserva.usuario_id}"></code>
+                    </div>
+                    <div class="mt-3">
+                        <a th:href="@{/api/socio/{id}(id=${reserva.usuario_id})}" class="btn">
+                            Ver información del socio
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información de la Embarcación -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <span>⛵ Información de la Embarcación</span>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <strong>Matrícula:</strong><br>
+                        <span class="badge badge-dark" th:text="${reserva.matricula_embarcacion}"></span>
+                    </div>
+                    <div class="mt-3">
+                        <a th:href="@{/api/embarcacion/{matricula}(matricula=${reserva.matricula_embarcacion})}" class="btn">
+                            Ver detalles de la embarcación
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha -->
+        <div class="col-md-6 mb-4">
+            <!-- Información Económica -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <span>💰 Información Económica</span>
+                </div>
+                <div class="card-body text-center">
+                    <h3 class="text-success"
+                        th:text="${#numbers.formatDecimal(reserva.precio, 0, 'POINT', 2, 'COMMA') + ' €'}">0 €</h3>
+                    <small class="text-muted">Precio de la reserva</small>
+                </div>
+            </div>
+
+            <!-- Información de Plazas -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <span>🧍‍♂️ Plazas Reservadas</span>
+                </div>
+                <div class="card-body text-center">
+                    <h3 th:text="${reserva.plazas}">0</h3>
+                    <small class="text-muted">Número total de plazas</small>
+                </div>
+            </div>
+
+            <!-- Acciones Rápidas -->
+            <div class="card">
+                <div class="card-header">
+                    <span>⚡ Acciones Rápidas</span>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a th:href="@{/api/reserva}" class="btn">
+                            📋 Ver Todas las Reservas
+                        </a>
+                        <a th:href="@{/menu}" class="btn">
+                            🏠 Menú Principal
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumen Final -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <strong>📊 Resumen de la Reserva</strong>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <div class="border rounded p-3">
+                                <h4 th:text="${reserva.plazas}">0</h4>
+                                <small class="text-muted">Plazas Totales</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3">
+                                <h4 th:text="${#temporals.format(reserva.fecha, 'dd/MM/yyyy')}">00/00/0000</h4>
+                                <small class="text-muted">Fecha de Reserva</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3">
+                                <h4 class="text-success" th:text="${#numbers.formatDecimal(reserva.precio, 0, 'POINT', 2, 'COMMA') + ' €'}">€0</h4>
+                                <small class="text-muted">Precio Total</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Mensaje si la reserva no existe -->
+<div class="container" th:unless="${reserva}">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card text-center">
+                <div class="card-body py-5">
+                    <h3 class="text-danger">❌ Reserva No Encontrada</h3>
+                    <p class="text-muted">La reserva solicitada no existe en el sistema.</p>
+                    <a th:href="@{/api/reserva}" class="btn mt-3">Volver a la Lista de Reservas</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p class="mb-0">Sistema de Gestión Club Náutico &copy; 2024</p>
+    </div>
+</footer>
+</body>
+</html>

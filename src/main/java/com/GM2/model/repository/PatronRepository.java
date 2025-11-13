@@ -20,27 +20,43 @@ public class PatronRepository extends AbstractRepository {
     public List<Patron> findAllPatrones() {
         try {
             String query = sqlQueries.getProperty("select-findAllPatrones");
-            if(query != null){
-                List<Patron> result = jdbcTemplate.query(query, new RowMapper<Patron>() {
-                    public Patron mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        return new Patron(
-                                rs.getString("nombre"),
-                                rs.getString("apellidos"),
-                                rs.getString("dni"),
-                                rs.getDate("fecha_nacimiento").toLocalDate(),
-                                rs.getDate("fecha_expedicion_titulo").toLocalDate()
-                        );
-                    };
-                });
-
-                return result;
-            } else return null;
+            return getPatrons(query);
 
         } catch (DataAccessException exception) {
             System.err.println("Unable to find patrones");
             exception.printStackTrace();
             return null;
         }
+    }
+
+    public List<Patron> findAllFreePatrones() {
+        try {
+            String query = sqlQueries.getProperty("select-findAllFreePatrones");
+            return getPatrons(query);
+
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to find patrones");
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
+    private List<Patron> getPatrons(String query) {
+        if(query != null){
+            List<Patron> result = jdbcTemplate.query(query, new RowMapper<Patron>() {
+                public Patron mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return new Patron(
+                            rs.getString("nombre"),
+                            rs.getString("apellidos"),
+                            rs.getString("dni"),
+                            rs.getDate("fecha_nacimiento").toLocalDate(),
+                            rs.getDate("fecha_expedicion_titulo").toLocalDate()
+                    );
+                };
+            });
+
+            return result;
+        } else return null;
     }
 
     public Patron findPatronByDNI(String dni) {
@@ -75,12 +91,11 @@ public class PatronRepository extends AbstractRepository {
         try {
 
             if(row.first()) {
-                String id = row.getString("id");
                 String nombre = row.getString("nombre");
                 String apellidos = row.getString("apellidos");
                 String dni = row.getString("dni");
                 Date fechaNacimiento = row.getDate("fecha_nacimiento");
-                Date fechaExpedicionTitulo = row.getDate("fecha_inscripcion");
+                Date fechaExpedicionTitulo = row.getDate("fecha_expedicion_titulo");
 
                 Patron patron = new Patron(nombre, apellidos, dni,
                                     fechaNacimiento.toLocalDate(), fechaExpedicionTitulo.toLocalDate());
@@ -116,6 +131,7 @@ public class PatronRepository extends AbstractRepository {
 
         } catch (DataAccessException exception) {
             System.err.println("Unable to insert patron in the database");
+            exception.printStackTrace();
         }
 
         return false;

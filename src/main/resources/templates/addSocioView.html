@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Club Náutico - Añadir Socio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link th:href="@{/styles.css}" rel="stylesheet">
+    <style>
+        /* Por defecto, el botón de ampliar está oculto */
+        .opcion-familiar {
+            display: none;
+        }
+
+        /* SI el checkbox #esTitular está marcado,
+          MUESTRA el elemento .opcion-familiar que es su "hermano" (~)
+        */
+        #esTitular:checked ~ .opcion-familiar {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo">👥 Añadir Socio</div>
+        <div class="header-buttons">
+            <a th:href="@{/api/socios/}" class="btn">← Volver a Socios</a>
+            <a th:href="@{/menu}" class="btn">Menú Principal</a>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <!-- Mensajes -->
+    <div th:if="${mensajeExito}" class="alert alert-success" th:text="${mensajeExito}"></div>
+    <div th:if="${mensajeError}" class="alert alert-danger" th:text="${mensajeError}"></div>
+
+    <h1 class="titulo-principal">Registrar Nuevo Socio</h1>
+
+    <form th:action="@{/api/socios/addSocio}" th:object="${socio}" method="post" class="card">
+        <div class="card-header">
+            <span>Información del Socio</span>
+        </div>
+
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input type="text" id="nombre" th:field="*{nombre}" class="form-control" required />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="apellidos" class="form-label">Apellidos</label>
+                        <input type="text" id="apellidos" th:field="*{apellidos}" class="form-control" required />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="dni" class="form-label">DNI</label>
+                        <input type="text" id="dni" th:field="*{dni}" class="form-control" required />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
+                        <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}" class="form-control" required />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        <input type="text" id="direccion" th:field="*{direccion}" class="form-control" required />
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <input type="checkbox" id="esTitular" th:field="*{esTitular}" class="checkbox" />
+                <label for="esTitular" class="form-label">Eres el titular de la inscripción</label>
+
+                <div class="opcion-familiar mt-2" style="padding-left: 20px;">
+                    <input type="checkbox" id="ampliarInscripcion" name="ampliarInscripcion" value="true" class="checkbox" />
+                    <label for="ampliarInscripcion" class="form-label text-info">¿Ampliar a inscripción familiar?</label>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="tieneLicenciaPatron" th:field="*{tieneLicenciaPatron}" class="me-2" />
+                    <label for="tieneLicenciaPatron" class="form-label">Licencia de patrón</label>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn">Guardar Socio</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p class="mb-0">Sistema de Gestión Club Náutico &copy; 2024</p>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Acompañantes - Club Náutico</title>
+    <link th:href="@{/styles.css}" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">👥 Gestionar Acompañantes</div>
+            <div class="header-buttons">
+                <a th:href="@{/api/alquiler}" class="btn me-2">← Volver a Alquileres</a>
+                <a th:href="@{/menu}" class="btn">Menú Principal</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Información del Alquiler -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <span>📋 Información del Alquiler</span>
+                        <span class="badge badge-light" th:text="'ID: ' + ${alquilerId}"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <strong>Total de Plazas:</strong> 
+                                    <span class="badge badge-primary" th:text="${plazas}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <strong>Acompañantes registrados:</strong> 
+                                    <span class="badge badge-primary" th:text="${acompanantesExistentes.size()}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <strong>Plazas disponibles:</strong> 
+                                    <span class="badge badge-primary" th:text="${plazasDisponibles}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acompañantes Existentes -->
+                <div th:if="${not acompanantesExistentes.empty}" class="card mb-4">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>👥 Acompañantes Registrados</span>
+                            <span class="badge badge-light" 
+                                  th:text="|${acompanantesExistentes.size()} de ${plazas - 1} plazas|">
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>DNI</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="acomp : ${acompanantesExistentes}">
+                                        <td>
+                                            <code th:text="${acomp.dni}"></code>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulario para Añadir Nuevos Acompañantes -->
+                <div th:if="${plazasDisponibles > 0}" class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>📝 Añadir Nuevos Acompañantes</span>
+                            <span class="badge badge-light" 
+                                  th:text="'Plazas disponibles: ' + ${plazasDisponibles}">
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <form th:action="@{/api/acompanantes}" method="post">
+                            <input type="hidden" name="alquilerId" th:value="${alquilerId}"/>
+
+                            <div class="alert alert-info text-center">
+                                <strong>Puedes añadir hasta</strong> 
+                                <span th:text="${plazasDisponibles}"></span>
+                                <span th:text="${plazasDisponibles == 1 ? ' acompañante más' : ' acompañantes más'}"></span>
+                            </div>
+
+                            <!-- Campos para nuevos acompañantes -->
+                            <div th:each="i : ${#numbers.sequence(0, acompanantes.size() - 1)}" 
+                                 class="card acompanante-card mb-4">
+                                <div class="card-header">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">👤 Nuevo Acompañante <span th:text="${i + 1}"></span></h5>
+                                        <span class="badge badge-primary" 
+                                         th:text="'Plaza ' + ${acompanantesExistentes.size() + i + 1}">
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="form-group">
+                                                <label th:for="'dni' + ${i}" class="form-label">
+                                                    <strong>DNI *</strong>
+                                                </label>
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       th:id="'dni' + ${i}" 
+                                                       name="dni" 
+                                                       placeholder="Ej: 12345678A"
+                                                       required 
+                                                       th:maxlength="9"
+                                                       pattern="[0-9]{8}[A-Za-z]"
+                                                       title="Formato: 8 dígitos seguidos de 1 letra">
+                                                <div class="form-text">
+                                                    Introduce el DNI con 8 dígitos y 1 letra (ej: 12345678A)
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group d-flex align-items-end">
+                                                <div class="alert alert-info w-100">
+                                                    <small>
+                                                        <strong>Plaza:</strong> 
+                                                        <span th:text="${acompanantesExistentes.size() + i + 1}"></span>/
+                                                        <span th:text="${plazas - 1}"></span>
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botones de acción -->
+                            <div class="d-grid gap-2 justify-content-end mt-4">
+                                <a th:href="@{/api/alquiler}" class="btn me-2">
+                                    ❌ Cancelar
+                                </a>
+                                <button type="submit" class="btn">
+                                    💾 Guardar Acompañantes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Mensaje cuando no hay plazas disponibles -->
+                <div th:if="${plazasDisponibles == 0}" class="card">
+                    <div class="card-body text-center py-5">
+                        <h4>✅ Todas las plazas están ocupadas</h4>
+                        <p class="text-muted">No hay plazas disponibles para nuevos acompañantes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">Sistema de Gestión Club Náutico &copy; 2024</p>
+        </div>
+    </footer>
+</body>
+</html>
