@@ -1,5 +1,6 @@
 package com.GM2.controller.Inscripcion;
 
+import com.GM2.model.domain.Inscripcion;
 import com.GM2.model.repository.HijosRepository;
 import com.GM2.model.repository.InscripcionRepository;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,17 @@ public class InscripcionController {
     public InscripcionController(InscripcionRepository inscripcionRepository, HijosRepository hijosRepository) {
         this.hijosRepository = hijosRepository;
         this.inscripcionRepository = inscripcionRepository;
+    }
+
+    @GetMapping("/")
+    public ModelAndView getInscripciones(){
+        ModelAndView mv = new ModelAndView("listInscripciones");
+
+        List<Inscripcion> inscripciones = inscripcionRepository.findAllInscripciones();
+
+        mv.addObject("inscripciones", inscripciones);
+
+        return mv;
     }
 
     @GetMapping("/updateInscripcion")

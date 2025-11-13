@@ -5,6 +5,7 @@ import com.GM2.model.domain.Inscripcion;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -27,6 +28,37 @@ public class InscripcionRepository extends AbstractRepository{
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
         setSqlQueriesFileName(sqlQueriesFileName);
         this.hijosRepository.setSqlQueriesFileName(sqlQueriesFileName);
+    }
+
+    public List<Inscripcion> findAllInscripciones() {
+        try {
+            String query = sqlQueries.getProperty("select-findAllInscripciones");
+            if( query != null ) {
+                List<Inscripcion> result = jdbcTemplate.query(query, new RowMapper<Inscripcion>() {
+                    public Inscripcion mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        int id = rs.getInt("id");
+                        String titular = rs.getString("socio_Titular");
+                        float cuota = rs.getFloat("cuota_anual");
+                        LocalDate fechaCreacion = rs.getDate("fecha_creacion").toLocalDate();
+                        String segundoAdulto = rs.getString("segundo_adulto");
+
+                        List<Hijos> hijos = new ArrayList<>();
+
+                        if(cuota > 300) {
+                            hijos = hijosRepository.findHijosByInscripcion(id);
+                        }
+
+                        return new Inscripcion(id, titular, cuota, fechaCreacion, segundoAdulto, hijos);
+                    };
+                });
+
+                return result;
+            } else return null;
+        } catch (DataAccessException ex) {
+            System.err.println("Unable to retrieve results from the database");
+            ex.printStackTrace();
+            return null;
+        }
     }
 
     private Inscripcion mapRowToInscripcion(ResultSet rs) {

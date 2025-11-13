@@ -20,9 +20,16 @@ public class SocioController {
     public SocioController(SocioRepository socioRepository) {
         this.socioRepository = socioRepository;
     }
-    @GetMapping
-    @ResponseBody
-    public List<Socio> getSocios() { return socioRepository.findAllSocios(); }
+    @GetMapping("/")
+    public ModelAndView getSocios() {
+        List<Socio> socios = socioRepository.findAllSocios();
+
+        ModelAndView mv = new ModelAndView("listSocios");
+
+        mv.addObject("socios", socios);
+
+        return mv;
+    }
 
     @GetMapping("/addSocio")
     public ModelAndView mostrarFormularioSocio() {
