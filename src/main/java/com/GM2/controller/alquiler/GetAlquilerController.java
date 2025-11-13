@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -78,8 +80,19 @@ public class GetAlquilerController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("alquileresFuturos");
 
-        List<Alquiler> alquileresFuturos = alquilerRepository.listarAlquileresFuturos();
-        modelAndView.addObject("alquileresFuturos", alquileresFuturos);
+        LocalDate hoy = LocalDate.now();
+        List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
+        List<Alquiler> futuros = new ArrayList<>();
+
+        for (Alquiler a : alquileres) {
+
+            if (!a.getFechainicio().isBefore(hoy)){ 
+                futuros.add(a);
+            }
+
+        }
+
+        modelAndView.addObject("alquileresFuturos", futuros);
 
         return modelAndView;
     }

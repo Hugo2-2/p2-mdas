@@ -11,8 +11,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -177,28 +175,5 @@ public class AlquilerRepository extends AbstractRepository{
         }
 
         return false;
-    }
-
-
-    /**
-     * Obtiene todos los alquileres que tienen fecha de inicio en el futuro.
-     * 
-     * @return Lista de todos los objetos {@link Alquiler} futuros o null si ocurre un error.   
-     */
-    public List<Alquiler> listarAlquileresFuturos() {
-        LocalDate hoy = LocalDate.now();
-        List<Alquiler> alquileres = findAllAlquileres();
-        List<Alquiler> futuros = new ArrayList<>();
-
-        for (Alquiler a : alquileres) {
-
-            if (!a.getFechainicio().isBefore(hoy)){ 
-                futuros.add(a);
-            }
-
-        }
-
-        return futuros;
-    
     }
 }
