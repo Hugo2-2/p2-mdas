@@ -1,20 +1,33 @@
 package com.GM2.model.domain;
 
-import java.time.LocalDate;
+import java.time.LocalDate; // Importa la clase para manejar fechas sin hora (inmutable)
 
+/**
+ * Clase de dominio que representa una Reserva en el sistema.
+ * Es un POJO (Plain Old Java Object) con atributos, un constructor vacío,
+ * un constructor con todos los argumentos y sus respectivos getters y setters.
+ */
 public class Reserva {
-    
-    private int id;
-    private LocalDate fecha;
-    private int plazas;
-    private double precio;
-    private String usuario_id;
-    private String matricula_embarcacion;
-    private String descripcion;
 
+    // --- Atributos de la Reserva (corresponden a las columnas de la tabla de BD) ---
+
+    private int id; // Identificador único de la reserva
+    private LocalDate fecha; // Fecha para la que se realiza la reserva
+    private int plazas; // Número de plazas reservadas
+    private double precio; // Precio total de la reserva
+    private String usuario_id; // Identificador del usuario/socio que realiza la reserva (ej. DNI)
+    private String matricula_embarcacion; // Matrícula de la embarcación reservada
+    private String descripcion; // Descripción o notas adicionales de la reserva
+
+    /**
+     * Constructor vacío (necesario para frameworks como Spring y serialización JSON).
+     */
     public Reserva() {
     }
 
+    /**
+     * Constructor con todos los argumentos.
+     */
     public Reserva(int id, LocalDate fecha, int plazas, double precio, String usuario_id, String matricula_embarcacion, String descripcion) {
         this.id = id;
         this.fecha = fecha;
@@ -24,6 +37,8 @@ public class Reserva {
         this.matricula_embarcacion = matricula_embarcacion;
         this.descripcion = descripcion;
     }
+
+    // --- Métodos Getters y Setters ---
 
     public int getId() {
         return id;

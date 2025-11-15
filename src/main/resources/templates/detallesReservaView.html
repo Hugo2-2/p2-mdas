@@ -75,11 +75,6 @@
                         <strong>ID del Socio:</strong><br>
                         <code th:text="${reserva.usuario_id}"></code>
                     </div>
-                    <div class="mt-3">
-                        <a th:href="@{/api/socio/{id}(id=${reserva.usuario_id})}" class="btn">
-                            Ver información del socio
-                        </a>
-                    </div>
                 </div>
             </div>
 
@@ -92,11 +87,6 @@
                     <div class="form-group">
                         <strong>Matrícula:</strong><br>
                         <span class="badge badge-dark" th:text="${reserva.matricula_embarcacion}"></span>
-                    </div>
-                    <div class="mt-3">
-                        <a th:href="@{/api/embarcacion/{matricula}(matricula=${reserva.matricula_embarcacion})}" class="btn">
-                            Ver detalles de la embarcación
-                        </a>
                     </div>
                 </div>
             </div>
