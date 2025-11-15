@@ -1,4 +1,4 @@
-package com.GM2.controller.Socio;
+package com.GM2.controller.socio;
 
 import com.GM2.model.domain.Socio;
 import com.GM2.model.repository.SocioRepository;
@@ -8,7 +8,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
-import java.util.List;
 
 
 @Controller
@@ -26,7 +25,7 @@ public class AddSocioController {
 
     @GetMapping("/addSocio")
     public ModelAndView mostrarFormularioSocio() {
-        ModelAndView mv = new ModelAndView("addSocioView");
+        ModelAndView mv = new ModelAndView("socio/addSocioView");
         mv.addObject("socio", new Socio());
         return mv;
     }

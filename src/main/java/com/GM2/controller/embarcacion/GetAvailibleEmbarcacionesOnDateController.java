@@ -63,7 +63,7 @@ public class GetAvailibleEmbarcacionesOnDateController {
             @RequestParam(value = "fin", required = false) String fin) {
 
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("alquilerDisponible");
+        modelAndView.setViewName("embarcacion/embarcacionDisponibleView");
 
         // Si no hay parámetros, mostrar solo el formulario
         if (inicio == null || fin == null) {

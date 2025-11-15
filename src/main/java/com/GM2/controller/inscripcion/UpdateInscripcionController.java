@@ -1,15 +1,10 @@
-package com.GM2.controller.Inscripcion;
+package com.GM2.controller.inscripcion;
 
-import com.GM2.model.domain.Inscripcion;
-import com.GM2.model.repository.HijosRepository;
 import com.GM2.model.repository.InscripcionRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Controller
 @RequestMapping("/api/inscripciones")
@@ -27,7 +22,7 @@ public class UpdateInscripcionController {
     @GetMapping("/updateInscripcion")
     public ModelAndView updateInscripcionView() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("updateInscripcionView");
+        modelAndView.setViewName("inscripcion/updateInscripcionView");
         return modelAndView;
     }
 

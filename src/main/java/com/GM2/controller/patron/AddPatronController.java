@@ -35,7 +35,7 @@ public class AddPatronController {
     @GetMapping("/addPatron")
     public ModelAndView getAddPatronView() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("addPatronView");
+        modelAndView.setViewName("patron/addPatronView");
         modelAndView.addObject("newPatron", new Patron());
         return modelAndView;
     }

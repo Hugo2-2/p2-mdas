@@ -27,7 +27,7 @@ public class AssignPatronToEmbarcacionController {
     @GetMapping("/asociarPatron")
     public ModelAndView getAsociatePatronView() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("asociatePatronToEmbarcacionView");
+        modelAndView.setViewName("patron/asociatePatronToEmbarcacionView");
         modelAndView.addObject("todasLasEmbarcaciones", embarcacionRepository.findAllEmbarcaciones());
         modelAndView.addObject("patronesLibres", patronRepository.findAllFreePatrones());
         return modelAndView;
@@ -59,7 +59,7 @@ public class AssignPatronToEmbarcacionController {
             model.addAttribute("dniPatronNuevo", dniPatronNuevo);
             model.addAttribute("dniPatronAntiguo", dniPatronAntiguo);
 
-            return "patronAssignedView"; // Muestra la vista de confirmación
+            return "patron/patronAssignedView"; // Muestra la vista de confirmación
 
         } else {
 
