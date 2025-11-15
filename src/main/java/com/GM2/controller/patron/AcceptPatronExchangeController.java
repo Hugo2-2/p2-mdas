@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/api/embarcaciones")
 public class AcceptPatronExchangeController {
+
     EmbarcacionRepository embarcacionRepository;
     PatronRepository patronRepository;
 
@@ -23,8 +24,13 @@ public class AcceptPatronExchangeController {
         this.patronRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
-    //Este Post será llamado en la vista patronAssignedView, en caso de que en el
-    //post anterior querramos reemplazar el patrón
+    /**
+     * Procesa la confirmación del reemplazo del patrón de una embarcación.
+     * Este endpoint es llamado desde la vista "patronAssignedView".
+     *
+     * @param matricula        Matrícula de la embarcación cuyo patrón se quiere reemplazar.
+     * @param dniPatronNuevo   DNI del nuevo patrón.
+     */
     @PostMapping("/confirmarReemplazoPatron")
     public String confirmarReemplazo(@RequestParam String matricula,
                                      @RequestParam String dniPatronNuevo,

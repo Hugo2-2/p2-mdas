@@ -11,11 +11,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Repositorio para operaciones de base de datos relacionadas con los patrones.
+ * Se encarga de consultar, insertar y validar la existencia de patrones.
+ * Utiliza JdbcTemplate para ejecutar las consultas SQL definidas en un archivo de propiedades.
+ */
 @Repository
 public class PatronRepository extends AbstractRepository {
 
+    /**
+     * Constructor que recibe la instancia de JdbcTemplate.
+     * @param jdbcTemplate Instancia para ejecutar consultas SQL en la base de datos.
+     */
     public PatronRepository(JdbcTemplate jdbcTemplate) { this.jdbcTemplate = jdbcTemplate; }
 
+    /**
+     * Obtiene todos los patrones registrados en la base de datos.
+     * @return Lista de patrones o null si ocurre un error.
+     */
     public List<Patron> findAllPatrones() {
         try {
             String query = sqlQueries.getProperty("select-findAllPatrones");
@@ -28,6 +41,10 @@ public class PatronRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Obtiene todos los patrones que actualmente no están asignados a ninguna embarcación.
+     * @return Lista de patrones libres o null si ocurre un error.
+     */
     public List<Patron> findAllFreePatrones() {
         try {
             String query = sqlQueries.getProperty("select-findAllFreePatrones");
@@ -40,6 +57,11 @@ public class PatronRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Ejecuta una consulta SQL para obtener una lista de patrones.
+     * @param query Consulta SQL que retorna patrones
+     * @return Lista de objetos Patron o null si la consulta es nula
+     */
     private List<Patron> getPatrons(String query) {
         if(query != null){
             List<Patron> result = jdbcTemplate.query(query, new RowMapper<Patron>() {
@@ -58,6 +80,11 @@ public class PatronRepository extends AbstractRepository {
         } else return null;
     }
 
+    /**
+     * Busca un patrón por su DNI.
+     * @param dni DNI del patrón
+     * @return Patron encontrado o null si no existe o hay error
+     */
     public Patron findPatronByDNI(String dni) {
         try {
             String query = sqlQueries.getProperty("select-findPatronByDNI");
@@ -72,6 +99,11 @@ public class PatronRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Comprueba si un patrón ya está registrado en la base de datos.
+     * @param dni DNI del patrón
+     * @return true si el patrón existe, false en caso contrario o error
+     */
     public boolean isRegistered(String dni) {
         try {
             String query = sqlQueries.getProperty("select-countPatronByDNI");
@@ -86,6 +118,11 @@ public class PatronRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Convierte el primer resultado de un ResultSet en un objeto Patron.
+     * @param row ResultSet de la consulta
+     * @return Patron o null si no hay resultados
+     */
     private Patron mapRowToPatron(ResultSet row) {
         try {
 
@@ -110,6 +147,11 @@ public class PatronRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Inserta un nuevo patrón en la base de datos.
+     * @param patron Objeto Patron a insertar
+     * @return true si la inserción fue exitosa, false en caso contrario
+     */
     public boolean addPatron(Patron patron) {
         try {
             String query = sqlQueries.getProperty("insert-addPatron");

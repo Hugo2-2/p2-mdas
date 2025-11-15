@@ -11,13 +11,13 @@ public class Reserva {
 
     // --- Atributos de la Reserva (corresponden a las columnas de la tabla de BD) ---
 
-    private int id; // Identificador único de la reserva
-    private LocalDate fecha; // Fecha para la que se realiza la reserva
-    private int plazas; // Número de plazas reservadas
-    private double precio; // Precio total de la reserva
-    private String usuario_id; // Identificador del usuario/socio que realiza la reserva (ej. DNI)
-    private String matricula_embarcacion; // Matrícula de la embarcación reservada
-    private String descripcion; // Descripción o notas adicionales de la reserva
+    private int id;
+    private LocalDate fecha;
+    private int plazas;
+    private double precio;
+    private String usuario_id;
+    private String matricula_embarcacion;
+    private String descripcion;
 
     /**
      * Constructor vacío (necesario para frameworks como Spring y serialización JSON).
