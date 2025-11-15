@@ -12,13 +12,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 /**
- * Controlador web (MVC) para la gestión de Embarcaciones.
- * * Maneja las peticiones web para mostrar formularios y procesar la
- * creación de nuevas embarcaciones. También expone algunos
- * endpoints de API (híbridos) para obtener datos en JSON
- * que fueron principalmente usados para pruebas de
- * guardado de datos.
- * * @author gm2equipo1
+ * Controlador encargado de gestionar las operaciones relacionadas con la creación
+ * de nuevas embarcaciones dentro del sistema.
+ *
+ * Este controlador permite:
+ * - Mostrar el formulario para registrar una nueva embarcación.
+ * - Procesar el envío del formulario y validar los datos recibidos.
+ * - Verificar restricciones como matrícula única, nombre único, plazas mínimas,
+ *   dimensiones válidas y disponibilidad del patrón asociado.
+ *
+ * Forma parte del módulo de gestión de embarcaciones del club náutico.
+ *
+ * @author gm2equipo1
  * @version 3.0
  */
 @Controller
@@ -27,14 +32,17 @@ public class AddEmbarcacionController {
 
     EmbarcacionRepository embarcacionRepository;
     PatronRepository patronRepository;
+
     /**
-     * Constructor para la inyección de dependencias.
-     * Spring Boot inyectará automáticamente las instancias de los repositorios
-     * y servicios necesarios.
+     * Constructor utilizado para la inyección de dependencias necesarias para la
+     * gestión de embarcaciones y patrones.
      *
-     * @param embarcacionRepository Repositorio para el acceso a datos de Embarcacion.
-     * @param patronRepository Repositorio para el acceso a datos de Patron.
-     * */
+     * También establece el archivo donde se encuentran definidas las consultas SQL
+     * utilizadas por los repositorios.
+     *
+     * @param embarcacionRepository repositorio para operaciones con embarcaciones.
+     * @param patronRepository repositorio para operaciones con patrones.
+     */
     public AddEmbarcacionController(EmbarcacionRepository embarcacionRepository, PatronRepository patronRepository) {
         this.embarcacionRepository = embarcacionRepository;
         this.patronRepository = patronRepository;
@@ -45,10 +53,12 @@ public class AddEmbarcacionController {
     }
 
     /**
-     * Muestra el formulario web (vista HTML) para añadir una nueva embarcación.
+     * Devuelve la vista del formulario para registrar una nueva embarcación.
      *
-     * @return Un objeto {@link ModelAndView} que contiene el nombre de la vista
-     * (addEmbarcacionView) y un objeto Embarcacion vacío para el formulario.
+     * La vista incluye un objeto vacío de Embarcacion para rellenar sus atributos
+     * desde el formulario HTML.
+     *
+     * @return un ModelAndView con el nombre de la vista y el objeto newEmbarcacion.
      */
     @GetMapping("/addEmbarcacion")
     public ModelAndView getAddEmbarcacionView() {
@@ -61,6 +71,9 @@ public class AddEmbarcacionController {
     /**
      * Procesa el envío del formulario (POST) para añadir una nueva embarcacion.
      * Utiliza el patrón Post-Redirect-Get para evitar envíos duplicados.
+     *
+     * Tras superar las validaciones, se intenta insertar la embarcación en
+     * la base de datos y se notifica el resultado mediante mensajes Flash.
      *
      * @param newEmbarcacion     El objeto Embarcacion con los datos rellenados del formulario (@ModelAttribute).
      * @param sessionStatus      Controlador de estado de la sesión para limpiarla tras el envío.
