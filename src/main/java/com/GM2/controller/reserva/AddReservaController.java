@@ -159,10 +159,6 @@ public class AddReservaController {
 
                 if (!disponible) {
                     resultado = "La embarcación no está disponible en la fecha seleccionada.";
-                    modelAndView.addObject("mensajeError", resultado);
-                    status.setComplete();
-                    return modelAndView;
-
                 } else {
                     // --- GUARDAR RESERVA ---
                     // 4. Procesar y Guardar
