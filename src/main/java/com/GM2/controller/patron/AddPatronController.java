@@ -24,14 +24,6 @@ public class AddPatronController {
         this.patronRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
-    @GetMapping
-    @ResponseBody
-    public List<Patron> getPatrones() { return patronRepository.findAllPatrones(); }
-
-    @GetMapping("/{dni}")
-    @ResponseBody
-    public Patron getPatronById(@PathVariable String dni){ return patronRepository.findPatronByDNI(dni); }
-
     @GetMapping("/addPatron")
     public ModelAndView getAddPatronView() {
         ModelAndView modelAndView = new ModelAndView();
