@@ -18,7 +18,7 @@ public class ShowAllEmbarcacionesController {
 
     public ShowAllEmbarcacionesController(EmbarcacionRepository embarcacionRepository) {
         this.embarcacionRepository = embarcacionRepository;
-        this.modelAndView.setViewName("showAllEmbarcacionesView");
+        this.modelAndView.setViewName("embarcacion/showAllEmbarcacionesView");
 
 
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";

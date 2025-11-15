@@ -44,7 +44,7 @@ public class ShowAcompanantesController {
     @GetMapping("/{alquilerId}/{plazas}")
     public ModelAndView mostrarFormularioAcompanantes(@PathVariable Integer alquilerId, @PathVariable int plazas) {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("addAcompanante");
+        modelAndView.setViewName("acompanantes/addAcompananteView");
 
         // 1. Cargar acompañantes existentes de la base de datos
         List<Acompanante> acompanantesExistentes = acompanantesRepository.findAcompananteByAlquiler(alquilerId);

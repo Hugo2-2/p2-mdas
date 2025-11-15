@@ -1,4 +1,4 @@
-package com.GM2.controller.Hijos;
+package com.GM2.controller.hijos;
 
 import com.GM2.model.repository.InscripcionRepository;
 import org.springframework.stereotype.Controller;
@@ -37,7 +37,7 @@ public class AddHijosInscripcionController {
             return modelAndView;
         }
 
-        modelAndView.setViewName("addHijosView");
+        modelAndView.setViewName("hijos/addHijosView");
 
         // Pasamos los datos a la vista
         modelAndView.addObject("dniTitular", dniTitular);

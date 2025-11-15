@@ -42,7 +42,7 @@ public class ShowEmbarcacionesByTypeController {
     public ShowEmbarcacionesByTypeController(EmbarcacionRepository embarcacionRepository, PatronRepository patronRepository) {
         this.embarcacionRepository = embarcacionRepository;
         this.patronRepository = patronRepository;
-        this.modelAndView.setViewName("consultarEmbarcacionesView");
+        this.modelAndView.setViewName("embarcacion/consultarEmbarcacionesByTipoView");
 
         // Configuración del archivo de propiedades SQL desde el Controlador
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";

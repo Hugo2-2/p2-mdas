@@ -70,7 +70,7 @@ public class AddAlquilerController {
     @GetMapping("/addAlquiler")
     public ModelAndView mostrarFormularioAlquiler() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("addAlquilerView");
+        modelAndView.setViewName("alquiler/addAlquilerView");
         modelAndView.addObject("alquiler", new Alquiler());
         return modelAndView; 
     }
@@ -92,14 +92,14 @@ public class AddAlquilerController {
 
         if (socio == null){
             resultado = "El socio no existe.";
-            modelAndView.setViewName("addAlquilerView");
+            modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
             status.setComplete();
             return modelAndView;
         }
         if (!socio.getTieneLicenciaPatron()){ 
             resultado = "El socio no tiene título de patrón.";
-            modelAndView.setViewName("addAlquilerView");
+            modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
             status.setComplete();
             return modelAndView;
@@ -111,7 +111,7 @@ public class AddAlquilerController {
 
         if (inicio.isAfter(fin)){ 
             resultado = "La fecha de inicio no puede ser posterior a la de fin.";
-            modelAndView.setViewName("addAlquilerView");
+            modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
             status.setComplete();
             return modelAndView;
@@ -121,7 +121,7 @@ public class AddAlquilerController {
         if (mesInicio >= 10 || mesInicio <= 4) {
             if (dias > 3){
                 resultado = "Solo se permiten hasta 3 días entre octubre y abril.";
-                modelAndView.setViewName("addAlquilerView");
+                modelAndView.setViewName("alquiler/addAlquilerView");
                 modelAndView.addObject("mensajeError", resultado);
                 status.setComplete();
                 return modelAndView;
@@ -129,7 +129,7 @@ public class AddAlquilerController {
         } else if (mesInicio >= 5 && mesInicio <= 9) {
             if (dias != 7 && dias != 14){ 
                 resultado = "Solo se permiten alquileres de 7 o 14 días entre mayo y septiembre.";
-                modelAndView.setViewName("addAlquilerView");
+                modelAndView.setViewName("alquiler/addAlquilerView");
                 modelAndView.addObject("mensajeError", resultado);
                 status.setComplete();
                 return modelAndView;
@@ -139,14 +139,14 @@ public class AddAlquilerController {
         Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(alquiler.getMatricula_embarcacion());
         if (embarcacion == null){
             resultado = "Embarcación no encontrada.";
-            modelAndView.setViewName("addAlquilerView");
+            modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
             status.setComplete();
             return modelAndView;
         }
         if (alquiler.getPlazas() > embarcacion.getPlazas()){
             resultado = "No hay suficientes plazas.";
-            modelAndView.setViewName("addAlquilerView");
+            modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
             status.setComplete();
             return modelAndView;
@@ -204,7 +204,7 @@ public class AddAlquilerController {
         
         if (!disponible){ 
             resultado = "La embarcación no está disponible en esas fechas.";
-            modelAndView.setViewName("addAlquilerView");
+            modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
             status.setComplete();
             return modelAndView;
@@ -233,7 +233,7 @@ public class AddAlquilerController {
     
         } else {
             // Fallo: volvemos al formulario y mostramos mensaje de error
-            modelAndView.setViewName("addAlquilerView");
+            modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
         }
         status.setComplete();
