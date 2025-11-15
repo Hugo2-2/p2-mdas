@@ -56,7 +56,7 @@ public class GetReservaController {
     public ModelAndView getReservas() {
         ModelAndView modelAndView = new ModelAndView();
         // Establece la vista a la que se debe enviar el modelo
-        modelAndView.setViewName("listReservaView");
+        modelAndView.setViewName("reserva/listReservaView");
 
         // Llama al repositorio para obtener todas las reservas
         List<Reserva> reservas = reservaRepository.findAllReservas();
@@ -77,7 +77,7 @@ public class GetReservaController {
     public ModelAndView getReservaDetalles(@PathVariable Integer id) {
         ModelAndView modelAndView = new ModelAndView();
         // Establece la vista para mostrar los detalles
-        modelAndView.setViewName("detallesReservaView");
+        modelAndView.setViewName("reserva/detallesReservaView");
 
         // Llama al repositorio para buscar la reserva por su ID
         Reserva reserva = reservaRepository.findReservaById(id);

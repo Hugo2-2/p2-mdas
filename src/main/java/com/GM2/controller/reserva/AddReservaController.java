@@ -62,7 +62,7 @@ public class AddReservaController {
     public ModelAndView mostrarFormularioReserva() {
         ModelAndView modelAndView = new ModelAndView();
         // Establece el nombre de la vista a mostrar (ej. addReservaView.jsp)
-        modelAndView.setViewName("addReservaView");
+        modelAndView.setViewName("reserva/addReservaView");
         // Añade un objeto Reserva vacío al modelo para ser rellenado por el formulario
         modelAndView.addObject("reserva", new Reserva());
         return modelAndView;
@@ -79,7 +79,7 @@ public class AddReservaController {
     @PostMapping("/addReserva")
     public ModelAndView procesarFormularioReserva(@ModelAttribute Reserva reserva, SessionStatus status) {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("addReservaView");
+        modelAndView.setViewName("reserva/addReservaView");
         String resultado; // Variable para almacenar el mensaje de éxito o error
 
         // 1. Validar el Socio
@@ -178,7 +178,7 @@ public class AddReservaController {
             modelAndView.setViewName("redirect:/api/reserva");
         } else {
             // Si hay un error, vuelve a mostrar el formulario
-            modelAndView.setViewName("addReservaView");
+            modelAndView.setViewName("reserva/addReservaView");
             // Añade el mensaje de error al modelo para que se muestre en la vista
             modelAndView.addObject("mensajeError", resultado);
         }
