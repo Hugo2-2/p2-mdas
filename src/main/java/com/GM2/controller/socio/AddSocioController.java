@@ -8,6 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Controlador web (MVC) para la gestión de Socios.
@@ -47,7 +48,7 @@ public class AddSocioController {
      */
     @GetMapping("/addSocio")
     public ModelAndView mostrarFormularioSocio() {
-        ModelAndView mv = new ModelAndView("addSocioView");
+        ModelAndView mv = new ModelAndView("socio/addSocioView");
         mv.addObject("socio", new Socio());
         return mv;
     }

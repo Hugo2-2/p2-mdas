@@ -1,4 +1,4 @@
-package com.GM2.controller.Inscripcion;
+package com.GM2.controller.inscripcion;
 
 import com.GM2.model.domain.Inscripcion;
 import com.GM2.model.repository.InscripcionRepository;
@@ -50,7 +50,7 @@ public class GetInscripcionesController {
      */
     @GetMapping("/")
     public ModelAndView getInscripciones(){
-        ModelAndView mv = new ModelAndView("listInscripciones");
+        ModelAndView mv = new ModelAndView("inscripcion/listInscripcionesView");
 
         List<Inscripcion> inscripciones = inscripcionRepository.findAllInscripciones();
 

@@ -47,7 +47,7 @@ public class UpdateInscripcionController {
     @GetMapping("/updateInscripcion")
     public ModelAndView updateInscripcionView() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("updateInscripcionView");
+        modelAndView.setViewName("inscripcion/updateInscripcionView");
         return modelAndView;
     }
 

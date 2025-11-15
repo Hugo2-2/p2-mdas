@@ -1,4 +1,4 @@
-package com.GM2.controller.Socio;
+package com.GM2.controller.socio;
 
 import com.GM2.model.domain.Socio;
 import com.GM2.model.repository.SocioRepository;
@@ -49,7 +49,7 @@ public class ShowSociosController {
     public ModelAndView getSocios() {
         List<Socio> socios = socioRepository.findAllSocios();
 
-        ModelAndView mv = new ModelAndView("listSocios");
+        ModelAndView mv = new ModelAndView("socio/listSociosView");
 
         mv.addObject("socios", socios);
 

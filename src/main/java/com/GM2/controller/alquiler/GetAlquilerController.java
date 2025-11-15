@@ -49,7 +49,7 @@ public class GetAlquilerController {
     @GetMapping
     public ModelAndView getAlquileres() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("listAlquiler");
+        modelAndView.setViewName("alquiler/listAlquilerView");
 
         List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
         modelAndView.addObject("alquileres", alquileres);
@@ -66,7 +66,7 @@ public class GetAlquilerController {
     @GetMapping("/{id}")
     public ModelAndView getAlquilerDetalles(@PathVariable Integer id) {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("detallesAlquiler");
+        modelAndView.setViewName("alquiler/detallesAlquilerView");
 
         Alquiler alquiler = alquilerRepository.findAlquilerById(id);
         modelAndView.addObject("alquiler", alquiler);
@@ -82,7 +82,7 @@ public class GetAlquilerController {
     @GetMapping("/futuros")
     public ModelAndView getAlquileresFuturos() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("alquileresFuturos");
+        modelAndView.setViewName("alquiler/alquileresFuturosView");
 
         LocalDate hoy = LocalDate.now();
         List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
