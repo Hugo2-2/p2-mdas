@@ -13,22 +13,15 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/api/socios")
-public class SocioController {
+public class AddSocioController {
 
     SocioRepository socioRepository;
 
-    public SocioController(SocioRepository socioRepository) {
+    public AddSocioController(SocioRepository socioRepository) {
         this.socioRepository = socioRepository;
-    }
-    @GetMapping("/")
-    public ModelAndView getSocios() {
-        List<Socio> socios = socioRepository.findAllSocios();
 
-        ModelAndView mv = new ModelAndView("listSocios");
-
-        mv.addObject("socios", socios);
-
-        return mv;
+        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        this.socioRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
     @GetMapping("/addSocio")
