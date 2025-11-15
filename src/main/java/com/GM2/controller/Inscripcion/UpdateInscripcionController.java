@@ -13,25 +13,15 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/api/inscripciones")
-public class InscripcionController {
+public class UpdateInscripcionController {
 
-    private final HijosRepository hijosRepository;
     InscripcionRepository inscripcionRepository;
 
-    public InscripcionController(InscripcionRepository inscripcionRepository, HijosRepository hijosRepository) {
-        this.hijosRepository = hijosRepository;
+    public UpdateInscripcionController(InscripcionRepository inscripcionRepository) {
         this.inscripcionRepository = inscripcionRepository;
-    }
 
-    @GetMapping("/")
-    public ModelAndView getInscripciones(){
-        ModelAndView mv = new ModelAndView("listInscripciones");
-
-        List<Inscripcion> inscripciones = inscripcionRepository.findAllInscripciones();
-
-        mv.addObject("inscripciones", inscripciones);
-
-        return mv;
+        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        this.inscripcionRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
     @GetMapping("/updateInscripcion")
@@ -85,48 +75,5 @@ public class InscripcionController {
             }
             return "redirect:/api/inscripciones/updateInscripcion";
         }
-    }
-
-    @GetMapping("/addHijosView")
-    public ModelAndView addHijosView(
-            // Recibimos los datos enviados por 'RedirectAttributes'
-            @ModelAttribute("dniTitular") String dniTitular,
-            @ModelAttribute("numeroHijos") Integer numeroHijos,
-            RedirectAttributes redirectAttributes) {
-
-        ModelAndView modelAndView = new ModelAndView();
-
-        if (numeroHijos == null || numeroHijos <= 0) {
-            redirectAttributes.addFlashAttribute("mensajeError", "Número de hijos no válido.");
-            modelAndView.setViewName("redirect:/api/inscripciones/updateInscripcion");
-            return modelAndView;
-        }
-
-        modelAndView.setViewName("addHijosView");
-
-        // Pasamos los datos a la vista
-        modelAndView.addObject("dniTitular", dniTitular);
-        modelAndView.addObject("numeroHijos", numeroHijos);
-
-        return modelAndView;
-    }
-
-    @PostMapping("/addHijosView")
-    public String addHijos(
-            @RequestParam("dniTitular") String dniTitular,
-            @RequestParam("hijo_dni") List<String> dnisHijos,
-            @RequestParam("nombre") List<String> nombreHijos,
-            @RequestParam("apellidos") List<String> apellidosHijos,
-            @RequestParam("fechaNacimiento") List<LocalDate> fechaNacimientoHijos,
-            RedirectAttributes redirectAttributes) {
-
-        String resultado = inscripcionRepository.updateInscripcioConHijos(dniTitular, dnisHijos, nombreHijos, apellidosHijos, fechaNacimientoHijos);
-
-        if (resultado.equals("EXITO")) {
-            redirectAttributes.addFlashAttribute("mensajeExito", "Inscripción (con hijos) guardada.");
-        } else {
-            redirectAttributes.addFlashAttribute("mensajeError", resultado);
-        }
-        return "redirect:/api/inscripciones/updateInscripcion";
     }
 }
