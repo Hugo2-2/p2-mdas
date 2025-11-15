@@ -6,17 +6,29 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Repositorio para gestionar las operaciones CRUD (Crear, Leer, Actualizar, Borrar)
+ * de la entidad {@link Hijos} en la base de datos.
+ * Maneja la información de los menores asociados a las inscripciones familiares
+ * del club náutico, permitiendo su registro y consulta.
+ *
+ * @author gm2equipo1
+ * @version 1.0
+ */
 @Repository
 public class HijosRepository extends AbstractRepository {
     private JdbcTemplate jdbcTemplate;
 
+    /**
+     * Constructor para la inyección de dependencias de JdbcTemplate.
+     * 
+     * @param jdbcTemplate El bean de JdbcTemplate gestionado por Spring.
+     */
     public HijosRepository(JdbcTemplate jdbcTemplate) { this.jdbcTemplate = jdbcTemplate; }
 
     public List<Hijos> findAllHijos() {
@@ -45,6 +57,12 @@ public class HijosRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Busca un hijo específico por su DNI (clave primaria).
+     *
+     * @param dni El DNI único del hijo a buscar.
+     * @return El objeto {@link Hijos} si se encuentra, o null si no existe.
+     */
     public Hijos findHijoByDni(String dni) {
         try {
             String query = sqlQueries.getProperty("select-findHijoByDni");
@@ -59,6 +77,15 @@ public class HijosRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Extrae y mapea la primera fila de un ResultSet a un objeto Hijos.
+     * Este método funciona como un ResultSetExtractor que solo procesa un resultado.
+     * Mueve el cursor a la primera fila; si no hay filas, devuelve null.
+     *
+     * @param row El conjunto de resultados (ResultSet) completo devuelto por la consulta JDBC.
+     * @return Un objeto {@link Hijos} si se encuentra una fila,
+     *         o null si el ResultSet está vacío o si ocurre una SQLException.
+     */
     private Hijos mapRowToHijos(ResultSet row) {
         try {
 
@@ -82,6 +109,12 @@ public class HijosRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Busca todos los hijos asociados a una inscripción específica.
+     *
+     * @param inscripcion El ID de la inscripción cuyos hijos se desean obtener.
+     * @return Una lista de {@link Hijos} asociados a la inscripción, o null si no existen o hay error.
+     */
     public List<Hijos> findHijosByInscripcion(int inscripcion) {
         try {
             String query = sqlQueries.getProperty("select-findHijosByInscripcion");
@@ -97,6 +130,15 @@ public class HijosRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Mapea una fila específica de un ResultSet a un objeto Hijos.
+     * Este método se utiliza como RowMapper para consultas que devuelven múltiples resultados.
+     *
+     * @param row El ResultSet con los datos de la consulta.
+     * @param rowNum El número de fila actual (base 0) que se está procesando.
+     * @return Un objeto {@link Hijos} con los datos de la fila, o null si hay error.
+     * @throws SQLException Si ocurre un error al acceder a los datos del ResultSet.
+     */
     private Hijos mapRowFromInscripcion(ResultSet row, int rowNum) throws SQLException {
         String dni = row.getString("dni");
         String nombre = row.getString("nombre");
@@ -105,15 +147,16 @@ public class HijosRepository extends AbstractRepository {
         int id_inscripcion = row.getInt("id_inscripcion");
 
         Hijos hijo = new Hijos(dni, nombre, apellidos, fechaNacimiento, id_inscripcion);
-
-        if(hijo != null) {
-            return hijo;
-        }
-
-        return null;
+        return hijo;
 
     }
 
+    /**
+     * Inserta un nuevo hijo en la base de datos.
+     *
+     * @param hijo El objeto {@link Hijos} a insertar.
+     * @return true si la inserción fue exitosa, false en caso contrario.
+     */
     public boolean addHijo(Hijos hijo) {
          try {
             String query = sqlQueries.getProperty("insert-addHijo");
@@ -139,6 +182,16 @@ public class HijosRepository extends AbstractRepository {
          }
     }
 
+    /**
+     * Inserta múltiples hijos en la base de datos de forma secuencial.
+     * Si falla la inserción de cualquier hijo, el proceso se detiene y retorna false.
+     * 
+     * NOTA: Este método tiene un error de implementación - solo usa DNI e ID de inscripción
+     * en lugar de todos los campos del objeto Hijos.
+     *
+     * @param hijos Lista de objetos {@link Hijos} a insertar.
+     * @return true si todas las inserciones fueron exitosas, false si alguna falla.
+     */
     public boolean addHijos(List<Hijos> hijos) {
         for(Hijos hijo : hijos) {
             try {

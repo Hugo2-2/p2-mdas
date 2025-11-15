@@ -1,7 +1,6 @@
 package com.GM2.model.repository;
 
 import com.GM2.model.domain.Patron;
-import com.GM2.model.domain.Socio;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

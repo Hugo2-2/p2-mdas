@@ -8,15 +8,30 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
-import java.util.List;
 
-
+/**
+ * Controlador web (MVC) para la gestión de Socios.
+ * Maneja las peticiones web para mostrar formularios y procesar la
+ * creación de nuevos socios. Incluye lógica para manejar inscripciones
+ * automáticas y redirección a formularios de inscripción familiar
+ * cuando el socio es titular.
+ *
+ * @author gm2equipo1
+ * @version 1.0
+ */
 @Controller
 @RequestMapping("/api/socios")
 public class AddSocioController {
 
     SocioRepository socioRepository;
 
+    /**
+     * Constructor para la inyección de dependencias.
+     * Spring Boot inyectará automáticamente las instancias de los repositorios
+     * y servicios necesarios.
+     *
+     * @param socioRepository Repositorio para el acceso a datos de Socio.
+     */
     public AddSocioController(SocioRepository socioRepository) {
         this.socioRepository = socioRepository;
 
@@ -24,6 +39,12 @@ public class AddSocioController {
         this.socioRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
+    /**
+     * Muestra el formulario web (vista HTML) para añadir un nuevo socio.
+     *
+     * @return Un objeto {@link ModelAndView} que contiene el nombre de la vista
+     *         (addSocioView) y un objeto Socio vacío para el formulario.
+     */
     @GetMapping("/addSocio")
     public ModelAndView mostrarFormularioSocio() {
         ModelAndView mv = new ModelAndView("addSocioView");
@@ -31,6 +52,17 @@ public class AddSocioController {
         return mv;
     }
 
+    /**
+     * Procesa el envío del formulario (POST) para añadir un nuevo socio.
+     * Utiliza el patrón Post-Redirect-Get para evitar envíos duplicados.
+     * Maneja la lógica de creación de inscripciones automáticas y redirección
+     * a formularios de inscripción familiar si el socio es titular.
+     *
+     * @param socio El objeto Socio con los datos rellenados del formulario (@ModelAttribute).
+     * @param ampliarInscripcion Parámetro opcional que indica si se desea ampliar la inscripción.
+     * @param redirectAttributes Interfaz para pasar mensajes (éxito/error) a la vista de redirección.
+     * @return Un String que indica la URL a la que se debe redirigir.
+     */
     @PostMapping("/addSocio")
     public String addSocio(@ModelAttribute Socio socio,
                            @RequestParam(name = "ampliarInscripcion", required = false) String ampliarInscripcion,

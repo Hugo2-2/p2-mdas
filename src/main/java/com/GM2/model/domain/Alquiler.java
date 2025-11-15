@@ -37,8 +37,8 @@ public class Alquiler {
      * @param fechaFin Fecha de fin del alquiler
      * @param precio Precio total del alquiler
      * @param plazas Número de plazas reservadas
-     * @param usuarioDni DNI del usuario que realiza el alquiler
-     * @param matriculaEmbarcacion Matrícula de la embarcación alquilada
+     * @param usuario_dni DNI del usuario que realiza el alquiler
+     * @param matricula_embarcacion Matrícula de la embarcación alquilada
      * @param acompanantes Lista de acompañantes
      */
     public Alquiler(int id, LocalDate fechaInicio, LocalDate fechaFin, double precio, int plazas, String usuario_dni, String matricula_embarcacion, List<Acompanante> acompanantes) {

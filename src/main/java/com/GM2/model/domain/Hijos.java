@@ -1,8 +1,16 @@
 package com.GM2.model.domain;
 
 import java.time.LocalDate;
-import java.util.Date;
 
+/**
+ * Representa a los hijos asociados a una inscripción en el club náutico.
+ * Esta clase almacena la información personal de los menores que forman
+ * parte de una inscripción familiar, incluyendo sus datos de identificación
+ * y la relación con la inscripción a la que pertenecen.
+ *
+ * @author gm2equipo1
+ * @version 1.0
+ */
 public class Hijos {
     private String dni;
     private String nombre;
@@ -10,6 +18,15 @@ public class Hijos {
     private LocalDate fechaNacimiento;
     private int id_inscripcion;
 
+    /**
+     * Constructor completo para crear un registro de hijo con todos sus datos.
+     *
+     * @param dni DNI del hijo.
+     * @param nombre Nombre del hijo.
+     * @param apellidos Apellidos del hijo.
+     * @param fechaNacimiento Fecha de nacimiento del hijo.
+     * @param id_inscripcion ID de la inscripción a la que pertenece el hijo.
+     */
     public Hijos(String dni, String nombre, String apellidos, LocalDate fechaNacimiento, int id_inscripcion) {
         this.dni = dni;
         this.nombre = nombre;
@@ -18,9 +35,15 @@ public class Hijos {
         this.id_inscripcion = id_inscripcion;
     }
 
+    /**
+     * Constructor por defecto.
+     * Necesario para algunas librerías (como Spring MVC) para crear instancias.
+     */
     public Hijos() {
 
     }
+
+    // Getters y Setters
 
     public String getDni() {
         return dni;

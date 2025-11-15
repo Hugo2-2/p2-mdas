@@ -9,12 +9,29 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
+/**
+ * Controlador web (MVC) para la visualización de Inscripciones.
+ * Maneja las peticiones web para mostrar listados de inscripciones
+ * registradas en el club náutico. Proporciona endpoints para
+ * consultar y visualizar la información de todas las inscripciones,
+ * incluyendo datos de socios titulares, cuotas e hijos asociados.
+ *
+ * @author gm2equipo1
+ * @version 1.0
+ */
 @Controller
 @RequestMapping("/api/inscripciones")
 public class GetInscripcionesController {
 
     InscripcionRepository inscripcionRepository;
 
+    /**
+     * Constructor para la inyección de dependencias.
+     * Spring Boot inyectará automáticamente las instancias de los repositorios
+     * y servicios necesarios.
+     *
+     * @param inscripcionRepository Repositorio para el acceso a datos de Inscripcion.
+     */
     public GetInscripcionesController(InscripcionRepository inscripcionRepository) {
         this.inscripcionRepository = inscripcionRepository;
 
@@ -22,6 +39,15 @@ public class GetInscripcionesController {
         this.inscripcionRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
+    /**
+     * Muestra la lista completa de inscripciones registradas en el club náutico.
+     * Recupera todas las inscripciones de la base de datos, incluyendo
+     * automáticamente los hijos asociados cuando la cuota supera los 300€,
+     * y las envía a la vista para su visualización en formato de lista.
+     *
+     * @return Un objeto {@link ModelAndView} que contiene el nombre de la vista
+     *         (listInscripciones) y la lista de inscripciones para mostrar.
+     */
     @GetMapping("/")
     public ModelAndView getInscripciones(){
         ModelAndView mv = new ModelAndView("listInscripciones");

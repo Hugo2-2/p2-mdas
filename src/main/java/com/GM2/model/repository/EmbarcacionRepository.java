@@ -1,14 +1,11 @@
 package com.GM2.model.repository;
 
 import com.GM2.model.domain.Embarcacion;
-import com.GM2.model.domain.Patron;
-import com.GM2.model.domain.Reserva;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;

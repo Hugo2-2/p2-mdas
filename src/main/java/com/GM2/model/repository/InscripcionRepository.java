@@ -15,12 +15,30 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Repositorio para gestionar las operaciones CRUD (Crear, Leer, Actualizar, Borrar)
+ * de la entidad {@link Inscripcion} en la base de datos.
+ * Maneja las inscripciones del club náutico, incluyendo la gestión de cuotas,
+ * segundos adultos e hijos asociados a las inscripciones familiares.
+ *
+ * @author gm2equipo1
+ * @version 1.0
+ */
 @Repository
 public class InscripcionRepository extends AbstractRepository{
 
     final private HijosRepository hijosRepository;
     final private SocioRepository socioRepository;
 
+    /**
+     * Constructor para la inyección de dependencias.
+     * Configura JdbcTemplate y los repositorios relacionados, usando @Lazy
+     * para SocioRepository para evitar dependencias circulares.
+     *
+     * @param jdbcTemplate El bean de JdbcTemplate gestionado por Spring.
+     * @param hijosRepository Repositorio para gestionar los hijos de las inscripciones.
+     * @param socioRepository Repositorio de socios (cargado de forma lazy).
+     */
     public InscripcionRepository(JdbcTemplate jdbcTemplate, HijosRepository hijosRepository, @Lazy SocioRepository socioRepository) {
         this.jdbcTemplate = jdbcTemplate;
         this.hijosRepository = hijosRepository;
@@ -30,6 +48,12 @@ public class InscripcionRepository extends AbstractRepository{
         this.hijosRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
+    /**
+     * Recupera una lista de todas las inscripciones de la base de datos.
+     * Incluye automáticamente los hijos asociados si la cuota es superior a 300€.
+     *
+     * @return Una lista de {@link Inscripcion}, o null si no se encuentran resultados o hay error.
+     */
     public List<Inscripcion> findAllInscripciones() {
         try {
             String query = sqlQueries.getProperty("select-findAllInscripciones");
@@ -61,6 +85,15 @@ public class InscripcionRepository extends AbstractRepository{
         }
     }
 
+    /**
+     * Extrae y mapea la primera fila de un ResultSet a un objeto Inscripcion.
+     * Este método funciona como un ResultSetExtractor que solo procesa un resultado.
+     * Carga automáticamente los hijos asociados si la cuota anual es superior a 300€.
+     *
+     * @param rs El conjunto de resultados (ResultSet) completo devuelto por la consulta JDBC.
+     * @return Un objeto {@link Inscripcion} si se encuentra una fila,
+     *         o null si el ResultSet está vacío o si ocurre una SQLException.
+     */
     private Inscripcion mapRowToInscripcion(ResultSet rs) {
 
         try {
@@ -94,6 +127,12 @@ public class InscripcionRepository extends AbstractRepository{
 
     }
 
+    /**
+     * Busca una inscripción específica por su ID (clave primaria).
+     *
+     * @param id El ID único de la inscripción a buscar.
+     * @return El objeto {@link Inscripcion} si se encuentra, o null si no existe.
+     */
     public Inscripcion findInscripcionById(int id) {
         try {
             String query = sqlQueries.getProperty("select-findInscripcionById");
@@ -111,6 +150,12 @@ public class InscripcionRepository extends AbstractRepository{
 
     }
 
+    /**
+     * Busca una inscripción por el DNI del socio titular.
+     *
+     * @param dniTitular El DNI del socio titular de la inscripción.
+     * @return El objeto {@link Inscripcion} si se encuentra, o null si no existe.
+     */
     public Inscripcion findInscripcionByDNITitular(String dniTitular) {
         try {
             String query = sqlQueries.getProperty("select-findInscripcionByDniTitular");
@@ -126,6 +171,13 @@ public class InscripcionRepository extends AbstractRepository{
         }
     }
 
+    /**
+     * Inserta una nueva inscripción en la base de datos.
+     * Verifica que no exista ya una inscripción para el mismo titular.
+     *
+     * @param inscripcion El objeto {@link Inscripcion} a insertar.
+     * @return true si la inserción fue exitosa, false en caso contrario.
+     */
     public boolean addInscripcion(Inscripcion inscripcion) {
 
         if( inscripcion == null ) return false;
@@ -154,6 +206,14 @@ public class InscripcionRepository extends AbstractRepository{
 
     }
 
+    /**
+     * Actualiza una inscripción existente en la base de datos.
+     * Verifica que la inscripción exista antes de realizar la actualización.
+     * Actualiza automáticamente la fecha de creación al momento actual.
+     *
+     * @param inscripcion El objeto {@link Inscripcion} con los datos actualizados.
+     * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
+     */
     public String updateInscripcion(Inscripcion inscripcion) {
 
         if( inscripcion == null ) return "No se ha podido ingresar la inscripcion";
@@ -185,6 +245,16 @@ public class InscripcionRepository extends AbstractRepository{
         }
     }
 
+    /**
+     * Actualiza una inscripción añadiendo un segundo adulto sin hijos.
+     * Realiza validaciones para verificar que ambos socios estén registrados
+     * y que el titular tenga permisos de titularidad.
+     * Incrementa la cuota anual en 250€ por el segundo adulto.
+     *
+     * @param dniTitular DNI del socio titular de la inscripción.
+     * @param dniSegundoAdulto DNI del segundo adulto a añadir.
+     * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
+     */
     public String updateInscripcioSinHijos(String dniTitular, String dniSegundoAdulto){
 
         if(socioRepository.findSocioByDNI(dniTitular) == null && socioRepository.findSocioByDNI(dniSegundoAdulto) == null) {
@@ -212,6 +282,18 @@ public class InscripcionRepository extends AbstractRepository{
 
     }
 
+    /**
+     * Actualiza una inscripción añadiendo hijos a la inscripción familiar.
+     * Procesa una lista de hijos, los registra en la base de datos y
+     * actualiza la cuota anual incrementándola en 100€ por cada hijo.
+     *
+     * @param dniTitular DNI del socio titular de la inscripción.
+     * @param dnisHijos Lista de DNIs de los hijos a añadir.
+     * @param nombreHijos Lista de nombres de los hijos.
+     * @param apellidosHijos Lista de apellidos de los hijos.
+     * @param fechaNacimientoHijos Lista de fechas de nacimiento de los hijos.
+     * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
+     */
     public String updateInscripcioConHijos(String dniTitular, List<String> dnisHijos, List<String> nombreHijos, List<String> apellidosHijos, List<LocalDate> fechaNacimientoHijos){
         Inscripcion inscripcion = findInscripcionByDNITitular(dniTitular);
 

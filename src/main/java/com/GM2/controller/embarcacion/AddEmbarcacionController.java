@@ -1,6 +1,5 @@
 package com.GM2.controller.embarcacion;
 
-import com.GM2.controller.patron.AssignPatronToEmbarcacionController;
 import com.GM2.model.domain.Embarcacion;
 import com.GM2.model.repository.EmbarcacionRepository;
 
@@ -11,7 +10,6 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
 
 /**
  * Controlador web (MVC) para la gestión de Embarcaciones.
