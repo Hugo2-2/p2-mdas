@@ -1,4 +1,4 @@
-package com.GM2.controller.Socio;
+package com.GM2.controller.socio;
 
 import com.GM2.model.domain.Socio;
 import com.GM2.model.repository.SocioRepository;

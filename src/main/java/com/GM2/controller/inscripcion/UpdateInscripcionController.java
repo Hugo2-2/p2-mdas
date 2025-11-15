@@ -1,4 +1,4 @@
-package com.GM2.controller.Inscripcion;
+package com.GM2.controller.inscripcion;
 
 
 import com.GM2.model.repository.InscripcionRepository;
