@@ -4,6 +4,7 @@ import com.GM2.model.domain.Socio;
 import com.GM2.model.repository.SocioRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -66,7 +67,8 @@ public class AddSocioController {
     @PostMapping("/addSocio")
     public String addSocio(@ModelAttribute Socio socio,
                            @RequestParam(name = "ampliarInscripcion", required = false) String ampliarInscripcion,
-                           RedirectAttributes redirectAttributes) {
+                           RedirectAttributes redirectAttributes,
+                           SessionStatus sessionStatus) {
 
         socio.setFechaInscripcion(LocalDate.now());
 
@@ -80,14 +82,22 @@ public class AddSocioController {
                 " esTitular=" + socio.getEsTitular() +
                 " tieneLicenciaPatron=" + socio.getTieneLicenciaPatron());
 
+        if(socioRepository.findSocioByDNI(socio.getDni()) != null) {
+            redirectAttributes.addFlashAttribute("mensajeError", "Error: El socio ya existe");
+            sessionStatus.setComplete();
+            return "redirect:/api/socios/addSocio";
+        }
+
         //Usaremos estas funciones para añadir al socio y mostrar mensajes de error
         String mensaje = socioRepository.addSocio(socio);
 
         //Evaluamos el mensaje que se mostrará en las flashcards de error
         if(mensaje.equals("EXITO")) {
-            redirectAttributes.addFlashAttribute("mensaje", "Socio guardado exitosamente");
+            redirectAttributes.addFlashAttribute("mensajeExito", "Socio guardado exitosamente");
         } else {
-            redirectAttributes.addFlashAttribute("mensaje", mensaje);
+            redirectAttributes.addFlashAttribute("mensajeError", mensaje);
+            sessionStatus.setComplete();
+            return "redirect:/api/socios/addSocio";
         }
 
         //Confirmamos que la checkbox de la vista está marcada
@@ -98,9 +108,11 @@ public class AddSocioController {
             redirectAttributes.addFlashAttribute("dniTitular", socio.getDni());
 
             // Redirigimos al nuevo formulario de inscripción familiar pasando el id de la inscripción como parámetro en el enlace
+            sessionStatus.setComplete();
             return "redirect:/api/inscripciones/updateInscripcion";
         } else {
             redirectAttributes.addFlashAttribute("mensajeExito", "Socio guardado exitosamente.");
+            sessionStatus.setComplete();
             return "redirect:/api/socios/addSocio";
         }
     }

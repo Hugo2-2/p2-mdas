@@ -14,7 +14,7 @@
         <div class="logo">Club Náutico</div>
         <div class="header-buttons">
             <a th:href="@{/api/socios/addSocio}" class="btn">Añadir Socio</a>
-            <a th:href="@{/static}" class="btn">Menú Principal</a>
+            <a th:href="@{/menu}" class="btn">Menú Principal</a>
         </div>
     </div>
 </header>
@@ -58,7 +58,7 @@
                         </td>
                         <td>
                             <span th:if="${socio.tieneLicenciaPatron}" class="badge badge-success">Sí</span>
-                            <span th:unless="${socio.tieneLicenciaPatron}" class="badge badge-light">No</span>
+                            <span th:unless="${socio.tieneLicenciaPatron}" class="badge bg-secondary">No</span>
                         </td>
 
                         <td th:text="${socio.direccion}">Calle Falsa 123</td>
