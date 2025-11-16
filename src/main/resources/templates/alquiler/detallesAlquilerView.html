@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalles del Alquiler</title>
+    <link th:href="@{/styles.css}" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">📋 Detalles del Alquiler</div>
+            <div class="header-buttons">
+                <a th:href="@{/api/alquiler}" class="btn">← Volver a Lista</a>
+                <a th:href="@{/menu}" class="btn">Menú Principal</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" th:if="${alquiler}">
+        <!-- Encabezado con ID y Estado -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h2 class="mb-0">Alquiler #<span th:text="${alquiler.id}"></span></h2>
+                                <p class="text-muted mb-0">Información detallada del alquiler</p>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <!-- Estado del alquiler -->
+                                <span th:if="${alquiler.fechainicio.isAfter(T(java.time.LocalDate).now())}" 
+                                      class="badge bg-warning estado-badge">
+                                    ⏳ Programado
+                                </span>
+                                <span th:if="${alquiler.fechainicio.isEqual(T(java.time.LocalDate).now())}" 
+                                      class="badge bg-success estado-badge">
+                                    ✅ Comienza hoy
+                                </span>
+                                <span th:if="${alquiler.fechafin.isBefore(T(java.time.LocalDate).now())}" 
+                                      class="badge bg-secondary estado-badge">
+                                    ⌛ Finalizado
+                                </span>
+                                <span th:if="${alquiler.fechainicio.isBefore(T(java.time.LocalDate).now()) and alquiler.fechafin.isAfter(T(java.time.LocalDate).now())}" 
+                                      class="badge bg-primary estado-badge">
+                                    🚀 En curso
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Columna izquierda - Información básica -->
+            <div class="col-md-6 mb-4">
+                <!-- Información de Fechas -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <span>📅 Información de Fechas</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <strong>Fecha de Inicio:</strong><br>
+                                    <span class="badge badge-primary" 
+                                          th:text="${#temporals.format(alquiler.fechainicio, 'dd/MM/yyyy')}">
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <strong>Fecha de Fin:</strong><br>
+                                    <span class="badge badge-primary" 
+                                          th:text="${#temporals.format(alquiler.fechafin, 'dd/MM/yyyy')}">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <div class="form-group">
+                                <strong>Duración:</strong><br>
+                                <span class="badge badge-primary" 
+                                      th:text="${(alquiler.fechafin.toEpochDay() - alquiler.fechainicio.toEpochDay() + 1) + ' días'}">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información del Socio -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <span>👤 Información del Socio</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <strong>DNI del Socio:</strong><br>
+                            <code th:text="${alquiler.usuario_dni}"></code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información de la Embarcación -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <span>⛵ Información de la Embarcación</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <strong>Matrícula:</strong><br>
+                            <span class="badge badge-dark" th:text="${alquiler.matricula_embarcacion}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna derecha - Información adicional -->
+            <div class="col-md-6 mb-4">
+                <!-- Información de Precio y Plazas -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <span>💰 Información Económica</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <h3 class="text-success" th:text="${'€' + #numbers.formatDecimal(alquiler.precio, 1, 2)}"></h3>
+                                <small class="text-muted">Precio Total</small>
+                            </div>
+                            <div class="col-6">
+                                <h3 th:text="${alquiler.plazas}"></h3>
+                                <small class="text-muted">Plazas Totales</small>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                <strong>Cálculo:</strong> 
+                                20€ × <span th:text="${alquiler.plazas}"></span> plazas × 
+                                <span th:text="${(alquiler.fechafin.toEpochDay() - alquiler.fechainicio.toEpochDay() + 1)}"></span> días
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de Acompañantes -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>👥 Acompañantes</span>
+                            <span class="badge badge-light"
+                                th:if="${alquiler.plazas > 1}"
+                                th:text="|${alquiler.acompanantes.size()} de ${alquiler.plazas - 1} plazas|">
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${alquiler.acompanantes.empty}">
+                            <p class="text-muted text-center mb-0">
+                                <i th:if="${alquiler.plazas == 1}">No se permiten acompañantes (solo 1 plaza)</i>
+                                <i th:if="${alquiler.plazas > 1}">No hay acompañantes registrados</i>
+                            </p>
+                        </div>
+                        <div th:each="acomp : ${alquiler.acompanantes}" class="acompanante-item">
+                            <strong>DNI:</strong> 
+                            <code th:text="${acomp.dni}"></code>
+                        </div>
+                        
+                        <!-- Botón para gestionar acompañantes (solo si el alquiler es futuro y tiene más de 1 plaza) -->
+                        <div th:if="${(alquiler.fechainicio.isAfter(T(java.time.LocalDate).now()) or alquiler.fechainicio.isEqual(T(java.time.LocalDate).now())) and alquiler.plazas > 1}" 
+                            class="mt-3">
+                            <a th:href="@{/api/acompanantes/{alquilerId}/{plazas}(alquilerId=${alquiler.id}, plazas=${alquiler.plazas})}" 
+                            class="btn w-100">
+                                🛠️ Gestionar Acompañantes
+                            </a>
+                        </div>
+                        
+                        <!-- Mensaje cuando no se permiten acompañantes -->
+                        <div th:if="${(alquiler.fechainicio.isAfter(T(java.time.LocalDate).now()) or alquiler.fechainicio.isEqual(T(java.time.LocalDate).now())) and alquiler.plazas == 1}" 
+                            class="mt-3">
+                            <p class="text-muted text-center">
+                                <small>ℹ️ Este alquiler es para 1 persona (no se permiten acompañantes)</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acciones Rápidas -->
+                <div class="card">
+                    <div class="card-header">
+                        <span>⚡ Acciones Rápidas</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/api/alquiler}" class="btn">
+                                📋 Ver Todos los Alquileres
+                            </a>
+                            <a th:href="@{/api/alquiler/futuros}" class="btn">
+                                📅 Ver Alquileres Futuros
+                            </a>
+                            <a th:href="@{/menu}" class="btn">
+                                🏠 Menú Principal
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información de Resumen -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <strong>📊 Resumen del Alquiler</strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-3">
+                                <div class="border rounded p-3">
+                                    <h4 th:text="${alquiler.plazas}">0</h4>
+                                    <small class="text-muted">Plazas Totales</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="border rounded p-3">
+                                    <h4 th:text="${alquiler.acompanantes.size()}">0</h4>
+                                    <small class="text-muted">Acompañantes</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="border rounded p-3">
+                                    <h4 th:text="${(alquiler.fechafin.toEpochDay() - alquiler.fechainicio.toEpochDay() + 1)}">0</h4>
+                                    <small class="text-muted">Días de Duración</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="border rounded p-3">
+                                    <h4 class="text-success" th:text="${'€' + #numbers.formatDecimal(alquiler.precio, 1, 2)}">€0</h4>
+                                    <small class="text-muted">Precio Total</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensaje si el alquiler no existe -->
+    <div class="container" th:unless="${alquiler}">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card text-center">
+                    <div class="card-body py-5">
+                        <h3 class="text-danger">❌ Alquiler No Encontrado</h3>
+                        <p class="text-muted">El alquiler solicitado no existe en el sistema.</p>
+                        <a th:href="@{/api/alquiler}" class="btn mt-3">
+                            Volver a la Lista de Alquileres
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">Sistema de Gestión Club Náutico &copy; 2025</p>
+        </div>
+    </footer>
+</body>
+</html>

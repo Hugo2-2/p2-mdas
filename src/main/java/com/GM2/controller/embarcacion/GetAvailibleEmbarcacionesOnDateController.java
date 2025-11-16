@@ -14,6 +14,18 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controlador encargado de gestionar la consulta de embarcaciones disponibles
+ * en un rango de fechas concreto.
+ *
+ * Este controlador realiza las siguientes acciones:
+ * - Carga desde los repositorios todas las embarcaciones, alquileres y reservas.
+ * - Comprueba solapamientos entre el rango solicitado y las fechas existentes.
+ * - Determina qué embarcaciones están libres para ser alquiladas.
+ *
+ * El resultado se devuelve en una vista que muestra un formulario y,
+ * opcionalmente, la tabla con embarcaciones disponibles.
+ */
 @Controller
 @RequestMapping("/api/embarcaciones")
 public class GetAvailibleEmbarcacionesOnDateController {
@@ -63,7 +75,7 @@ public class GetAvailibleEmbarcacionesOnDateController {
             @RequestParam(value = "fin", required = false) String fin) {
 
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("alquilerDisponible");
+        modelAndView.setViewName("embarcacion/embarcacionDisponibleView");
 
         // Si no hay parámetros, mostrar solo el formulario
         if (inicio == null || fin == null) {
@@ -74,6 +86,11 @@ public class GetAvailibleEmbarcacionesOnDateController {
         try {
             LocalDate fechaInicio = LocalDate.parse(inicio);
             LocalDate fechaFin = LocalDate.parse(fin);
+
+            if (fechaInicio.isAfter(fechaFin)) {
+                modelAndView.addObject("error", "La fecha de inicio no puede ser posterior a la de fin.");
+                return modelAndView;
+            }
 
             // Buscar embarcaciones disponibles entre dos fechas
             List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcaciones();

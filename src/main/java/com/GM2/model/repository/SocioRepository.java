@@ -13,11 +13,27 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Repositorio para gestionar las operaciones CRUD (Crear, Leer, Actualizar, Borrar)
+ * de la entidad {@link Socio} en la base de datos.
+ * También maneja la creación de inscripciones automáticas para socios titulares.
+ *
+ * @author gm2equipo1
+ * @version 1.0
+ */
 @Repository
 public class SocioRepository extends AbstractRepository {
 
     InscripcionRepository inscripcionRepository;
 
+    /**
+     * Constructor para la inyección de dependencias.
+     * Configura JdbcTemplate y el repositorio de inscripciones usando @Lazy
+     * para evitar dependencias circulares.
+     *
+     * @param jdbcTemplate El bean de JdbcTemplate gestionado por Spring.
+     * @param inscripcionRepository Repositorio de inscripciones (cargado de forma lazy).
+     */
     public SocioRepository(JdbcTemplate jdbcTemplate, @Lazy InscripcionRepository inscripcionRepository) {
         this.jdbcTemplate = jdbcTemplate;
         this.inscripcionRepository = inscripcionRepository;
@@ -25,6 +41,11 @@ public class SocioRepository extends AbstractRepository {
         setSqlQueriesFileName(sqlQueriesFileName);
     }
 
+    /**
+     * Recupera una lista de todos los socios de la base de datos.
+     *
+     * @return Una lista de {@link Socio}, o null si no se encuentran resultados o hay error.
+     */
     public List<Socio> findAllSocios() {
         try {
             String query = sqlQueries.getProperty("select-findAllSocios");
@@ -55,6 +76,12 @@ public class SocioRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Busca un socio específico por su DNI (clave primaria).
+     *
+     * @param dni El DNI único del socio a buscar.
+     * @return El objeto {@link Socio} si se encuentra, o null si no existe.
+     */
     public Socio findSocioByDNI(String dni) {
         try {
             String query = sqlQueries.getProperty("select-findSocioByDNI");
@@ -69,6 +96,15 @@ public class SocioRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Extrae y mapea la primera fila de un ResultSet a un objeto Socio.
+     * Este método funciona como un ResultSetExtractor que solo procesa un resultado.
+     * Mueve el cursor a la primera fila; si no hay filas, devuelve null.
+     *
+     * @param row El conjunto de resultados (ResultSet) completo devuelto por la consulta JDBC.
+     * @return Un objeto {@link Socio} si se encuentra una fila,
+     *         o null si el ResultSet está vacío o si ocurre una SQLException.
+     */
     private Socio mapRowToSocio(ResultSet row) {
         try {
 
@@ -96,6 +132,14 @@ public class SocioRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Inserta un nuevo socio en la base de datos.
+     * Realiza validaciones de negocio (edad mínima para titularidad) y
+     * crea automáticamente una inscripción si el socio es titular.
+     *
+     * @param socio El objeto {@link Socio} a insertar.
+     * @return "EXITO" si la inserción fue exitosa, mensaje de error en caso contrario.
+     */
     public String addSocio(Socio socio) {
 
         boolean sqlRes;

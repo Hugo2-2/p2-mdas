@@ -1,81 +1,69 @@
 package com.GM2.controller.embarcacion;
 
-import com.GM2.controller.patron.AssignPatronToEmbarcacionController;
 import com.GM2.model.domain.Embarcacion;
 import com.GM2.model.repository.EmbarcacionRepository;
 
+import com.GM2.model.repository.PatronRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
 
 /**
- * Controlador web (MVC) para la gestión de Embarcaciones.
- * * Maneja las peticiones web para mostrar formularios y procesar la
- * creación de nuevas embarcaciones. También expone algunos
- * endpoints de API (híbridos) para obtener datos en JSON
- * que fueron principalmente usados para pruebas de
- * guardado de datos.
- * * @author gm2equipo1
- * @version 1.0
+ * Controlador encargado de gestionar las operaciones relacionadas con la creación
+ * de nuevas embarcaciones dentro del sistema.
+ *
+ * Este controlador permite:
+ * - Mostrar el formulario para registrar una nueva embarcación.
+ * - Procesar el envío del formulario y validar los datos recibidos.
+ * - Verificar restricciones como matrícula única, nombre único, plazas mínimas,
+ *   dimensiones válidas y disponibilidad del patrón asociado.
+ *
+ * Forma parte del módulo de gestión de embarcaciones del club náutico.
+ *
+ * @author gm2equipo1
+ * @version 3.0
  */
 @Controller
 @RequestMapping("/api/embarcaciones")
 public class AddEmbarcacionController {
 
     EmbarcacionRepository embarcacionRepository;
-    AssignPatronToEmbarcacionController assignPatronToEmbarcacionController;
+    PatronRepository patronRepository;
 
     /**
-     * Constructor para la inyección de dependencias.
-     * Spring Boot inyectará automáticamente las instancias de los repositorios
-     * y servicios necesarios.
+     * Constructor utilizado para la inyección de dependencias necesarias para la
+     * gestión de embarcaciones y patrones.
      *
-     * @param embarcacionRepository Repositorio para el acceso a datos de Embarcacion.
-     * @param assignPatronToEmbarcacionController Servicio para la lógica de asignación de patrones.
+     * También establece el archivo donde se encuentran definidas las consultas SQL
+     * utilizadas por los repositorios.
+     *
+     * @param embarcacionRepository repositorio para operaciones con embarcaciones.
+     * @param patronRepository repositorio para operaciones con patrones.
      */
-    public AddEmbarcacionController(EmbarcacionRepository embarcacionRepository, AssignPatronToEmbarcacionController assignPatronToEmbarcacionController) {
+    public AddEmbarcacionController(EmbarcacionRepository embarcacionRepository, PatronRepository patronRepository) {
         this.embarcacionRepository = embarcacionRepository;
-        this.assignPatronToEmbarcacionController = assignPatronToEmbarcacionController;
+        this.patronRepository = patronRepository;
 
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
         this.embarcacionRepository.setSqlQueriesFileName(sqlQueriesFileName);
+        this.patronRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
     /**
-     * Endpoint API REST para obtener un listado de todas las embarcaciones.
-     * Gracias a @ResponseBody, devuelve los datos en formato JSON.
+     * Devuelve la vista del formulario para registrar una nueva embarcación.
      *
-     * @return Una lista de objetos {@link Embarcacion}.
-     */
-    @GetMapping
-    @ResponseBody
-    public List<Embarcacion> getEmbarcaciones(){ return embarcacionRepository.findAllEmbarcaciones(); }
-
-    /**
-     * Endpoint API REST para obtener una embarcación específica por su matrícula.
-     * Gracias a @ResponseBody, devuelve los datos en formato JSON.
+     * La vista incluye un objeto vacío de Embarcacion para rellenar sus atributos
+     * desde el formulario HTML.
      *
-     * @param matricula La matrícula de la embarcación a buscar.
-     * @return El objeto {@link Embarcacion} encontrado, o null si no existe.
-     */
-    @GetMapping("/{matricula}")
-    @ResponseBody
-    public Embarcacion getEmbarcacionByMatricula(@PathVariable String matricula){ return embarcacionRepository.findEmbarcacionByMatricula(matricula); }
-
-    /**
-     * Muestra el formulario web (vista HTML) para añadir una nueva embarcación.
-     *
-     * @return Un objeto {@link ModelAndView} que contiene el nombre de la vista
-     * (addEmbarcacionView) y un objeto Embarcacion vacío para el formulario.
+     * @return un ModelAndView con el nombre de la vista y el objeto newEmbarcacion.
      */
     @GetMapping("/addEmbarcacion")
     public ModelAndView getAddEmbarcacionView() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("addEmbarcacionView");
+        modelAndView.setViewName("embarcacion/addEmbarcacionView");
         modelAndView.addObject("newEmbarcacion", new Embarcacion());
         return modelAndView;
     }
@@ -83,6 +71,9 @@ public class AddEmbarcacionController {
     /**
      * Procesa el envío del formulario (POST) para añadir una nueva embarcacion.
      * Utiliza el patrón Post-Redirect-Get para evitar envíos duplicados.
+     *
+     * Tras superar las validaciones, se intenta insertar la embarcación en
+     * la base de datos y se notifica el resultado mediante mensajes Flash.
      *
      * @param newEmbarcacion     El objeto Embarcacion con los datos rellenados del formulario (@ModelAttribute).
      * @param sessionStatus      Controlador de estado de la sesión para limpiarla tras el envío.
@@ -101,18 +92,58 @@ public class AddEmbarcacionController {
                 " id_patron=" + newEmbarcacion.getIdPatron() +
                 " plazas=" + newEmbarcacion.getPlazas());
 
-        String resultado = embarcacionRepository.addEmbarcacionValidado(newEmbarcacion);
-        String nextPage;
+        // 1. Comprobamos que la matrícula sea única, al igual con el nombre
+        if (embarcacionRepository.findEmbarcacionByMatricula(newEmbarcacion.getMatricula()) != null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: Ya existe una embarcación con esa matrícula");
+            sessionStatus.setComplete();
+            return "redirect:/api/embarcaciones/addEmbarcacion";
+        } else if (embarcacionRepository.findEmbarcacionByNombre(newEmbarcacion.getNombre()) != null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: Ya existe una embarcación con dicho nombre asociado");
+            sessionStatus.setComplete();
+            return "redirect:/api/embarcaciones/addEmbarcacion";
+        }
+        // 2. Comprobamos que al menos sea 2 plazas (1 para patron y otra para quien reserva)
+        else if (newEmbarcacion.getPlazas() < 2) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error: El número mínimo de plazas debe ser 2");
+            sessionStatus.setComplete();
+            return "redirect:/api/embarcaciones/addEmbarcacion";
+        }
+        // 3. Validación de dimensiones, se mete en un try catch, ya que hay que pasar de string a double las dimensiones
+        else try {
+                double dimensiones = Double.parseDouble(newEmbarcacion.getDimensiones());
+                if (dimensiones < 1) {
+                    redirectAttributes.addFlashAttribute("errorMessage", "Error: La embarcación debe tener al menos 1m2");
+                    sessionStatus.setComplete();
+                    return "redirect:/api/embarcaciones/addEmbarcacion";
+                }
 
-        if(resultado.equals("EXITO")){
-            redirectAttributes.addFlashAttribute("successMessage", "La embarcacion se ha ingresado correctamente");
-        }
-        else {
-            redirectAttributes.addFlashAttribute("errorMessage", resultado);
-        }
-        nextPage = "redirect:/api/embarcaciones/addEmbarcacion";
+                // 4. Validación de Patrón
+                String patronDni = newEmbarcacion.getIdPatron();
+                //El dni del patron no debe estar nulo, ni dejarse vacío
+                if (patronDni != null && !patronDni.trim().isEmpty()) {
+                    if (patronRepository.findPatronByDNI(patronDni) == null) {
+                        redirectAttributes.addFlashAttribute("errorMessage", "Error: El patron no existe");
+                        sessionStatus.setComplete();
+                        return "redirect:/api/embarcaciones/addEmbarcacion";
+                    } else if (embarcacionRepository.isPatronAssignedToEmbarcacion(patronDni)) {
+                        redirectAttributes.addFlashAttribute("errorMessage", "Error: El patron ya se encuentra asignado a una embarcación");
+                        sessionStatus.setComplete();
+                        return "redirect:/api/embarcaciones/addEmbarcacion";
+                    }
+                }
+
+                // 5. Insertamos los datos
+                boolean resultado = embarcacionRepository.addEmbarcacion(newEmbarcacion); // Llama al método "tonto"
+                if (resultado) {
+                    redirectAttributes.addFlashAttribute("successMessage", "La embarcacion se ha ingresado correctamente");
+                } else {
+                    redirectAttributes.addFlashAttribute("errorMessage", "Error: No se pudo añadir la embarcación");
+                }
+            } catch (NumberFormatException e) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Error: El formato de las dimensiones no es válido.");
+            }
 
         sessionStatus.setComplete();
-        return nextPage;
+        return "redirect:/api/embarcaciones/addEmbarcacion";
     }
 }

@@ -1,11 +1,9 @@
 package com.GM2.controller.alquiler;
 
-import com.GM2.model.domain.Acompanante;
 import com.GM2.model.domain.Alquiler;
 import com.GM2.model.domain.Embarcacion;
 import com.GM2.model.domain.Reserva;
 import com.GM2.model.domain.Socio;
-import com.GM2.model.repository.AcompananteRepository;
 import com.GM2.model.repository.AlquilerRepository;
 import com.GM2.model.repository.EmbarcacionRepository;
 import com.GM2.model.repository.ReservaRepository;
@@ -23,7 +21,7 @@ import java.util.List;
 
 /**
  * Controlador web (MVC) para la gestión de Alquileres.
- * Maneja las peticiones web para mostrar formularios y procesar la
+ * Maneja las peticiones web para procesar la
  * creación de nuevos alquileres.
  * 
  * @author gm2equipo1
@@ -34,7 +32,6 @@ import java.util.List;
 public class AddAlquilerController {
 
     AlquilerRepository alquilerRepository;
-    AcompananteRepository acompanantesRepository;
     ReservaRepository reservaRepository;
     SocioRepository socioRepository;
     EmbarcacionRepository embarcacionRepository;
@@ -47,21 +44,18 @@ public class AddAlquilerController {
      * y servicios necesarios.
      * 
      * @param alquilerRepository Repositorio para operaciones de base de datos relacionadas con los alquileres.
-     * @param acompanantesRepository Repositorio para el acceso a datos de Acompañantes.
      * @param reservaRepository Repositorio para el acceso a datos de Reservas.
      * @param socioRepository Repositorio para el acceso a datos de Socios.
      * @param embarcacionRepository Repositorio para el acceso a datos de Embarcaciones.
      */
-    public AddAlquilerController(AlquilerRepository alquilerRepository, AcompananteRepository acompanantesRepository, ReservaRepository reservaRepository, SocioRepository socioRepository, EmbarcacionRepository embarcacionRepository) {
+    public AddAlquilerController(AlquilerRepository alquilerRepository, ReservaRepository reservaRepository, SocioRepository socioRepository, EmbarcacionRepository embarcacionRepository) {
         this.alquilerRepository = alquilerRepository;    
-        this.acompanantesRepository = acompanantesRepository;
         this.reservaRepository = reservaRepository;
         this.socioRepository = socioRepository;
         this.embarcacionRepository = embarcacionRepository;
 
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
         this.alquilerRepository.setSqlQueriesFileName(sqlQueriesFileName);  
-        this.acompanantesRepository.setSqlQueriesFileName(sqlQueriesFileName);
         this.reservaRepository.setSqlQueriesFileName(sqlQueriesFileName);
         this.socioRepository.setSqlQueriesFileName(sqlQueriesFileName);
         this.embarcacionRepository.setSqlQueriesFileName(sqlQueriesFileName);
@@ -76,7 +70,7 @@ public class AddAlquilerController {
     @GetMapping("/addAlquiler")
     public ModelAndView mostrarFormularioAlquiler() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("addAlquilerView");
+        modelAndView.setViewName("alquiler/addAlquilerView");
         modelAndView.addObject("alquiler", new Alquiler());
         return modelAndView; 
     }
@@ -96,25 +90,67 @@ public class AddAlquilerController {
         String resultado;
         Socio socio = socioRepository.findSocioByDNI(alquiler.getUsuario_dni());
 
-        if (socio == null) resultado = "El socio no existe.";
-        if (!socio.getTieneLicenciaPatron()) resultado = "El socio no tiene título de patrón.";
+        if (socio == null){
+            resultado = "El socio no existe.";
+            modelAndView.setViewName("alquiler/addAlquilerView");
+            modelAndView.addObject("mensajeError", resultado);
+            status.setComplete();
+            return modelAndView;
+        }
+        if (!socio.getTieneLicenciaPatron()){ 
+            resultado = "El socio no tiene título de patrón.";
+            modelAndView.setViewName("alquiler/addAlquilerView");
+            modelAndView.addObject("mensajeError", resultado);
+            status.setComplete();
+            return modelAndView;
+        }
 
         LocalDate inicio = alquiler.getFechainicio();
         LocalDate fin = alquiler.getFechafin();
         long dias = ChronoUnit.DAYS.between(inicio, fin) + 1;
 
-        if (inicio.isAfter(fin)) resultado = "La fecha de inicio no puede ser posterior a la de fin.";
+        if (inicio.isAfter(fin)){ 
+            resultado = "La fecha de inicio no puede ser posterior a la de fin.";
+            modelAndView.setViewName("alquiler/addAlquilerView");
+            modelAndView.addObject("mensajeError", resultado);
+            status.setComplete();
+            return modelAndView;
+        }
 
         int mesInicio = inicio.getMonthValue();
         if (mesInicio >= 10 || mesInicio <= 4) {
-            if (dias > 3) resultado = "Solo se permiten hasta 3 días entre octubre y abril.";
+            if (dias > 3){
+                resultado = "Solo se permiten hasta 3 días entre octubre y abril.";
+                modelAndView.setViewName("alquiler/addAlquilerView");
+                modelAndView.addObject("mensajeError", resultado);
+                status.setComplete();
+                return modelAndView;
+            }
         } else if (mesInicio >= 5 && mesInicio <= 9) {
-            if (dias != 7 && dias != 14) resultado = "Solo se permiten alquileres de 7 o 14 días entre mayo y septiembre.";
+            if (dias != 7 && dias != 14){ 
+                resultado = "Solo se permiten alquileres de 7 o 14 días entre mayo y septiembre.";
+                modelAndView.setViewName("alquiler/addAlquilerView");
+                modelAndView.addObject("mensajeError", resultado);
+                status.setComplete();
+                return modelAndView;
+            }
         }
 
         Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(alquiler.getMatricula_embarcacion());
-        if (embarcacion == null) resultado = "Embarcación no encontrada.";
-        if (alquiler.getPlazas() > embarcacion.getPlazas()) resultado = "No hay suficientes plazas.";
+        if (embarcacion == null){
+            resultado = "Embarcación no encontrada.";
+            modelAndView.setViewName("alquiler/addAlquilerView");
+            modelAndView.addObject("mensajeError", resultado);
+            status.setComplete();
+            return modelAndView;
+        }
+        if (alquiler.getPlazas() > embarcacion.getPlazas()){
+            resultado = "No hay suficientes plazas.";
+            modelAndView.setViewName("alquiler/addAlquilerView");
+            modelAndView.addObject("mensajeError", resultado);
+            status.setComplete();
+            return modelAndView;
+        }
 
         List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcaciones();
         List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
@@ -132,7 +168,7 @@ public class AddAlquilerController {
 
             for (Alquiler a : alquileres) {
                 if (a.getMatricula_embarcacion().equals(e.getMatricula())) {
-                    if (!(fin.isBefore(a.getFechainicio()) || inicio.isAfter(a.getFechafin()))) {
+                    if (!(inicio.isAfter(a.getFechafin()) || fin.isBefore(a.getFechainicio()))) {
                         ocupada = true;
                         break;
                     }
@@ -165,7 +201,14 @@ public class AddAlquilerController {
                 break;
             }
         }
-        if (!disponible) resultado = "La embarcación no está disponible en esas fechas.";
+        
+        if (!disponible){ 
+            resultado = "La embarcación no está disponible en esas fechas.";
+            modelAndView.setViewName("alquiler/addAlquilerView");
+            modelAndView.addObject("mensajeError", resultado);
+            status.setComplete();
+            return modelAndView;
+        }
 
 
 
@@ -185,12 +228,15 @@ public class AddAlquilerController {
             // Extraer el id del alquiler
             Integer alquilerId = Integer.parseInt(resultado.substring(3));
             int plazas = alquiler.getPlazas();
-
-        modelAndView.setViewName("redirect:/api/alquiler/acompanantes/" + alquilerId + "/" + plazas);
-    
+            if( plazas > 1){
+                modelAndView.setViewName("redirect:/api/acompanantes/" + alquilerId + "/" + plazas);
+            }
+            else{
+                modelAndView.setViewName("alquiler/addAlquilerView");
+            }
         } else {
             // Fallo: volvemos al formulario y mostramos mensaje de error
-            modelAndView.setViewName("addAlquilerView");
+            modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
         }
         status.setComplete();
@@ -198,42 +244,5 @@ public class AddAlquilerController {
         return modelAndView;
     }
 
-    /**
-     * Muestra el formulario para gestionar acompañantes de un alquiler.
-     * 
-     * @param alquilerId ID del alquiler
-     * @param plazas Número de plazas disponibles
-     * @return ModelAndView con el formulario de acompañantes
-     */
-    @GetMapping("/acompanantes/{alquilerId}/{plazas}")
-    public ModelAndView mostrarFormularioAcompanantes(@PathVariable Integer alquilerId, @PathVariable int plazas) {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("addAcompanante");
 
-        // 1. Cargar acompañantes existentes de la base de datos
-        List<Acompanante> acompanantesExistentes = acompanantesRepository.findAcompananteByAlquiler(alquilerId);
-        
-        // Si es null, crear lista vacía
-        if (acompanantesExistentes == null) {
-            acompanantesExistentes = new ArrayList<>();
-        }
-
-        // 2. Calcular cuántos acompañantes nuevos se pueden añadir
-        int plazasDisponibles = plazas - 1 - acompanantesExistentes.size();
-        
-        // 3. Crear lista para nuevos acompañantes (solo los que caben)
-        List<Acompanante> nuevosAcompanantes = new ArrayList<>();
-        for (int i = 0; i < plazasDisponibles; i++) {
-            nuevosAcompanantes.add(new Acompanante());
-        }
-
-        // 4. Pasar todos los datos al modelo
-        modelAndView.addObject("alquilerId", alquilerId);
-        modelAndView.addObject("plazas", plazas);
-        modelAndView.addObject("acompanantesExistentes", acompanantesExistentes);
-        modelAndView.addObject("acompanantes", nuevosAcompanantes); // Los nuevos que se pueden añadir
-        modelAndView.addObject("plazasDisponibles", plazasDisponibles);
-
-        return modelAndView;
-    }
 }

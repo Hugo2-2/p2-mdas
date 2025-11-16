@@ -1,14 +1,11 @@
 package com.GM2.model.repository;
 
 import com.GM2.model.domain.Embarcacion;
-import com.GM2.model.domain.Patron;
-import com.GM2.model.domain.Reserva;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -23,15 +20,13 @@ import java.util.List;
 @Repository
 public class EmbarcacionRepository extends AbstractRepository {
 
-    private final PatronRepository patronRepository;
-
     /**
      * Constructor para la inyección de dependencias de JdbcTemplate.
      * @param jdbcTemplate El bean de JdbcTemplate gestionado por Spring.
      */
-    public EmbarcacionRepository(JdbcTemplate jdbcTemplate, PatronRepository patronRepository) {
-        this.patronRepository = patronRepository;
-        this.jdbcTemplate = jdbcTemplate; }
+    public EmbarcacionRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     /**
      * Recupera una lista de todas las embarcaciones de la base de datos.
@@ -182,53 +177,6 @@ public class EmbarcacionRepository extends AbstractRepository {
             return null;
         }
     }
-
-    /**
-     * Valida y añade una nueva embarcación a la base de datos.
-     * Contiene toda la lógica de negocio de las validaciones.
-     *
-     * @param embarcacion El objeto {@link Embarcacion} con los datos a insertar.
-     * @return Un String que indica "EXITO" o un mensaje de error específico.
-     */
-    public String addEmbarcacionValidado(Embarcacion embarcacion) {
-
-        if (findEmbarcacionByMatricula(embarcacion.getMatricula()) != null) {
-            return "Error: Ya existe una embarcación con esa matrícula";
-        }
-        if (findEmbarcacionByNombre(embarcacion.getNombre()) != null) {
-            return "Error: Ya existe una embarcación con dicho nombre asociado";
-        }
-        if (embarcacion.getPlazas() < 2) {
-            return "Error: El número mínimo de plazas debe ser 2";
-        }
-        try {
-            double dimensiones = Double.parseDouble(embarcacion.getDimensiones());
-            if (dimensiones < 1) {
-                return "Error: La embarcación debe tener al menos 1m2";
-            }
-        } catch (NumberFormatException e) {
-            return "Error: El formato de las dimensiones no es válido.";
-        }
-
-        // Validación de Patrón
-        String patronDni = embarcacion.getIdPatron();
-        if (patronDni != null && !patronDni.trim().isEmpty()) {
-            if (patronRepository.findPatronByDNI(patronDni) == null) {
-                return "Error: El patron no existe";
-            }
-            if (isPatronAssignedToEmbarcacion(patronDni)) {
-                return "Error: El patron ya se encuentra asignado a una embarcación";
-            }
-        }
-
-        boolean resultado = addEmbarcacion(embarcacion); // Llama al método de inserción simple
-        if (!resultado) {
-            return "Error: No se pudo añadir la embarcación";
-        }
-
-        return "EXITO";
-    }
-
 
     /**
      * Inserta una nueva embarcación en la base de datos.

@@ -12,40 +12,44 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controlador web (MVC) para la gestión de Alquileres.
+ * Maneja las peticiones web para mostrar formularios referentes a los alquileres.
+ * 
+ * @author gm2equipo1
+ * @version 1.0
+ */
 @Controller
 @RequestMapping("/api/alquiler")
 public class GetAlquilerController {
-    AlquilerRepository alquilerRepository;
-    AcompananteRepository acompanantesRepository;
-    ReservaRepository reservaRepository;
-    SocioRepository socioRepository;
-    EmbarcacionRepository embarcacionRepository;
 
-    public GetAlquilerController(AlquilerRepository alquilerRepository, AcompananteRepository acompanantesRepository, ReservaRepository reservaRepository, SocioRepository socioRepository, EmbarcacionRepository embarcacionRepository) {
+    AlquilerRepository alquilerRepository;
+
+    /**
+     * Constructor para la inyección de dependencias.
+     * Spring Boot inyectará automáticamente las instancias de los repositorios
+     * y servicios necesarios.
+     * 
+     * @param alquilerRepository Repositorio para operaciones de base de datos relacionadas con los alquileres.
+     */
+    public GetAlquilerController(AlquilerRepository alquilerRepository) {
         this.alquilerRepository = alquilerRepository;
-        this.acompanantesRepository = acompanantesRepository;
-        this.reservaRepository = reservaRepository;
-        this.socioRepository = socioRepository;
-        this.embarcacionRepository = embarcacionRepository;
 
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
         this.alquilerRepository.setSqlQueriesFileName(sqlQueriesFileName);
-        this.acompanantesRepository.setSqlQueriesFileName(sqlQueriesFileName);
-        this.reservaRepository.setSqlQueriesFileName(sqlQueriesFileName);
-        this.socioRepository.setSqlQueriesFileName(sqlQueriesFileName);
-        this.embarcacionRepository.setSqlQueriesFileName(sqlQueriesFileName);
+        
     }
 
 
     /**
      * Obtiene todos los alquileres del sistema.
      *
-     * @return ModelAndView con la lista de alquileres
+     * @return ModelAndView con la lista de objetos {@link Alquiler}
      */
     @GetMapping
     public ModelAndView getAlquileres() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("listAlquiler");
+        modelAndView.setViewName("alquiler/listAlquilerView");
 
         List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
         modelAndView.addObject("alquileres", alquileres);
@@ -57,12 +61,12 @@ public class GetAlquilerController {
      * Obtiene los detalles de un alquiler específico.
      *
      * @param id ID del alquiler
-     * @return ModelAndView con los detalles del alquiler
+     * @return ModelAndView con los detalles del objeto {@link Alquiler}
      */
     @GetMapping("/{id}")
     public ModelAndView getAlquilerDetalles(@PathVariable Integer id) {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("detallesAlquiler");
+        modelAndView.setViewName("alquiler/detallesAlquilerView");
 
         Alquiler alquiler = alquilerRepository.findAlquilerById(id);
         modelAndView.addObject("alquiler", alquiler);
@@ -73,12 +77,12 @@ public class GetAlquilerController {
     /**
      * Obtiene todos los alquileres futuros.
      *
-     * @return ModelAndView con la lista de alquileres futuros
+     * @return ModelAndView con la lista de objetos {@link Alquiler} futuros
      */
     @GetMapping("/futuros")
     public ModelAndView getAlquileresFuturos() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("alquileresFuturos");
+        modelAndView.setViewName("alquiler/alquileresFuturosView");
 
         LocalDate hoy = LocalDate.now();
         List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();

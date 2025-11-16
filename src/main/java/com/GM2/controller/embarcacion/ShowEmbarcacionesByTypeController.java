@@ -12,10 +12,16 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
 
 /**
- * Controlador web (MVC) para la funcionalidad de consultar embarcaciones.
- * * Maneja la lógica para mostrar la vista "consultarEmbarcacionesView"
- * y procesar la búsqueda de embarcaciones por tipo.
- * * @author gm2equipo1
+ * Controlador encargado de gestionar la consulta de embarcaciones por tipo.
+ * Permite mostrar un formulario donde el usuario puede seleccionar un tipo
+ * de embarcación y visualizar todas las que coinciden con dicho criterio.
+ *
+ * Este controlador implementa el requisito funcional B.4 del sistema
+ * (Consultar embarcación por tipo).
+ *
+ * La vista asociada es "embarcacion/consultarEmbarcacionesByTipoView".
+ *
+ * @author gm2equipo1
  * @version 1.0
  */
 @Controller
@@ -28,21 +34,16 @@ public class ShowEmbarcacionesByTypeController {
     private ModelAndView modelAndView = new ModelAndView();
 
     /**
-     * Constructor para la inyección de dependencias de los repositorios.
+     * Constructor encargado de inyectar las dependencias necesarias y de configurar
+     * los repositorios indicando el archivo donde se encuentran las consultas SQL.
      *
-     * Siguiendo la arquitectura MVC estricta del proyecto, este constructor
-     * recibe las instancias de los repositorios (el Modelo) y es
-     * responsable de configurarlas, como indicar la ruta al archivo
-     * de consultas SQL.
-     *
-     * @param embarcacionRepository El repositorio para acceder a los datos de Embarcacion.
-     * @param patronRepository El repositorio para acceder a los datos de Patron (necesario
-     * para las validaciones de EmbarcacionRepository).
+     * @param embarcacionRepository Repositorio para la gestión de datos de embarcaciones.
+     * @param patronRepository Repositorio para la gestión de datos de patrones.
      */
     public ShowEmbarcacionesByTypeController(EmbarcacionRepository embarcacionRepository, PatronRepository patronRepository) {
         this.embarcacionRepository = embarcacionRepository;
         this.patronRepository = patronRepository;
-        this.modelAndView.setViewName("consultarEmbarcacionesView");
+        this.modelAndView.setViewName("embarcacion/consultarEmbarcacionesByTipoView");
 
         // Configuración del archivo de propiedades SQL desde el Controlador
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
@@ -51,12 +52,15 @@ public class ShowEmbarcacionesByTypeController {
     }
 
     /**
-     * Muestra la página para consultar embarcaciones y procesa la búsqueda por tipo.
-     * Cumple con el requisito B.4 (Consultar embarcación por tipo)
+     * Muestra el formulario de consulta por tipo y, si se proporciona un tipo,
+     * procesa la búsqueda correspondiente.
      *
-     * @param tipo El tipo de embarcación a buscar (ej. "VELERO").
-     * Es opcional; si no se provee, se usa "none".
-     * @return Un objeto {@link ModelAndView} con la vista y los datos del modelo.
+     * El parámetro es opcional: si no se recibe un tipo, simplemente se mostrará
+     * el formulario vacío sin resultados.
+     *
+     * @param tipo Tipo de embarcación a buscar. Si no se especifica, se utiliza "none"
+     *             indicando que no debe ejecutarse ninguna búsqueda.
+     * @return ModelAndView configurado con la vista y, si corresponde, los resultados.
      */
     @GetMapping("/consultarEmbarcacionesPorTipo")
     public ModelAndView showEmbarcacionesByType(

@@ -2,7 +2,7 @@ package com.GM2.model.domain;
 
 /**
  * Representa a un acompanante de un alquiler de embarcación.
- * Contiene información sobre el DNI del acompanante y el ID del alquiler al que pertenece.
+ * Contiene información sobre el DNI del acompanante y el ID del alquiler al que pertenece, además de su ID representativo.
  * El acompanante debe ser un socio del club náutico.
  * 
  * @author gm2equipo1

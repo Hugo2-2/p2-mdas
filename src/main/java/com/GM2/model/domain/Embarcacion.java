@@ -1,5 +1,7 @@
 package com.GM2.model.domain;
 
+import java.time.LocalDate;
+
 /**
  * Representa una embarcación en el club náutico.
  * Esta clase almacena la información de la flota, incluyendo sus
@@ -27,7 +29,7 @@ public class Embarcacion {
      * Constructor completo para crear una embarcación con todos sus datos.
      *
      * @param idPatron DNI del patrón asignado.
-     * @param dimensiones Dimensiones de la embarcación.
+     * @param dimensiones Dimensiones de la embarcación (en m2).
      * @param plazas Número total de plazas.
      * @param tipo Tipo de embarcación.
      * @param nombre Nombre de la embarcación.
@@ -45,14 +47,14 @@ public class Embarcacion {
     /**
      * Constructor para crear una embarcación sin un patrón asignado inicialmente.
      *
-     * @param dimensiones Dimensiones de la embarcación.
+     * @param dimensiones Dimensiones de la embarcación (en m2).
      * @param plazas Número total de plazas.
      * @param tipo Tipo de embarcación.
      * @param nombre Nombre de la embarcación.
      * @param matricula Matrícula única de la embarcación.
      */
     public Embarcacion(String dimensiones, int plazas, String tipo, String nombre, String matricula) {
-        this.idPatron = "";
+        this.idPatron = ""; // Asigna un string vacío como valor por defecto
         this.dimensiones = dimensiones;
         this.plazas = plazas;
         this.tipo = tipo;
@@ -60,51 +62,88 @@ public class Embarcacion {
         this.matricula = matricula;
     }
 
+    // --- Getters y Setters ---
 
+    /**
+     * @return El DNI del patrón asignado.
+     */
     public String getIdPatron() {
         return idPatron;
     }
 
+    /**
+     * @param idPatron El DNI del patrón a asignar.
+     */
     public void setIdPatron(String idPatron) {
         this.idPatron = idPatron;
     }
 
+    /**
+     * @return Las dimensiones de la embarcación (como String).
+     */
     public String getDimensiones() {
         return dimensiones;
     }
 
+    /**
+     * @param dimensiones Las dimensiones de la embarcación.
+     */
     public void setDimensiones(String dimensiones) {
         this.dimensiones = dimensiones;
     }
 
+    /**
+     * @return El número de plazas.
+     */
     public int getPlazas() {
         return plazas;
     }
 
+    /**
+     * @param plazas El número de plazas.
+     */
     public void setPlazas(int plazas) {
         this.plazas = plazas;
     }
 
+    /**
+     * @return El tipo de embarcación (como String).
+     */
     public String getTipo() {
         return tipo;
     }
 
+    /**
+     * @param tipo El tipo de embarcación.
+     */
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 
+    /**
+     * @return El nombre de la embarcación.
+     */
     public String getNombre() {
         return nombre;
     }
 
+    /**
+     * @param nombre El nombre de la embarcación.
+     */
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
+    /**
+     * @return La matrícula de la embarcación.
+     */
     public String getMatricula() {
         return matricula;
     }
 
+    /**
+     * @param matricula La matrícula de la embarcación.
+     */
     public void setMatricula(String matricula) {
         this.matricula = matricula;
     }
