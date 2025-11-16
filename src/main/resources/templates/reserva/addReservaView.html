@@ -5,25 +5,6 @@
     <title>Nueva Reserva de Actividad - Club Náutico</title>
     <link th:href="@{/styles.css}" rel="stylesheet">
 
-    <script>
-        // Calcula el precio automáticamente (40 € por plaza)
-        function actualizarPrecio() {
-            // Obtiene el valor de las plazas
-            const plazas = document.getElementById("plazas").value;
-
-            // Calcula el precio (40 € por plaza)
-            const precio = plazas ? plazas * 40 : 0;
-
-            // Asigna el valor calculado al campo oculto 'precio' para que Spring lo reciba
-            document.getElementById("precio").value = precio.toFixed(2);
-
-            // Opcional: Si quieres mostrar el precio al usuario en un campo de solo lectura
-            const precioDisplay = document.getElementById("precio_display");
-            if (precioDisplay) {
-                precioDisplay.value = precio.toFixed(2);
-            }
-        }
-    </script>
 </head>
 
 <body>
@@ -71,9 +52,9 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="usuario_id" class="form-label">UID del socio solicitante</label>
+                        <label for="usuario_id" class="form-label">DNI del socio solicitante</label>
                         <input type="text" id="usuario_id" th:field="*{usuario_id}" class="form-control"
-                               placeholder="Ej: 12345678A" required>
+                               placeholder="Ej: 12345678A"  minlength="9" maxlength="9" required>
                     </div>
                 </div>
                 <div class="col-md-6">

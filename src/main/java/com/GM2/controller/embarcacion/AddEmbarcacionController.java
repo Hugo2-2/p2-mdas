@@ -95,18 +95,26 @@ public class AddEmbarcacionController {
         // 1. Comprobamos que la matrícula sea única, al igual con el nombre
         if (embarcacionRepository.findEmbarcacionByMatricula(newEmbarcacion.getMatricula()) != null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: Ya existe una embarcación con esa matrícula");
+            sessionStatus.setComplete();
+            return "redirect:/api/embarcaciones/addEmbarcacion";
         } else if (embarcacionRepository.findEmbarcacionByNombre(newEmbarcacion.getNombre()) != null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: Ya existe una embarcación con dicho nombre asociado");
+            sessionStatus.setComplete();
+            return "redirect:/api/embarcaciones/addEmbarcacion";
         }
         // 2. Comprobamos que al menos sea 2 plazas (1 para patron y otra para quien reserva)
         else if (newEmbarcacion.getPlazas() < 2) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: El número mínimo de plazas debe ser 2");
+            sessionStatus.setComplete();
+            return "redirect:/api/embarcaciones/addEmbarcacion";
         }
         // 3. Validación de dimensiones, se mete en un try catch, ya que hay que pasar de string a double las dimensiones
         else try {
                 double dimensiones = Double.parseDouble(newEmbarcacion.getDimensiones());
                 if (dimensiones < 1) {
                     redirectAttributes.addFlashAttribute("errorMessage", "Error: La embarcación debe tener al menos 1m2");
+                    sessionStatus.setComplete();
+                    return "redirect:/api/embarcaciones/addEmbarcacion";
                 }
 
                 // 4. Validación de Patrón
@@ -115,8 +123,12 @@ public class AddEmbarcacionController {
                 if (patronDni != null && !patronDni.trim().isEmpty()) {
                     if (patronRepository.findPatronByDNI(patronDni) == null) {
                         redirectAttributes.addFlashAttribute("errorMessage", "Error: El patron no existe");
+                        sessionStatus.setComplete();
+                        return "redirect:/api/embarcaciones/addEmbarcacion";
                     } else if (embarcacionRepository.isPatronAssignedToEmbarcacion(patronDni)) {
                         redirectAttributes.addFlashAttribute("errorMessage", "Error: El patron ya se encuentra asignado a una embarcación");
+                        sessionStatus.setComplete();
+                        return "redirect:/api/embarcaciones/addEmbarcacion";
                     }
                 }
 
