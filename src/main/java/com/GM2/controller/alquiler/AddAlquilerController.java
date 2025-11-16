@@ -168,7 +168,7 @@ public class AddAlquilerController {
 
             for (Alquiler a : alquileres) {
                 if (a.getMatricula_embarcacion().equals(e.getMatricula())) {
-                    if (!(fin.isBefore(a.getFechainicio()) || inicio.isAfter(a.getFechafin()))) {
+                    if (!(inicio.isAfter(a.getFechafin()) || fin.isBefore(a.getFechainicio()))) {
                         ocupada = true;
                         break;
                     }
@@ -228,9 +228,12 @@ public class AddAlquilerController {
             // Extraer el id del alquiler
             Integer alquilerId = Integer.parseInt(resultado.substring(3));
             int plazas = alquiler.getPlazas();
-
-        modelAndView.setViewName("redirect:/api/acompanantes/" + alquilerId + "/" + plazas);
-    
+            if( plazas > 1){
+                modelAndView.setViewName("redirect:/api/acompanantes/" + alquilerId + "/" + plazas);
+            }
+            else{
+                modelAndView.setViewName("alquiler/addAlquilerView");
+            }
         } else {
             // Fallo: volvemos al formulario y mostramos mensaje de error
             modelAndView.setViewName("alquiler/addAlquilerView");

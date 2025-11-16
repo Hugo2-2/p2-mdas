@@ -80,8 +80,7 @@
                                 <!-- Duración -->
                                 <td>
                                     <span class="badge bg-info"
-                                          th:text="${#temporals.day(alquiler.fechafin) - #temporals.day(alquiler.fechainicio) + 1} + ' días'">
-                                        5 días
+                                          th:text="${(alquiler.fechafin.toEpochDay() - alquiler.fechainicio.toEpochDay() + 1) + ' días'}"></span>
                                     </span>
                                 </td>
 
@@ -128,7 +127,8 @@
                                            title="Ver detalles">
                                             👁️
                                         </a>
-                                        <a th:href="@{/api/acompanantes/{alquilerId}/{plazas}(alquilerId=${alquiler.id}, plazas=${alquiler.plazas})}"
+                                        <a th:if="${alquiler.plazas > 1}"
+                                           th:href="@{/api/acompanantes/{alquilerId}/{plazas}(alquilerId=${alquiler.id}, plazas=${alquiler.plazas})}"
                                            class="btn"
                                            title="Gestionar acompañantes">
                                             👥
