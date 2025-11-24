@@ -73,6 +73,16 @@ public class Socio {
         this.nombre = nombre;
     }
 
+    public Socio(String nombre, String apellidos, String dni, LocalDate fechaNacimiento, String direccion, LocalDate fechaInscripcion, Boolean esTitular, Boolean tieneLicenciaPatron) {
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+        this.dni = dni;
+        this.fechaNacimiento = fechaNacimiento;
+        this.direccion = direccion;
+        this.fechaInscripcion = fechaInscripcion;
+        this.esTitular = tieneLicenciaPatron;
+    }
+
     // Getters y Setters
 
     public String getNombre() {
@@ -152,3 +162,5 @@ public class Socio {
         return edad >= 18;
     }
 }
+
+

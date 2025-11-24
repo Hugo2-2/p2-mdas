@@ -176,7 +176,7 @@ public class SocioRepository extends AbstractRepository {
         }
 
         // Creamos su inscripcion simple que posteriormente podrá se ampliada
-        if(socio.getEsTitular()) {
+        if(socio.getEsTitular() && socio.getEsTitular() != null) {
 
             Inscripcion inscripcion = new Inscripcion(socio.getDni());
 
