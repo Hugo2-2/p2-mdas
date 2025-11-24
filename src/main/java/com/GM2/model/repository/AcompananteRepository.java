@@ -166,5 +166,17 @@ public class AcompananteRepository extends AbstractRepository {
             return false;
         }
     }
+
+    public boolean deleteAcompanante(int id, String dniSocio) {
+        try {
+            String query = sqlQueries.getProperty("delete-deleteAcompanante");
+            int rowsAffected = jdbcTemplate.update(query, id, dniSocio);
+            return rowsAffected > 0;
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to delete acompanante");
+            exception.printStackTrace();
+            return false;
+        }
+    }
     
 }

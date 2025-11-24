@@ -1,9 +1,11 @@
 package com.GM2.api;
 
+import com.GM2.model.domain.Acompanante;
 import com.GM2.model.domain.Alquiler;
 import com.GM2.model.domain.Embarcacion;
 import com.GM2.model.domain.Reserva;
 import com.GM2.model.domain.Socio;
+import com.GM2.model.repository.AcompananteRepository;
 import com.GM2.model.repository.AlquilerRepository;
 import com.GM2.model.repository.EmbarcacionRepository;
 import com.GM2.model.repository.ReservaRepository;
@@ -25,21 +27,25 @@ public class AlquilerRestController {
     EmbarcacionRepository embarcacionRepository;
     SocioRepository socioRepository;
     ReservaRepository reservaRepository;
+    AcompananteRepository acompanantesRepository;
 
     public AlquilerRestController(AlquilerRepository alquilerRepository, 
                                  EmbarcacionRepository embarcacionRepository,
                                  SocioRepository socioRepository,
-                                 ReservaRepository reservaRepository) {
+                                 ReservaRepository reservaRepository,
+                                 AcompananteRepository acompanantesRepository) {
         this.alquilerRepository = alquilerRepository;
         this.embarcacionRepository = embarcacionRepository;
         this.socioRepository = socioRepository;
         this.reservaRepository = reservaRepository;
+        this.acompanantesRepository = acompanantesRepository;
         
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
         this.alquilerRepository.setSqlQueriesFileName(sqlQueriesFileName);
         this.embarcacionRepository.setSqlQueriesFileName(sqlQueriesFileName);
         this.socioRepository.setSqlQueriesFileName(sqlQueriesFileName);
         this.reservaRepository.setSqlQueriesFileName(sqlQueriesFileName);
+        this.acompanantesRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
     /**
@@ -252,4 +258,151 @@ public class AlquilerRestController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+    @PatchMapping("/{id}/acompanantes")
+    public ResponseEntity<Alquiler> addAcompanante(@PathVariable Integer id, @RequestBody String dniSocio) {
+        try {
+            // Verificar que el alquiler existe y es futuro
+            Alquiler alquiler = alquilerRepository.findAlquilerById(id);
+            if (alquiler == null) {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+
+            if (alquiler.getFechainicio().isBefore(LocalDate.now())) {
+                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+
+            // Verificar que el socio existe
+            Socio socio = socioRepository.findSocioByDNI(dniSocio);
+            if (socio == null) {
+                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+
+            // Verificar que no es el socio titular
+            if (dniSocio.equals(alquiler.getUsuario_dni())) {
+                return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+            }
+
+            // Verificar que el socio no está ya vinculado
+            List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
+            for (Acompanante acompanante : acompanantes) {
+                if (acompanante.getDni().equals(dniSocio)) {
+                    return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+                }
+            }
+
+
+            // Verificar que hay plazas disponibles
+            Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(
+                alquiler.getMatricula_embarcacion());
+            int plazasOcupadas = acompanantes.size() + 1; // +1 por el titular
+            if (plazasOcupadas >= embarcacion.getPlazas()) {
+                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+
+            // Añadir acompañante
+            Acompanante acompanante = new Acompanante();
+            acompanante.setDni(dniSocio);
+            acompanante.setId_alquiler(id);
+
+            boolean exito = acompanantesRepository.addAcompanante(acompanante);
+            if (!exito) {
+                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            // Actualizar número de plazas y precio del alquiler
+            alquiler.setPlazas(plazasOcupadas);
+            long dias = ChronoUnit.DAYS.between(alquiler.getFechainicio(), alquiler.getFechafin()) + 1;
+            double nuevoPrecio = 20.0 * plazasOcupadas * dias;
+            alquiler.setPrecio(nuevoPrecio);
+
+            boolean actualizado = alquilerRepository.updateAlquiler(alquiler);
+            if (!actualizado) {
+                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            return new ResponseEntity<>(alquiler, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PatchMapping("/{id}/acompanantes/{dniSocio}")
+    public ResponseEntity<Alquiler> removeAcompanante(@PathVariable Integer id, 
+                                                     @PathVariable String dniSocio) {
+        try {
+            // Verificar que el alquiler existe y es futuro
+            Alquiler alquiler = alquilerRepository.findAlquilerById(id);
+            if (alquiler == null) {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+
+            if (alquiler.getFechainicio().isBefore(LocalDate.now())) {
+                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+
+            // Verificar que el socio está vinculado como acompañante
+            List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
+            for (Acompanante acompanante : acompanantes) {
+                if (acompanante.getDni().equals(dniSocio)) {
+                    return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+                }
+            }
+
+
+            // Eliminar acompañante
+            boolean exito = acompanantesRepository.deleteAcompanante(id, dniSocio);
+            if (!exito) {
+                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            // Actualizar número de plazas y precio del alquiler
+            int nuevasPlazas = acompanantes.size() - 1 + 1; // -1 acompañante +1 titular
+            alquiler.setPlazas(nuevasPlazas);
+            long dias = ChronoUnit.DAYS.between(alquiler.getFechainicio(), alquiler.getFechafin()) + 1;
+            double nuevoPrecio = 20.0 * nuevasPlazas * dias;
+            alquiler.setPrecio(nuevoPrecio);
+
+            boolean actualizado = alquilerRepository.updateAlquiler(alquiler);
+            if (!actualizado) {
+                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            return new ResponseEntity<>(alquiler, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancelAlquiler(@PathVariable Integer id) {
+        try {
+            // Verificar que el alquiler existe
+            Alquiler alquiler = alquilerRepository.findAlquilerById(id);
+            if (alquiler == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            // Verificar que es futuro
+            if (alquiler.getFechainicio().isBefore(LocalDate.now())) {
+                return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+
+            // Eliminar el alquiler
+            boolean exito = alquilerRepository.deleteAlquiler(id);
+            if (exito) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

@@ -176,4 +176,64 @@ public class AlquilerRepository extends AbstractRepository{
 
         return false;
     }
+
+    public boolean updateAlquiler(Alquiler alquiler) {
+        try {
+            String query = sqlQueries.getProperty("update-updateAlquiler");
+            if(query != null) {
+                int result = jdbcTemplate.update(query,
+                        Date.valueOf(alquiler.getFechainicio()),
+                        Date.valueOf(alquiler.getFechafin()),
+                        alquiler.getPrecio(),
+                        alquiler.getPlazas(),
+                        alquiler.getUsuario_dni(),
+                        alquiler.getMatricula_embarcacion(),
+                        alquiler.getId()
+                );
+
+                if (result <= 0){
+                    return false;
+                }
+
+                return true;
+
+            } else return false;
+
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to update alquileres in the database");
+            exception.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean deleteAlquiler(int id) {
+        try {
+            //Eliminar acompanantes
+            String deleteAcom = sqlQueries.getProperty("delete-deleteAcompanantesByAlquiler");
+            jdbcTemplate.update(deleteAcom, id);
+
+            //Eliminar alquiler
+            String query = sqlQueries.getProperty("delete-deteleAlquiler");
+            if(query != null) {
+                int result = jdbcTemplate.update(query, id);
+
+                if (result <= 0){
+                    return false;
+                }
+
+                return true;
+
+            } else return false;
+
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to delete alquileres in the database");
+            exception.printStackTrace();
+        }
+
+        return false;
+    }
+
+
+
 }
