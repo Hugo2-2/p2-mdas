@@ -160,4 +160,60 @@ public class ReservaRepository extends AbstractRepository{
         return false; // Retorna false por defecto si hay una excepción
     }
 
+    /**
+     * Actualiza los datos de una reserva existente.
+     * Corresponde a las operaciones PATCH/PUT.
+     *
+     * @param reserva El objeto reserva con los datos actualizados.
+     * @return true si se actualizó correctamente.
+     */
+    public boolean updateReserva(Reserva reserva) {
+        try {
+            // Buscamos la query en el archivo sql.properties
+            String query = sqlQueries.getProperty("update-reserva");
+
+            if (query != null) {
+                // Ejecutamos el update.
+                // IMPORTANTE: El orden de estos parámetros debe coincidir con los "?" de tu SQL
+                int result = jdbcTemplate.update(query,
+                        reserva.getFecha(),                  // 1. Nueva fecha
+                        reserva.getPlazas(),                 // 2. Nuevas plazas
+                        reserva.getPrecio(),                 // 3. Nuevo precio (si cambiaron plazas)
+                        reserva.getDescripcion(),            // 4. Nueva descripción
+                        // El ID va al final porque está en la cláusula WHERE
+                        reserva.getId()
+                );
+
+                return result > 0; // Devuelve true si se modificó alguna fila
+            } else {
+                return false;
+            }
+        } catch (DataAccessException exception) {
+            System.err.println("Error actualizando la reserva: " + exception.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Elimina una reserva por su ID.
+     * Corresponde a la operación DELETE.
+     *
+     * @param id El ID de la reserva a eliminar.
+     * @return true si se eliminó correctamente.
+     */
+    public boolean deleteReserva(int id) {
+        try {
+            String query = sqlQueries.getProperty("delete-reserva");
+
+            if (query != null) {
+                int result = jdbcTemplate.update(query, id);
+                return result > 0;
+            } else {
+                return false;
+            }
+        } catch (DataAccessException exception) {
+            System.err.println("Error eliminando la reserva con id: " + id);
+            return false;
+        }
+    }
 }
