@@ -2,6 +2,7 @@ package com.GM2.api;
 
 import com.GM2.model.domain.Inscripcion;
 import com.GM2.model.domain.Socio;
+import com.GM2.model.domain.SocioConInscripcionRequest;
 import com.GM2.model.repository.HijosRepository;
 import com.GM2.model.repository.InscripcionRepository;
 import com.GM2.model.repository.SocioRepository;
@@ -165,7 +166,5 @@ public class SociosRestController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    
 
 }
