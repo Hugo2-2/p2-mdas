@@ -244,4 +244,36 @@ public class HijosRepository extends AbstractRepository {
             return false;
         }
     }
+
+    /**
+     * Elimina un hijo de la base de datos por su DNI.
+     *
+     * @param dni El DNI del hijo a eliminar.
+     * @return true si la eliminación fue exitosa, false en caso contrario.
+     */
+    public boolean deleteHijo(String dni) {
+        if(dni == null || dni.isEmpty()) {
+            return false;
+        }
+
+        // Verificar que el hijo existe
+        Hijos hijo = findHijoByDni(dni);
+        if(hijo == null) {
+            return false;
+        }
+
+        try {
+            String query = sqlQueries.getProperty("delete-deleteHijo");
+            if(query != null) {
+                int result = jdbcTemplate.update(query, dni);
+                return result > 0;
+            } else {
+                return false;
+            }
+        } catch (DataAccessException ex) {
+            System.err.println("Unable to delete hijo from the database");
+            ex.printStackTrace();
+            return false;
+        }
+    }
 }

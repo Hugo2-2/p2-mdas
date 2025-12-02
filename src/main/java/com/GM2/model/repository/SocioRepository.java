@@ -248,5 +248,38 @@ public class SocioRepository extends AbstractRepository {
             return "No se ha podido actualizar el socio";
         }
     }
+
+    /**
+     * Elimina un socio de la base de datos por su DNI.
+     * IMPORTANTE: Solo debe usarse si el socio no está vinculado a ninguna inscripción.
+     *
+     * @param dni El DNI del socio a eliminar.
+     * @return true si la eliminación fue exitosa, false en caso contrario.
+     */
+    public boolean deleteSocio(String dni) {
+        if(dni == null || dni.isEmpty()) {
+            return false;
+        }
+
+        // Verificar que el socio existe
+        Socio socio = findSocioByDNI(dni);
+        if(socio == null) {
+            return false;
+        }
+
+        try {
+            String query = sqlQueries.getProperty("delete-deleteSocio");
+            if(query != null) {
+                int result = jdbcTemplate.update(query, dni);
+                return result > 0;
+            } else {
+                return false;
+            }
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to delete socio from the database");
+            exception.printStackTrace();
+            return false;
+        }
+    }
 }
 

@@ -235,7 +235,75 @@ public class SociosRestController {
     }
 
     /*
-    * 6. 
+    * 6. Eliminar a un socio si no está vinculado a ninguna inscripción (DELETE)
+    * Busca en la tabla de socios y en la tabla de hijos
     */
+    @DeleteMapping
+    public ResponseEntity<Void> deleteSocio(@RequestBody String dni) {
+        try {
+            // Validación
+            if(dni == null || dni.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
+            // Primero verificar si existe como socio
+            Socio socio = socioRepository.findSocioByDNI(dni);
+            
+            if(socio != null) {
+                // Es un socio adulto - verificar que no esté vinculado a inscripciones
+                
+                // Verificar si es titular de alguna inscripción
+                if(socio.getEsTitular()) {
+                    Inscripcion inscripcion = inscripcionRepository.findInscripcionByDNITitular(dni);
+                    if(inscripcion != null) {
+                        return new ResponseEntity<>(HttpStatus.CONFLICT);
+                    }
+                }
+
+                // Verificar si es segundo adulto en alguna inscripción
+                List<Inscripcion> todasInscripciones = inscripcionRepository.findAllInscripciones();
+                if(todasInscripciones != null) {
+                    for(Inscripcion insc : todasInscripciones) {
+                        if(insc.getSegundoAudlto() != null && insc.getSegundoAudlto().equals(dni)) {
+                            return new ResponseEntity<>(HttpStatus.CONFLICT);
+                        }
+                    }
+                }
+
+                // Si pasa las validaciones, eliminar el socio
+                boolean resultado = socioRepository.deleteSocio(dni);
+                if(resultado) {
+                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+            
+            // Si no es socio, verificar si existe como hijo
+            Hijos hijo = hijosRepository.findHijoByDni(dni);
+            
+            if(hijo != null) {
+                // Es un hijo - verificar que no esté vinculado a una inscripción (id_inscripcion > 0)
+                if(hijo.getId_inscripcion() > 0) {
+                    return new ResponseEntity<>(HttpStatus.CONFLICT);
+                }
+
+                // Si no está vinculado, eliminar el hijo
+                boolean resultado = hijosRepository.deleteHijo(dni);
+                if(resultado) {
+                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+
+            // Si no existe ni como socio ni como hijo
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

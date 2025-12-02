@@ -265,13 +265,35 @@ public class InscripcionesRestController {
     * 8. Cancelar una inscripción individual o familiar, dado el DNI del socio titular, sin
         borrar a los socios (DELETE)
     */
+    @DeleteMapping
+    public ResponseEntity<Void> deleteInscripcion(@RequestBody String dniTitular) {
+        try {
+            // Validación
+            if(dniTitular == null || dniTitular.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
 
-    @DeleteMapping("/deleteInscripcion")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteInscripcion(@RequestBody int idInscripcion) {
-        Inscripcion inscripcion = inscripcionRepository.findInscripcionById(idInscripcion);
+            // Verificar que la inscripción existe
+            Inscripcion inscripcion = inscripcionRepository.findInscripcionByDNITitular(dniTitular);
+            if(inscripcion == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            // Eliminar la inscripción (los socios y los hijos no se eliminan)
+            boolean resultado = inscripcionRepository.deleteInscripcionByDniTitular(dniTitular);
+
+            if(resultado) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-
+    
 
 }
