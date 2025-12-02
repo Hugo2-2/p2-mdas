@@ -178,4 +178,31 @@ public class PatronRepository extends AbstractRepository {
         return false;
     }
 
+    /**
+     * Actualiza los datos personales de un patrón.
+     * NO actualiza el DNI.
+     * @param patron Objeto con los datos ya modificados.
+     * @return true si se actualizó correctamente.
+     */
+    public boolean updatePatronInfo(Patron patron) {
+        try {
+            String query = sqlQueries.getProperty("update-updatePatronInfo");
+            if (query != null) {
+                int result = jdbcTemplate.update(query,
+                        patron.getNombre(),
+                        patron.getApellidos(),
+                        patron.getFechaNacimiento(),
+                        patron.getFechaExpedicionTitulo(),
+                        patron.getDni()
+                );
+                return result > 0;
+            }
+            return false;
+        } catch (DataAccessException e) {
+            System.err.println("Error al actualizar el patrón: " + patron.getDni());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

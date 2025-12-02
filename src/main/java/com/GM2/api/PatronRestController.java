@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController()
@@ -59,6 +60,40 @@ public class PatronRestController {
 
         if (exito) {
             return new ResponseEntity<>(nuevoPatron, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PatchMapping(path="/{dni}", consumes="application/json")
+    public ResponseEntity<Patron> updatePatron(@PathVariable("dni") String dni, @RequestBody Patron newPatron) {
+
+        Patron patronActual = patronRepository.findPatronByDNI(dni);
+        if (patronActual == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        if (newPatron.getNombre() != null) patronActual.setNombre(newPatron.getNombre());
+        if (newPatron.getApellidos() != null) patronActual.setApellidos(newPatron.getApellidos());
+        if (newPatron.getFechaNacimiento() != null) patronActual.setFechaNacimiento(newPatron.getFechaNacimiento());
+        if (newPatron.getFechaExpedicionTitulo() != null) patronActual.setFechaExpedicionTitulo(newPatron.getFechaExpedicionTitulo());
+
+        if (patronActual.getFechaNacimiento().isAfter(LocalDate.now())) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        if (patronActual.getFechaExpedicionTitulo().isAfter(LocalDate.now())) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        if (patronActual.getFechaExpedicionTitulo().isBefore(patronActual.getFechaNacimiento())) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        boolean exito = patronRepository.updatePatronInfo(patronActual);
+
+        if (exito) {
+            return new ResponseEntity<>(patronActual, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
