@@ -270,4 +270,29 @@ public class EmbarcacionRepository extends AbstractRepository {
         }
         return false;
     }
+
+    public boolean updateEmbarcacion(Embarcacion embarcacion) {
+        try {
+            String query = sqlQueries.getProperty("update-updateEmbarcacion");
+
+            if (query != null) {
+                // Pasamos los parámetros en el mismo orden que los signos '?' de la query
+                int result = jdbcTemplate.update(query,
+                        embarcacion.getNombre(),
+                        embarcacion.getTipo(),
+                        embarcacion.getPlazas(),
+                        embarcacion.getDimensiones(),
+                        embarcacion.getMatricula()
+                );
+
+                return result > 0;
+            }
+            return false;
+
+        } catch (DataAccessException e) {
+            System.err.println("Error al actualizar la embarcación: " + embarcacion.getMatricula());
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
