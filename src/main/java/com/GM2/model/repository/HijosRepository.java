@@ -214,4 +214,34 @@ public class HijosRepository extends AbstractRepository {
 
         return true;
     }
+
+    public boolean updateHijo(Hijos hijo) {
+
+        if( hijo == null ) return false;
+
+        if( findHijoByDni(hijo.getDni()) == null ) return false;
+
+        try {
+            String query = sqlQueries.getProperty("update-Hijo");
+            if(query != null) {
+                int result = jdbcTemplate.update(query,
+                        hijo.getNombre(),
+                        hijo.getApellidos(),
+                        hijo.getFechaNacimiento(),
+                        hijo.getId_inscripcion(),
+                        hijo.getId_inscripcion()
+                );
+
+                if (result > 0)
+                    return true;
+                else return false;
+
+            } else return false;
+
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to update hijo in the database");
+            exception.printStackTrace();
+            return false;
+        }
+    }
 }

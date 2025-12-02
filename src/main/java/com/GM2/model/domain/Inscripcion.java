@@ -133,4 +133,8 @@ public class Inscripcion {
     public void setHijos(List<Hijos> hijos) {
         this.hijos = hijos;
     }
+
+    public void addHijo(Hijos hijo) {
+        this.hijos.add(hijo);
+    }
 }

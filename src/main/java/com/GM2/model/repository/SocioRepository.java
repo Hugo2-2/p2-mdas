@@ -196,5 +196,57 @@ public class SocioRepository extends AbstractRepository {
             return "No se ha podido guardar el socio";
         }
     }
+
+    /**
+     * Actualiza la información de un socio existente en la base de datos.
+     * No permite actualizar el DNI (se usa como clave primaria).
+     * Verifica que el socio exista antes de realizar la actualización.
+     *
+     * @param socio El objeto {@link Socio} con los datos actualizados.
+     * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
+     */
+    public String updateSocio(Socio socio) {
+        if(socio == null) {
+            return "No se ha ingresado el socio";
+        }
+
+        if(socio.getDni() == null || socio.getDni().isEmpty()) {
+            return "El DNI es obligatorio para actualizar el socio";
+        }
+
+        // Verificar que el socio existe
+        Socio socioExistente = findSocioByDNI(socio.getDni());
+        if(socioExistente == null) {
+            return "No se puede actualizar, el socio no existe";
+        }
+
+        try {
+            String query = sqlQueries.getProperty("update-socio");
+            if(query != null) {
+                int result = jdbcTemplate.update(query,
+                    socio.getNombre(),
+                    socio.getApellidos(),
+                    socio.getFechaNacimiento(),
+                    socio.getDireccion(),
+                    socio.getFechaInscripcion(),
+                    socio.getEsTitular(),
+                    socio.getTieneLicenciaPatron(),
+                    socio.getDni()
+                );
+
+                if(result > 0) {
+                    return "EXITO";
+                } else {
+                    return "No se ha podido actualizar el socio";
+                }
+            } else {
+                return "No se ha podido actualizar el socio";
+            }
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to update socio in the database");
+            exception.printStackTrace();
+            return "No se ha podido actualizar el socio";
+        }
+    }
 }
 
