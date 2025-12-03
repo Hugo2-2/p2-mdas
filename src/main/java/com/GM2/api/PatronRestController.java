@@ -14,13 +14,15 @@ import java.util.List;
 @RestController()
 @RequestMapping(path="api/patrones", produces="application/json")
 public class PatronRestController {
+    private final EmbarcacionRepository embarcacionRepository;
     PatronRepository patronRepository;
 
-    public PatronRestController(PatronRepository patronRepository) {
+    public PatronRestController(PatronRepository patronRepository, EmbarcacionRepository embarcacionRepository) {
         this.patronRepository = patronRepository;
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
 
         this.patronRepository.setSqlQueriesFileName(sqlQueriesFileName);
+        this.embarcacionRepository = embarcacionRepository;
     }
 
     @GetMapping
@@ -94,6 +96,65 @@ public class PatronRestController {
 
         if (exito) {
             return new ResponseEntity<>(patronActual, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PatchMapping(path="/{matricula}/patron", consumes="application/json")
+    public ResponseEntity<Patron> assignPatronToEmbarcacion(@PathVariable String matricula, @RequestBody String dniPatron) {
+        //Limpiamos el dni
+        String dniPatronLimpio = dniPatron.replaceAll("[\"{}]", "").trim();
+
+        if(embarcacionRepository.findEmbarcacionByMatricula(matricula) == null){
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        Patron patron = patronRepository.findPatronByDNI(dniPatronLimpio);
+        if(patron == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        //Comprobar que el patrón no está asignado
+        if(embarcacionRepository.isPatronAssignedToEmbarcacion(dniPatronLimpio)) {
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        }
+
+        boolean result = embarcacionRepository.updatePatron(dniPatronLimpio, matricula);
+
+        if(result) {
+            return new ResponseEntity<>(patron, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PatchMapping(path="/{matricula}/noPatron", consumes="application/json")
+    public ResponseEntity<Patron> unassignPatronToEmbarcacion(@PathVariable String matricula, @RequestBody String dniPatron) {
+        //Limpiamos el dni
+        String dniPatronLimpio = dniPatron.replaceAll("[\"{}]", "").trim();
+
+        Embarcacion embarcacionActual = embarcacionRepository.findEmbarcacionByMatricula(matricula);
+        if( embarcacionActual == null){
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        Patron patron = patronRepository.findPatronByDNI(dniPatronLimpio);
+        if(patron == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        String patronEmbarcacionActual = embarcacionActual.getIdPatron();
+
+        // Si el barco está vacío O el patrón no coincide, damos error
+        if(patronEmbarcacionActual == null || !patronEmbarcacionActual.equals(dniPatronLimpio)) {
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        }
+
+        boolean result = embarcacionRepository.updatePatron(null, matricula);
+
+        if(result) {
+            return new ResponseEntity<>(patron, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
