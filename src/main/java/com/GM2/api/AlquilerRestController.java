@@ -323,6 +323,10 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
+            alquiler = alquilerRepository.findAlquilerById(id);
+            if (alquiler == null) {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
             return new ResponseEntity<>(alquiler, HttpStatus.OK);
 
         } catch (Exception e) {
