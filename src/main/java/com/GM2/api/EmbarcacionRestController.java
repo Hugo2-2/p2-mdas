@@ -151,4 +151,31 @@ public class EmbarcacionRestController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @DeleteMapping("/{matricula}")
+    public ResponseEntity<Void> deleteEmbarcacion(@PathVariable String matricula) {
+        //Validar existencia de la embarcacion
+        if (embarcacionRepository.findEmbarcacionByMatricula(matricula) == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Validar que la embarcacion no este alquilada
+        if (embarcacionRepository.isEmbarcacionAlquilada(matricula)) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        //Validar que la embarcacion no este reservada
+        if (embarcacionRepository.isEmbarcacionReservada(matricula)) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        //Ejecutar borrado
+        boolean exito = embarcacionRepository.deleteEmbarcacion(matricula);
+
+        if (exito) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
