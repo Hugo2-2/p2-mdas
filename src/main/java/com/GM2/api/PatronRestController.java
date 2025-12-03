@@ -159,4 +159,27 @@ public class PatronRestController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @DeleteMapping("/{dni}")
+    public ResponseEntity<Void> deletePatron(@PathVariable String dni) {
+
+        //Validar existencia del patrón
+        if (patronRepository.findPatronByDNI(dni) == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Validar si el patron esta asignado a una embarcacion
+        if (embarcacionRepository.isPatronAssignedToEmbarcacion(dni)) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        //Ejecutar borrado
+        boolean exito = patronRepository.deletePatron(dni);
+
+        if (exito) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

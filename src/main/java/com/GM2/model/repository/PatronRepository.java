@@ -205,4 +205,18 @@ public class PatronRepository extends AbstractRepository {
         }
     }
 
+    public boolean deletePatron(String dni) {
+        try {
+            String query = sqlQueries.getProperty("delete-deletePatron");
+            if (query != null) {
+                int rows = jdbcTemplate.update(query, dni);
+                return rows > 0;
+            }
+        } catch (Exception e) {
+            System.err.println("Error al eliminar el patrón: " + dni);
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }
