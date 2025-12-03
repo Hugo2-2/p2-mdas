@@ -148,11 +148,10 @@ public class ReservaRestController {
             }
 
             // 4. LOGICA DE NEGOCIO: Calcular precio.
-            // Si no viene precio, aplicamos tarifa estándar: 40.0 * plazas.
-            if (nuevaReserva.getPrecio() == 0) {
-                double precioCalculado = 40.0 * nuevaReserva.getPlazas();
-                nuevaReserva.setPrecio(precioCalculado);
-            }
+            // CAMBIO: Al igual que en AddReservaController, FORZAMOS el cálculo en el servidor.
+            // Ignoramos cualquier precio que venga en el JSON para evitar fraudes.
+            double precioCalculado = 40.0 * nuevaReserva.getPlazas();
+            nuevaReserva.setPrecio(precioCalculado);
 
             // 5. PERSISTENCIA: Guardar en BBDD.
             boolean exito = reservaRepository.addReserva(nuevaReserva);
