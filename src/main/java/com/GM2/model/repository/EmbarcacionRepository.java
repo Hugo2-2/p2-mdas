@@ -295,4 +295,43 @@ public class EmbarcacionRepository extends AbstractRepository {
             return false;
         }
     }
+
+    public boolean isEmbarcacionAlquilada(String matricula) {
+        try {
+            String query = sqlQueries.getProperty("select-ocupadoAlquileresByMatricula");
+
+            Integer count =  jdbcTemplate.queryForObject(query, Integer.class, matricula);
+
+            return count != null && count > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean isEmbarcacionReservada(String matricula) {
+        try {
+            String query = sqlQueries.getProperty("select-ocupadaReservasByMatricula");
+
+            Integer count =  jdbcTemplate.queryForObject(query, Integer.class, matricula);
+
+            return count != null && count > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteEmbarcacion(String matricula) {
+        try {
+            String query = sqlQueries.getProperty("delete-deleteEmbarcacion");
+            if (query != null) {
+                int rows = jdbcTemplate.update(query, matricula);
+                return rows > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
