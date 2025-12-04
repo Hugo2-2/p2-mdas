@@ -85,6 +85,7 @@ public class SociosRestController {
 
             if(socio.getFechaNacimiento().getYear() > 2007) {
                 Hijos hijo = new Hijos(socio.getDni(), socio.getNombre(), socio.getApellidos(), socio.getFechaNacimiento());
+                hijo.setId_inscripcion(0); // Sin inscripción
 
                 try {
                     Boolean res = hijosRepository.addHijo(hijo) == true;
@@ -98,6 +99,7 @@ public class SociosRestController {
                     return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             } else {
+                socio.setEsTitular(false);
                 socio.setFechaInscripcion(LocalDate.now());
 
                 try {
@@ -147,31 +149,44 @@ public class SociosRestController {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
-            // Crear el objeto Socio
-            Socio socio = new Socio();
-            socio.setDni(requestBody.getDni());
-            socio.setNombre(requestBody.getNombre());
-            socio.setApellidos(requestBody.getApellidos());
-            socio.setFechaNacimiento(requestBody.getFechaNacimiento());
-            socio.setDireccion(requestBody.getDireccion());
-            socio.setTieneLicenciaPatron(requestBody.getPatron() != null ? requestBody.getPatron() : false);
-            socio.setEsTitular(false); // No es titular, se está añadiendo a una inscripción existente
-            socio.setFechaInscripcion(LocalDate.now());
+            Socio socio = new Socio(requestBody.getNombre(), requestBody.getApellidos(), requestBody.getDni(), requestBody.getFechaNacimiento(), requestBody.getDireccion(), LocalDate.now(), requestBody.getPatron());
 
-            // Guardar el socio
-            String resultado = socioRepository.addSocio(socio);
-            
-            if(!resultado.equals("EXITO")) {
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+
+            if(socio.getFechaNacimiento().getYear() > 2007) {
+                Hijos hijo = new Hijos(socio.getDni(), socio.getNombre(), socio.getApellidos(), socio.getFechaNacimiento());
+                hijo.setId_inscripcion(inscripcion.getId()); // Inscripción existente
+
+                try {
+                    Boolean res = hijosRepository.addHijo(hijo) == true;
+
+                    inscripcion.setCuotaAnual(inscripcion.getCuotaAnual() + 100);
+
+                    if(!res) {
+                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
+                } catch (Exception e) {
+                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+
+                // Guardar el socio
+                String resultado = socioRepository.addSocio(socio);
+                
+                if(!resultado.equals("EXITO")) {
+                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+
+                if(inscripcion.getSegundoAudlto() == null)
+                    inscripcion.setCuotaAnual(inscripcion.getCuotaAnual() + 250);
+
+                inscripcion.setSegundoAudlto(socio.getDni());
+
             }
 
             // Añadir el socio como segundo adulto a la inscripción
-            String resultadoInscripcion = inscripcionRepository.updateInscripcioSinHijos(
-                requestBody.getDniTitular(), 
-                requestBody.getDni()
-            );
+            Boolean resultadoInscripcion = inscripcionRepository.updateInscripcion(inscripcion).equals("EXITO");
 
-            if(!resultadoInscripcion.equals("EXITO")) {
+            if(!resultadoInscripcion) {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 

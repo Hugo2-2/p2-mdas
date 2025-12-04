@@ -166,7 +166,7 @@ public class HijosRepository extends AbstractRepository {
                         hijo.getNombre(),
                         hijo.getApellidos(),
                         hijo.getFechaNacimiento(),
-                        hijo.getId_inscripcion()
+                        hijo.getId_inscripcion() == 0 ? null : hijo.getId_inscripcion()
                 );
 
                 if (result > 0)

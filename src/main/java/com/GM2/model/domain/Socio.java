@@ -81,6 +81,18 @@ public class Socio {
         this.direccion = direccion;
         this.fechaInscripcion = fechaInscripcion;
         this.esTitular = tieneLicenciaPatron;
+        this.tieneLicenciaPatron = tieneLicenciaPatron;
+    }
+
+    public Socio(String nombre, String apellidos, String dni, LocalDate fechaNacimiento, String direccion, LocalDate fechaInscripcion, Boolean tieneLicenciaPatron) {
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+        this.dni = dni;
+        this.fechaNacimiento = fechaNacimiento;
+        this.direccion = direccion;
+        this.fechaInscripcion = fechaInscripcion;
+        this.tieneLicenciaPatron = tieneLicenciaPatron;
+        this.esTitular = false;
     }
 
     // Getters y Setters
