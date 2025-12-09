@@ -43,6 +43,22 @@ public class Inscripcion {
         this.hijos = null;
     }
 
+    public Inscripcion(String socioTitularId, String segundoAdulto, List<Hijos> hijos) {
+        this.socioTitularId = socioTitularId;
+        this.cuotaAnual = 300;
+        this.fechaCreacion = LocalDate.now();
+
+        if( segundoAdulto != null && !segundoAdulto.isEmpty()) {
+            this.segundoAudlto = segundoAdulto;
+            this.cuotaAnual += 250;
+        }
+
+        if( hijos != null && !hijos.isEmpty()) {
+            this.hijos = hijos;
+            this.cuotaAnual += hijos.size() * 100;
+        }
+    }
+
     /**
      * Constructor para crear una inscripción con datos básicos.
      *

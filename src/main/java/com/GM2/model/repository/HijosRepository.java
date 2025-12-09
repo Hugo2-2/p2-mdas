@@ -65,7 +65,7 @@ public class HijosRepository extends AbstractRepository {
      */
     public Hijos findHijoByDni(String dni) {
         try {
-            String query = sqlQueries.getProperty("select-findHijoByDni");
+            String query = sqlQueries.getProperty("select-findHijoByDNI");
             Hijos result = jdbcTemplate.query(query, this::mapRowToHijos, dni);
             if( result != null )
                 return result;
@@ -166,7 +166,7 @@ public class HijosRepository extends AbstractRepository {
                         hijo.getNombre(),
                         hijo.getApellidos(),
                         hijo.getFechaNacimiento(),
-                        hijo.getId_inscripcion()
+                        hijo.getId_inscripcion() == 0 ? null : hijo.getId_inscripcion()
                 );
 
                 if (result > 0)
@@ -214,6 +214,13 @@ public class HijosRepository extends AbstractRepository {
 
         return true;
     }
+
+    /**
+     * Elimina un hijo de la base de datos por su DNI.
+     *
+     * @param Hijo El objeto hijo a actualizar.
+     * @return true si la actualización fue exitosa, false en caso contrario.
+     */
 
     public boolean updateHijo(Hijos hijo) {
 

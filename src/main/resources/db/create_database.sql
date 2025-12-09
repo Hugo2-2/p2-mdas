@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `hijos` (
     `nombre` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
     `apellidos` VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
     `fecha_nacimiento` DATE DEFAULT NULL,
-    `id_inscripcion` INT(11),
+    `id_inscripcion` INT(11) DEFAULT NULL,
     PRIMARY KEY (`dni`),
     FOREIGN KEY (`id_inscripcion`) REFERENCES inscripcion(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

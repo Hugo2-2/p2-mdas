@@ -279,6 +279,7 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
+
             // Verificar que no es el socio titular
             if (dniSocio.equals(alquiler.getUsuario_dni())) {
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT);
@@ -322,6 +323,10 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
+            alquiler = alquilerRepository.findAlquilerById(id);
+            if (alquiler == null) {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
             return new ResponseEntity<>(alquiler, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -343,14 +348,19 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
+            boolean encontrado = false;
             // Verificar que el socio está vinculado como acompañante
             List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
             for (Acompanante acompanante : acompanantes) {
                 if (acompanante.getDni().equals(dniSocio)) {
-                    return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+                    encontrado = true;
+                    break;
                 }
             }
 
+            if (!encontrado) {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
 
             // Eliminar acompañante
             boolean exito = acompanantesRepository.deleteAcompanante(id, dniSocio);
@@ -368,6 +378,11 @@ public class AlquilerRestController {
             boolean actualizado = alquilerRepository.updateAlquiler(alquiler);
             if (!actualizado) {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            alquiler = alquilerRepository.findAlquilerById(id);
+            if (alquiler == null) {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
             return new ResponseEntity<>(alquiler, HttpStatus.OK);

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
@@ -128,18 +129,37 @@ public class InscripcionesRestController {
     * 4. Crear una inscripción para un socio titular (POST)
     */
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<Inscripcion> createInscripcion(@RequestBody Inscripcion inscripcion) {
+    public ResponseEntity<Inscripcion> createInscripcion(@RequestBody Inscripcion inscripcionBody) {
         try {
+            // Crear la inscripción
+            Inscripcion inscripcion = new Inscripcion(inscripcionBody.getSocioTitularId(), inscripcionBody.getSegundoAudlto(), inscripcionBody.getHijos());
+            
             // Validaciones básicas
+            
             if(inscripcion == null || inscripcion.getSocioTitularId() == null || 
                inscripcion.getSocioTitularId().isEmpty()) {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
 
+            // Verificar que el socio titular existe
+            Socio titular = socioRepository.findSocioByDNI(inscripcion.getSocioTitularId());
+            if(titular == null) {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // Socio no encontrado
+            }
+
+            // Verificar que no existe ya una inscripción para este titular
+            Inscripcion existente = inscripcionRepository.findInscripcionByDNITitular(inscripcion.getSocioTitularId());
+            if(existente != null) {
+                return new ResponseEntity<>(null, HttpStatus.CONFLICT); // Ya tiene inscripción
+            }
+
             // Intentar crear la inscripción
             boolean resultado = inscripcionRepository.addInscripcion(inscripcion);
 
+            
             if(resultado) {
+                titular.setEsTitular(true);
+                socioRepository.updateSocio(titular);
                 return new ResponseEntity<>(inscripcion, HttpStatus.CREATED);
             } else {
                 // Falló la creación (puede que ya exista una inscripción para ese titular)
@@ -183,23 +203,27 @@ public class InscripcionesRestController {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
-            boolean resultado = false;
+            boolean resInscripcion = false;
+            boolean resHijos = false;
 
             // Validar si estamos añadiendo un hijo o un segundo adulto
             Socio socio = socioRepository.findSocioByDNI(dniNuevoMiembro);
-
-            if(socio != null) {
+            if(socio != null && !socio.getEsTitular()) {
                 inscripcion.setSegundoAudlto(dniNuevoMiembro);
-                resultado = inscripcionRepository.updateInscripcion(inscripcion).equals("EXITO");
+                inscripcion.setCuotaAnual(inscripcion.getCuotaAnual() + 250);
             }
-
+            
             Hijos hijo = hijosRepository.findHijoByDni(dniNuevoMiembro);
             if(hijo != null) {
                 hijo.setId_inscripcion(idInscripcion);
-                resultado = hijosRepository.updateHijo(hijo) == true;
+                resHijos = hijosRepository.updateHijo(hijo) == true;
+                inscripcion.setCuotaAnual(inscripcion.getCuotaAnual() + 100);
+                
             }
 
-            if(resultado == true) {
+            resInscripcion = inscripcionRepository.updateInscripcion(inscripcion).equals("EXITO");
+
+            if((resHijos && resInscripcion) || (resInscripcion && hijo == null)) {
                 return new ResponseEntity<>(inscripcion, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
