@@ -312,12 +312,6 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            // Actualizar número de plazas y precio del alquiler
-            alquiler.setPlazas(plazasOcupadas);
-            long dias = ChronoUnit.DAYS.between(alquiler.getFechainicio(), alquiler.getFechafin()) + 1;
-            double nuevoPrecio = 20.0 * plazasOcupadas * dias;
-            alquiler.setPrecio(nuevoPrecio);
-
             boolean actualizado = alquilerRepository.updateAlquiler(alquiler);
             if (!actualizado) {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -367,13 +361,6 @@ public class AlquilerRestController {
             if (!exito) {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
-
-            // Actualizar número de plazas y precio del alquiler
-            int nuevasPlazas = acompanantes.size() - 1 + 1; // -1 acompañante +1 titular
-            alquiler.setPlazas(nuevasPlazas);
-            long dias = ChronoUnit.DAYS.between(alquiler.getFechainicio(), alquiler.getFechafin()) + 1;
-            double nuevoPrecio = 20.0 * nuevasPlazas * dias;
-            alquiler.setPrecio(nuevoPrecio);
 
             boolean actualizado = alquilerRepository.updateAlquiler(alquiler);
             if (!actualizado) {
