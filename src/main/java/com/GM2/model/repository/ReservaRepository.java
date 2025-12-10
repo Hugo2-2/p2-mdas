@@ -6,11 +6,15 @@ import org.springframework.dao.DataAccessException; // Para manejar excepciones 
 import org.springframework.jdbc.core.JdbcTemplate; // Herramienta principal de Spring para trabajar con JDBC
 import org.springframework.jdbc.core.RowMapper; // Interfaz para mapear filas del ResultSet a objetos
 import org.springframework.stereotype.Repository; // Marca la clase como un componente de repositorio (capa de persistencia)
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.Date; // Clase para manejar fechas SQL
 import java.sql.ResultSet; // Objeto que contiene los resultados de una consulta a la base de datos
 import java.sql.SQLException; // Para manejar excepciones de SQL
 import java.util.List; // Para manejar colecciones de objetos
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 
 // Clase Repositorio para la entidad Reserva, extiende de una clase base AbstractRepository
 @Repository
@@ -131,33 +135,37 @@ public class ReservaRepository extends AbstractRepository{
      */
     public boolean addReserva(Reserva reserva) {
         try {
-            // Obtiene la consulta SQL de inserción
             String query = sqlQueries.getProperty("insert-addReserva");
             if(query != null) {
-                // Ejecuta la actualización (INSERT) pasando los atributos de la reserva como parámetros
-                int result = jdbcTemplate.update(query,
-                        reserva.getFecha(), // Nota: Asume que getFecha() devuelve un tipo que JdbcTemplate puede manejar (ej. LocalDate, que debe ser convertido a Date/Timestamp en la consulta si la BD lo requiere)
-                        reserva.getPlazas(),
-                        reserva.getPrecio(),
-                        reserva.getUsuario_id(),
-                        reserva.getMatricula_embarcacion(),
-                        reserva.getDescripcion()
-                );
+                // 1. Preparamos una "bolsa" (KeyHolder) para recoger la llave que nos dará la BBDD
+                KeyHolder keyHolder = new GeneratedKeyHolder();
 
-                // Comprueba si se insertó al menos una fila
-                if (result > 0)
+                // 2. Ejecutamos la actualización de una forma especial para recuperar claves
+                int result = jdbcTemplate.update(connection -> {
+                    PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+                    // Asignamos los datos (respetando el orden de los ? en tu SQL)
+                    ps.setDate(1, Date.valueOf(reserva.getFecha()));
+                    ps.setInt(2, reserva.getPlazas());
+                    ps.setDouble(3, reserva.getPrecio());
+                    ps.setString(4, reserva.getUsuario_id());
+                    ps.setString(5, reserva.getMatricula_embarcacion());
+                    ps.setString(6, reserva.getDescripcion());
+                    return ps;
+                }, keyHolder);
+
+                // 3. ¡AQUÍ ESTÁ LA CLAVE!
+                // Si la BBDD nos devolvió una llave, actualizamos nuestro objeto Java
+                if (result > 0 && keyHolder.getKey() != null) {
+                    reserva.setId(keyHolder.getKey().intValue()); // <--- Ahora Java ya sabe que es la 3, la 4, etc.
                     return true;
-                else return false;
-
-            } else return false; // Si no se encuentra la consulta, retorna false
-
+                }
+            }
+            return false;
         } catch (DataAccessException exception) {
-            // Manejo de errores de acceso a datos durante la inserción
-            System.err.println("Unable to insert reservas in the database");
+            System.err.println("Error insertando reserva");
             exception.printStackTrace();
+            return false;
         }
-
-        return false; // Retorna false por defecto si hay una excepción
     }
 
     /**
