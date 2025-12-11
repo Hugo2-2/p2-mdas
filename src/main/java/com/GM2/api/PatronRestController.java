@@ -101,7 +101,7 @@ public class PatronRestController {
         }
     }
 
-    @PatchMapping(path="/{matricula}/patron", consumes="application/json")
+    @PatchMapping(path="/{matricula}/patron")
     public ResponseEntity<Patron> assignPatronToEmbarcacion(@PathVariable String matricula, @RequestBody String dniPatron) {
         //Limpiamos el dni
         String dniPatronLimpio = dniPatron.replaceAll("[\"{}]", "").trim();
@@ -129,7 +129,7 @@ public class PatronRestController {
         }
     }
 
-    @PatchMapping(path="/{matricula}/noPatron", consumes="application/json")
+    @PatchMapping(path="/{matricula}/noPatron")
     public ResponseEntity<Patron> unassignPatronToEmbarcacion(@PathVariable String matricula, @RequestBody String dniPatron) {
         //Limpiamos el dni
         String dniPatronLimpio = dniPatron.replaceAll("[\"{}]", "").trim();

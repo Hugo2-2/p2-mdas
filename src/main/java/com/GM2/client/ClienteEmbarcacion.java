@@ -31,15 +31,22 @@ public class ClienteEmbarcacion {
             ResponseEntity<Embarcacion[]> response = rest.getForEntity(baseURL + "/api/embarcaciones", Embarcacion[].class);
             List<Embarcacion> lista = Arrays.asList(response.getBody());
             System.out.println("==== REQUEST 1: GET all embarcaciones ====");
-            for(Embarcacion e : lista) System.out.println("- " + e.getNombre() + " (" + e.getMatricula() + ")");
+            for(Embarcacion e : lista) {
+                System.out.println(e);
+                System.out.println("------------------------");
+            }
         } catch (Exception e) { e.printStackTrace(); }
 
         // 2. Filtrar por tipo
         try {
             ResponseEntity<Embarcacion[]> response = rest.getForEntity(baseURL + "/api/embarcaciones?tipo=VELERO", Embarcacion[].class);
             List<Embarcacion> lista = Arrays.asList(response.getBody());
+            System.out.println();
             System.out.println("==== REQUEST 2: GET embarcaciones by type (VELERO) ====");
-            for(Embarcacion e : lista) System.out.println("- " + e.getNombre());
+            for(Embarcacion e : lista) {
+                System.out.println(e);
+                System.out.println("------------------------");
+            }
         } catch (Exception e) { e.printStackTrace(); }
     }
 
@@ -51,15 +58,18 @@ public class ClienteEmbarcacion {
         System.out.println("==== REQUEST 3: POST embarcacion (valid) ====");
         try {
             ResponseEntity<Embarcacion> response = rest.postForEntity(baseURL + "/api/embarcaciones", nuevo, Embarcacion.class);
-            System.out.println("Status: " + response.getStatusCode() + " | Creado: " + response.getBody().getNombre());
-        } catch (HttpClientErrorException e) { System.out.println("Error: " + e.getStatusCode()); }
+            System.out.println("Status code: " + response.getStatusCode());
+            System.out.println("Response body:\n" + response.getBody());
+            System.out.println("------------------------");
+        } catch (HttpClientErrorException e) { System.out.println("Error: " + e); }
 
         // 4. Crear duplicada (Error)
+        System.out.println();
         System.out.println("==== REQUEST 4: POST embarcacion (invalid - duplicada) ====");
         try {
             rest.postForEntity(baseURL + "/api/embarcaciones", nuevo, Embarcacion.class);
         } catch (HttpClientErrorException e) {
-            System.out.println("Error esperado: " + e.getStatusCode());
+            System.out.println("Error esperado: " + e);
         }
     }
 
@@ -73,25 +83,27 @@ public class ClienteEmbarcacion {
         System.out.println("==== REQUEST 5: PATCH update embarcacion (valid) ====");
         try {
             Embarcacion actualizado = rest.patchForObject(baseURL + "/api/embarcaciones/L-999", cambios, Embarcacion.class);
-            System.out.println("Nuevo nombre: " + actualizado.getNombre() + ", Plazas: " + actualizado.getPlazas());
+            System.out.println("Nuevos datos de la embarcacion: ");
+            System.out.println(actualizado);
         } catch (HttpClientErrorException e) { System.out.println(e); }
 
         // 6. VINCULAR Patrón (usando endpoint /patron)
-        // Nota: Asumimos que existe un patrón con DNI '11112222Z'
+        // Asumimos que existe un patrón con DNI '11112222Z'
         String dniPatron = "11112222Z";
+        System.out.println();
         System.out.println("==== REQUEST 6: PATCH vincular patron (/patron) ====");
         try {
-            Patron p = rest.patchForObject(baseURL + "/api/embarcaciones/L-999/patron", dniPatron, Patron.class);
+            Patron p = rest.patchForObject(baseURL + "/api/patrones/L-999/patron", dniPatron, Patron.class);
             System.out.println("Éxito. Vinculado patrón: " + p.getDni());
-        } catch (HttpClientErrorException e) { System.out.println("Error al vincular: " + e.getStatusCode()); }
+        } catch (HttpClientErrorException e) { System.out.println("Error al vincular: " + e); }
 
         // 7. DESVINCULAR Patrón (usando endpoint /noPatron)
+        System.out.println();
         System.out.println("==== REQUEST 7: PATCH desvincular patron (/noPatron) ====");
         try {
-            // Debes enviar el mismo DNI que está asignado para que tu lógica de seguridad lo permita
-            Patron p = rest.patchForObject(baseURL + "/api/embarcaciones/L-999/noPatron", dniPatron, Patron.class);
+            Patron p = rest.patchForObject(baseURL + "/api/patrones/L-999/noPatron", dniPatron, Patron.class);
             System.out.println("Éxito. Desvinculado patrón: " + p.getDni());
-        } catch (HttpClientErrorException e) { System.out.println("Error al desvincular: " + e.getStatusCode()); }
+        } catch (HttpClientErrorException e) { System.out.println("Error al desvincular: " + e);}
     }
 
     private static void sendDeleteRequests(RestTemplate rest, String baseURL) {
@@ -102,6 +114,6 @@ public class ClienteEmbarcacion {
         try {
             rest.delete(baseURL + "/api/embarcaciones/L-999");
             System.out.println("Embarcación borrada correctamente.");
-        } catch (HttpClientErrorException e) { System.out.println("Error: " + e.getStatusCode()); }
+        } catch (HttpClientErrorException e) { System.out.println("Error: " + e); }
     }
 }
