@@ -95,6 +95,10 @@ public class ClienteEmbarcacion {
         try {
             Patron p = rest.patchForObject(baseURL + "/api/patrones/L-999/patron", dniPatron, Patron.class);
             System.out.println("Éxito. Vinculado patrón: " + p.getDni());
+
+            //Mostrar que el barco tiene ahora un idpatron asignado
+            ResponseEntity<Embarcacion> response = rest.getForEntity(baseURL + "/api/embarcaciones/L-999", Embarcacion.class);
+            System.out.println("-> Datos de la embarcación: " + response.getBody());
         } catch (HttpClientErrorException e) { System.out.println("Error al vincular: " + e); }
 
         // 7. DESVINCULAR Patrón (usando endpoint /noPatron)
@@ -103,6 +107,10 @@ public class ClienteEmbarcacion {
         try {
             Patron p = rest.patchForObject(baseURL + "/api/patrones/L-999/noPatron", dniPatron, Patron.class);
             System.out.println("Éxito. Desvinculado patrón: " + p.getDni());
+
+            //Mostrar que el barco no tiene ahora un idpatron asignado
+            ResponseEntity<Embarcacion> response = rest.getForEntity(baseURL + "/api/embarcaciones/L-999", Embarcacion.class);
+            System.out.println("-> Datos de la embarcación: " + response.getBody());
         } catch (HttpClientErrorException e) { System.out.println("Error al desvincular: " + e);}
     }
 

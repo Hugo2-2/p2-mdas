@@ -31,7 +31,7 @@ public class PatronRestController {
             List<Patron> patrones = patronRepository.findAllPatrones();
 
             if (patrones == null || patrones.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
             return new ResponseEntity<>(patrones, HttpStatus.OK);
@@ -180,6 +180,22 @@ public class PatronRestController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //Método para las pruebas del cliente
+    /**
+     * Obtener un patrón específico por su DNI.
+     * Endpoint: GET /api/patrones/{dni}
+     */
+    @GetMapping("/{dni}")
+    public ResponseEntity<Patron> getPatronByDni(@PathVariable String dni) {
+        Patron patron = patronRepository.findPatronByDNI(dni);
+
+        if (patron != null) {
+            return new ResponseEntity<>(patron, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }

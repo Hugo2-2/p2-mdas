@@ -29,7 +29,7 @@ public class EmbarcacionRestController {
             List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcaciones();
 
             if (embarcaciones == null || embarcaciones.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
             return new ResponseEntity<>(embarcaciones, HttpStatus.OK);
@@ -176,6 +176,22 @@ public class EmbarcacionRestController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //Método simple para las pruebas
+    /**
+     * Obtener una embarcación específica por su matrícula.
+     * Endpoint: GET /api/embarcaciones/{matricula}
+     */
+    @GetMapping("/{matricula}")
+    public ResponseEntity<Embarcacion> getEmbarcacionByMatricula(@PathVariable String matricula) {
+        Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(matricula);
+
+        if (embarcacion != null) {
+            return new ResponseEntity<>(embarcacion, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }
