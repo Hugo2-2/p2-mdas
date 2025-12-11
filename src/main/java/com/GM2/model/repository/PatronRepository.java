@@ -205,11 +205,22 @@ public class PatronRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Elimina un patrón de la base de datos.
+     * Utiliza el DNI proporcionado para localizar y borrar el registro correspondiente.
+     *
+     * @param dni El DNI del patrón que se desea eliminar.
+     * @return true si la operación de borrado afectó a alguna fila (éxito),
+     * false si no se encontró el patrón o si ocurrió un error durante la ejecución.
+     */
     public boolean deletePatron(String dni) {
         try {
             String query = sqlQueries.getProperty("delete-deletePatron");
+
             if (query != null) {
                 int rows = jdbcTemplate.update(query, dni);
+
+                // Si rows > 0 significa que al menos un registro fue eliminado
                 return rows > 0;
             }
         } catch (Exception e) {

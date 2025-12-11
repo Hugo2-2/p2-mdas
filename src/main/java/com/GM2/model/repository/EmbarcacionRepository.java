@@ -271,12 +271,20 @@ public class EmbarcacionRepository extends AbstractRepository {
         return false;
     }
 
+    /**
+     * Actualiza los datos modificables de una embarcación existente en la base de datos.
+     *
+     * Los campos que se actualizan son: nombre, tipo, plazas y dimensiones.
+     * La matrícula se utiliza como criterio de búsqueda (WHERE) y no se modifica.
+     *
+     * @param embarcacion Objeto {@link Embarcacion} con los datos actualizados.
+     * @return true si la operación tuvo éxito (se modificó 1 fila), false en caso contrario.
+     */
     public boolean updateEmbarcacion(Embarcacion embarcacion) {
         try {
             String query = sqlQueries.getProperty("update-updateEmbarcacion");
 
             if (query != null) {
-                // Pasamos los parámetros en el mismo orden que los signos '?' de la query
                 int result = jdbcTemplate.update(query,
                         embarcacion.getNombre(),
                         embarcacion.getTipo(),
@@ -296,12 +304,20 @@ public class EmbarcacionRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Verifica si una embarcación tiene historial de alquileres.
+     * Utilizado para validar la integridad referencial antes de un borrado.
+     *
+     * @param matricula Identificador de la embarcación a consultar.
+     * @return true si existe al menos un registro en la tabla de alquileres, false si está libre.
+     */
     public boolean isEmbarcacionAlquilada(String matricula) {
         try {
             String query = sqlQueries.getProperty("select-ocupadoAlquileresByMatricula");
 
-            Integer count =  jdbcTemplate.queryForObject(query, Integer.class, matricula);
+            Integer count = jdbcTemplate.queryForObject(query, Integer.class, matricula);
 
+            // Si devuelve null o 0, no está alquilada
             return count != null && count > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -309,11 +325,18 @@ public class EmbarcacionRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Verifica si una embarcación tiene historial de reservas.
+     * Utilizado para validar la integridad referencial antes de un borrado.
+     *
+     * @param matricula Identificador de la embarcación a consultar.
+     * @return true si existe al menos un registro en la tabla de reservas, false si está libre.
+     */
     public boolean isEmbarcacionReservada(String matricula) {
         try {
             String query = sqlQueries.getProperty("select-ocupadaReservasByMatricula");
 
-            Integer count =  jdbcTemplate.queryForObject(query, Integer.class, matricula);
+            Integer count = jdbcTemplate.queryForObject(query, Integer.class, matricula);
 
             return count != null && count > 0;
         } catch (Exception e) {
@@ -322,6 +345,15 @@ public class EmbarcacionRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Elimina una embarcación de la base de datos.
+     *
+     * Nota: Esta operación debe realizarse solo si la embarcación no tiene
+     * dependencias (alquileres o reservas), lo cual debe validarse previamente en el servicio/controlador.
+     *
+     * @param matricula La matrícula de la embarcación a eliminar.
+     * @return true si se eliminó el registro correctamente, false en caso contrario.
+     */
     public boolean deleteEmbarcacion(String matricula) {
         try {
             String query = sqlQueries.getProperty("delete-deleteEmbarcacion");
