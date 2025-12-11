@@ -57,7 +57,7 @@ public class AlquilerRestController {
             List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
 
             if (alquileres == null || alquileres.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
             return new ResponseEntity<>(alquileres, HttpStatus.OK);
@@ -86,7 +86,7 @@ public class AlquilerRestController {
             }
 
             if (alquileresFuturos.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
             return new ResponseEntity<>(alquileresFuturos, HttpStatus.OK);
@@ -191,6 +191,17 @@ public class AlquilerRestController {
     @PostMapping(consumes = "application/json")
     public ResponseEntity<Alquiler> createAlquiler(@RequestBody Alquiler nuevoAlquiler) {
         try {
+
+            //Verificar datos del alquiler no nulos
+            if (nuevoAlquiler.getFechainicio() == null || nuevoAlquiler.getFechafin() == null ||
+                nuevoAlquiler.getPlazas() <= 0 ||
+                nuevoAlquiler.getUsuario_dni() == null || nuevoAlquiler.getUsuario_dni().trim().isEmpty() ||
+                nuevoAlquiler.getMatricula_embarcacion() == null || nuevoAlquiler.getMatricula_embarcacion().trim().isEmpty()) {
+                
+                    return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+             }
+
+
             // Validaciones básicas
             if (nuevoAlquiler.getFechainicio().isAfter(nuevoAlquiler.getFechafin())) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
@@ -199,7 +210,7 @@ public class AlquilerRestController {
             Socio socioAlquiler = socioRepository.findSocioByDNI(nuevoAlquiler.getUsuario_dni());
             // Verificar que el socio existe
             if ( socioAlquiler == null) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
             //Verificar que el socio tenga título de patrón
@@ -210,12 +221,12 @@ public class AlquilerRestController {
             // Verificar que la embarcación existe
             Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(nuevoAlquiler.getMatricula_embarcacion());
             if (embarcacion == null) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
             // Verificar que no excede las plazas disponibles
             if (nuevoAlquiler.getPlazas() > embarcacion.getPlazas()) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+                return new ResponseEntity<>(null, HttpStatus.CONFLICT);
             }
 
             // Verificar disponibilidad de la embarcación en las fechas solicitadas
@@ -226,7 +237,7 @@ public class AlquilerRestController {
                 if (alquiler.getMatricula_embarcacion().equals(nuevoAlquiler.getMatricula_embarcacion())) {
                     // Verificar superposición de fechas
                     if (!(nuevoAlquiler.getFechafin().isBefore(alquiler.getFechainicio()) || nuevoAlquiler.getFechainicio().isAfter(alquiler.getFechafin()))) {
-                        return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+                        return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
                     }
                 }
             }
@@ -235,7 +246,7 @@ public class AlquilerRestController {
                 if (reserva.getMatricula_embarcacion().equals(nuevoAlquiler.getMatricula_embarcacion())) {
                     // Verificar superposición de fechas
                     if (!(nuevoAlquiler.getFechafin().isBefore(reserva.getFecha()) || nuevoAlquiler.getFechainicio().isAfter(reserva.getFecha()))) {
-                        return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+                        return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
                     }
                 }
             }   
@@ -276,7 +287,7 @@ public class AlquilerRestController {
             // Verificar que el socio existe
             Socio socio = socioRepository.findSocioByDNI(dniSocio);
             if (socio == null) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
 
@@ -295,11 +306,9 @@ public class AlquilerRestController {
 
 
             // Verificar que hay plazas disponibles
-            Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(
-                alquiler.getMatricula_embarcacion());
             int plazasOcupadas = acompanantes.size() + 1; // +1 por el titular
-            if (plazasOcupadas >= embarcacion.getPlazas()) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+            if (plazasOcupadas > alquiler.getPlazas()) {
+                return new ResponseEntity<>(null, HttpStatus.CONFLICT);
             }
 
             // Añadir acompañante
