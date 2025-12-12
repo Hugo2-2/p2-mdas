@@ -197,18 +197,27 @@ public class Alquiler {
     }
 
 
-        // Ejemplo de cómo debería ser el toString() de Alquiler
     @Override
     public String toString() {
-        return "Alquiler {" +
-            "id=" + id +
-            ", fechainicio=" + fechaInicio +
-            ", fechafin=" + fechaFin +
-            ", plazas=" + plazas +
-            ", precio=" + precio +
-            ", usuario_dni='" + usuario_dni + '\'' +
-            ", matricula_embarcacion='" + matricula_embarcacion + '\'' +
-            ", acompanantes=" + (acompanantes != null ? acompanantes.size() : 0) +
-            '}';
-    }
+        String result = "Alquiler {\n";
+        result += "  ID: " + id + "\n";
+        result += "  Fecha inicio: " + fechaInicio + "\n";
+        result += "  Fecha fin: " + fechaFin + "\n";
+        result += "  Plazas: " + plazas + "\n";
+        result += "  Precio: " + precio + "€\n";
+        result += "  DNI Socio: " + usuario_dni + "\n";
+        result += "  Matrícula: " + matricula_embarcacion + "\n";
+        
+        if (acompanantes != null && !acompanantes.isEmpty()) {
+            result += "  Acompañantes (" + acompanantes.size() + "):\n";
+            for (Acompanante a : acompanantes) {
+                result += "    - " + a + "\n"; // Llama a a.toString()
+            }
+        } else {
+            result += "  Acompañantes: Ninguno\n";
+        }
+        
+        result += "}";
+        return result;
+    }   
 }

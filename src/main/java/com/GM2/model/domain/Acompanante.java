@@ -85,4 +85,11 @@ public class Acompanante {
     public void setId_alquiler(int id_alquiler) {
         this.id_alquiler = id_alquiler;
     }
+
+
+    // Versión compacta para Acompanante
+    @Override
+    public String toString() {
+        return "DNI='" + dni + "'";
+    }
 }
