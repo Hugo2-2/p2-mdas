@@ -196,4 +196,19 @@ public class Alquiler {
         this.matricula_embarcacion = matricula_embarcacion;
     }
 
+
+        // Ejemplo de cómo debería ser el toString() de Alquiler
+    @Override
+    public String toString() {
+        return "Alquiler {" +
+            "id=" + id +
+            ", fechainicio=" + fechaInicio +
+            ", fechafin=" + fechaFin +
+            ", plazas=" + plazas +
+            ", precio=" + precio +
+            ", usuario_dni='" + usuario_dni + '\'' +
+            ", matricula_embarcacion='" + matricula_embarcacion + '\'' +
+            ", acompanantes=" + (acompanantes != null ? acompanantes.size() : 0) +
+            '}';
+    }
 }

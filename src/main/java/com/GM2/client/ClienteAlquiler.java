@@ -29,91 +29,76 @@ public class ClienteAlquiler {
         System.out.println("\n********** [ALQUILERES] PRUEBAS GET **********");
 
         // 1. Listar todos los alquileres
+        System.out.println("==== REQUEST 1: GET all alquileres ====");
         try {
             ResponseEntity<Alquiler[]> response = rest.getForEntity(baseURL + "/api/alquileres", Alquiler[].class);
+            System.out.println("Status code: " + response.getStatusCode());
             List<Alquiler> lista = Arrays.asList(response.getBody());
-            System.out.println("==== REQUEST 1: GET all alquileres ====");
             for(Alquiler a : lista) {
-                System.out.println("- ID: " + a.getId() + 
-                ", Fechainicio: " + a.getFechainicio() + 
-                ", Fechafin: " + a.getFechafin() + 
-                ", Precio: " + a.getPrecio() + 
-                ", Plazas: " + a.getPlazas() + 
-                ", Usuario DNI: " + a.getUsuario_dni() + 
-                ", Matricula Embarcación: " + a.getMatricula_embarcacion());
+                System.out.println(a);
+                System.out.println("------------------------");
             }
         } catch (Exception e) { 
             System.out.println("Error: " + e.getMessage()); 
         }
 
         // 2. Obtener alquileres futuros a partir de una fecha
+        LocalDate fechaFutura = LocalDate.of(2025, 1, 1);
+        System.out.println();
+        System.out.println("==== REQUEST 2: GET alquileres futuros (a partir de " + fechaFutura + ") ====");
         try {
-            LocalDate fechaFutura = LocalDate.of(2025, 1, 1);
             ResponseEntity<Alquiler[]> response = rest.getForEntity(
                 baseURL + "/api/alquileres?fecha=" + fechaFutura, 
                 Alquiler[].class
             );
+            System.out.println("Status code: " + response.getStatusCode());
             List<Alquiler> lista = Arrays.asList(response.getBody());
-            System.out.println("\n==== REQUEST 2: GET alquileres futuros (a partir de " + fechaFutura + ") ====");
+            for(Alquiler a : lista) {
+                System.out.println(a);
+                System.out.println("------------------------");
+            }
             if (lista.isEmpty()) {
                 System.out.println("No hay alquileres futuros");
-            } else {
-                for(Alquiler a : lista) {
-                    System.out.println("- ID: " + a.getId() + 
-                ", Fechainicio: " + a.getFechainicio() + 
-                ", Fechafin: " + a.getFechafin() + 
-                ", Precio: " + a.getPrecio() + 
-                ", Plazas: " + a.getPlazas() + 
-                ", Usuario DNI: " + a.getUsuario_dni() + 
-                ", Matricula Embarcación: " + a.getMatricula_embarcacion());
-                }
             }
         } catch (Exception e) { 
             System.out.println("Error: " + e.getMessage()); 
         }
 
         // 3. Obtener alquiler por ID específico
+        int alquilerId = 1;
+        System.out.println();
+        System.out.println("==== REQUEST 3: GET alquiler by ID (" + alquilerId + ") ====");
         try {
-            int alquilerId = 1; // Cambia por un ID existente
             ResponseEntity<Alquiler> response = rest.getForEntity(
                 baseURL + "/api/alquileres/" + alquilerId, 
                 Alquiler.class
             );
-            System.out.println("\n==== REQUEST 3: GET alquiler by ID (" + alquilerId + ") ====");
-            Alquiler alquiler = response.getBody();
-            System.out.println("Alquiler encontrado:\nID: " + alquiler.getId() + 
-                ", Fechainicio: " + alquiler.getFechainicio() + 
-                ", Fechafin: " + alquiler.getFechafin() + 
-                ", Precio: " + alquiler.getPrecio() + 
-                ", Plazas: " + alquiler.getPlazas() + 
-                ", Usuario DNI: " + alquiler.getUsuario_dni() + 
-                ", Matricula Embarcación: " + alquiler.getMatricula_embarcacion());
+            System.out.println("Status code: " + response.getStatusCode());
+            System.out.println(response.getBody());
         } catch (HttpClientErrorException.NotFound e) {
-            System.out.println("Alquiler no encontrado con ID: " + 1);
+            System.out.println("Alquiler no encontrado con ID: " + alquilerId);
         } catch (Exception e) { 
             System.out.println("Error: " + e.getMessage()); 
         }
 
         // 4. Obtener embarcaciones disponibles en un rango de fechas
+        LocalDate fechaInicio = LocalDate.of(2025, 6, 1);
+        LocalDate fechaFin = LocalDate.of(2025, 6, 7);
+        System.out.println();
+        System.out.println("==== REQUEST 4: GET embarcaciones disponibles (" + fechaInicio + " a " + fechaFin + ") ====");
         try {
-            LocalDate fechaInicio = LocalDate.of(2025, 6, 1);
-            LocalDate fechaFin = LocalDate.of(2025, 6, 7);
             ResponseEntity<Embarcacion[]> response = rest.getForEntity(
                 baseURL + "/api/alquileres/disponibles?fechaInicio=" + fechaInicio + "&fechaFin=" + fechaFin, 
                 Embarcacion[].class
             );
+            System.out.println("Status code: " + response.getStatusCode());
             List<Embarcacion> lista = Arrays.asList(response.getBody());
-            System.out.println("\n==== REQUEST 4: GET embarcaciones disponibles (" + fechaInicio + " a " + fechaFin + ") ====");
+            for(Embarcacion e : lista) {
+                System.out.println(e);
+                System.out.println("------------------------");
+            }
             if (lista.isEmpty()) {
                 System.out.println("No hay embarcaciones disponibles en esas fechas");
-            } else {
-                for(Embarcacion e : lista) {
-                    System.out.println("- " + e.getNombre() + 
-                        " (" + e.getMatricula() + 
-                        "), Plazas: " + e.getPlazas() + 
-                        ", Tipo: " + e.getTipo() +
-                        ", Dimensiones: " + e.getDimensiones() + "m²");
-                }
             }
         } catch (Exception e) { 
             System.out.println("Error: " + e.getMessage()); 
@@ -128,8 +113,8 @@ public class ClienteAlquiler {
         nuevoAlquiler.setFechainicio(LocalDate.of(2025, 12, 20));
         nuevoAlquiler.setFechafin(LocalDate.of(2025, 12, 22));
         nuevoAlquiler.setPlazas(5);
-        nuevoAlquiler.setUsuario_dni("11111111A"); // Socio existente con licencia
-        nuevoAlquiler.setMatricula_embarcacion("XXX111"); // Embarcación existente
+        nuevoAlquiler.setUsuario_dni("11111111A");
+        nuevoAlquiler.setMatricula_embarcacion("XXX111");
         
         System.out.println("==== REQUEST 5: POST alquiler (valid) ====");
         try {
@@ -138,10 +123,14 @@ public class ClienteAlquiler {
                 nuevoAlquiler, 
                 Alquiler.class
             );
-            Alquiler creado = response.getBody();
-            System.out.println("Status: " + response.getStatusCode() + 
-                " | Creado ID: " + creado.getId() + 
-                ", Precio: " + creado.getPrecio() + "€");
+            System.out.println("Status code: " + response.getStatusCode());
+            System.out.println(response.getBody());
+            
+            // Limpiar
+            if (response.getBody() != null) {
+                rest.delete(baseURL + "/api/alquileres/" + response.getBody().getId());
+            }
+            
         } catch (HttpClientErrorException e) { 
             System.out.println("Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString()); 
         }
@@ -149,16 +138,19 @@ public class ClienteAlquiler {
         // 6. Crear alquiler inválido (fechas incorrectas)
         Alquiler alquilerInvalido = new Alquiler();
         alquilerInvalido.setFechainicio(LocalDate.of(2025, 8, 10));
-        alquilerInvalido.setFechafin(LocalDate.of(2025, 8, 1)); // Fecha fin antes de inicio
+        alquilerInvalido.setFechafin(LocalDate.of(2025, 8, 1));
         alquilerInvalido.setPlazas(5);
         alquilerInvalido.setUsuario_dni("11111111A");
         alquilerInvalido.setMatricula_embarcacion("XXX111");
         
-        System.out.println("\n==== REQUEST 6: POST alquiler (invalid - fechas) ====");
+        System.out.println();
+        System.out.println("==== REQUEST 6: POST alquiler (invalid - fechas) ====");
         try {
-            rest.postForEntity(baseURL + "/api/alquileres", alquilerInvalido, Alquiler.class);
+            ResponseEntity<Alquiler> response = rest.postForEntity(baseURL + "/api/alquileres", alquilerInvalido, Alquiler.class);
+            System.out.println("Status code: " + response.getStatusCode());
+            System.out.println(response.getBody());
         } catch (HttpClientErrorException e) {
-            System.out.println("Error esperado: " + e.getStatusCode());
+            System.out.println("Error esperado: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
         }
 
         // 7. Crear alquiler inválido (socio no existe)
@@ -166,117 +158,117 @@ public class ClienteAlquiler {
         alquilerSocioNoExiste.setFechainicio(LocalDate.of(2026, 9, 1));
         alquilerSocioNoExiste.setFechafin(LocalDate.of(2026, 9, 3));
         alquilerSocioNoExiste.setPlazas(4);
-        alquilerSocioNoExiste.setUsuario_dni("99999999Z"); // Socio que no existe
+        alquilerSocioNoExiste.setUsuario_dni("99999999Z");
         alquilerSocioNoExiste.setMatricula_embarcacion("XXX111");
         
-        System.out.println("\n==== REQUEST 7: POST alquiler (invalid - socio no existe) ====");
+        System.out.println();
+        System.out.println("==== REQUEST 7: POST alquiler (invalid - socio no existe) ====");
         try {
-            rest.postForEntity(baseURL + "/api/alquileres", alquilerSocioNoExiste, Alquiler.class);
+            ResponseEntity<Alquiler> response = rest.postForEntity(baseURL + "/api/alquileres", alquilerSocioNoExiste, Alquiler.class);
+            System.out.println("Status code: " + response.getStatusCode());
+            System.out.println(response.getBody());
         } catch (HttpClientErrorException e) {
-            System.out.println("Error esperado: " + e.getStatusCode());
+            System.out.println("Error esperado: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
         }
     }
 
     private static void sendPatchRequests(RestTemplate rest, String baseURL) {
         System.out.println("\n********** [ALQUILERES] PRUEBAS PATCH **********");
 
-        // 8. Añadir acompañante a alquiler futuro
-        int alquilerId = 10; // Cambia por ID de alquiler futuro existente
-        String dniAcompanante = "22222222A"; // Socio existente que no sea el titular
+        // Crear alquiler temporal
+        Alquiler alquilerTemp = new Alquiler();
+        alquilerTemp.setFechainicio(LocalDate.of(2025, 7, 1));
+        alquilerTemp.setFechafin(LocalDate.of(2025, 7, 3));
+        alquilerTemp.setPlazas(3);
+        alquilerTemp.setUsuario_dni("11111111A");
+        alquilerTemp.setMatricula_embarcacion("XXX111");
         
-        System.out.println("==== REQUEST 8: PATCH añadir acompañante ====");
-        System.out.println("URL: " + baseURL + "/api/alquileres/" + alquilerId + "/acompanantes");
-        System.out.println("Body: " + dniAcompanante);
-        System.out.println("Headers: Content-Type: text/plain");
+        Integer alquilerId = null;
         
         try {
-            // Crear la URL (SIN query parameter)
-            String url = baseURL + "/api/alquileres/" + alquilerId + "/acompanantes";
+            ResponseEntity<Alquiler> responseCreate = rest.postForEntity(
+                baseURL + "/api/alquileres", 
+                alquilerTemp, 
+                Alquiler.class
+            );
             
-            // Configurar headers para texto plano
+            if (responseCreate.getStatusCode().is2xxSuccessful()) {
+                alquilerId = responseCreate.getBody().getId();
+                System.out.println("Alquiler temporal creado con ID: " + alquilerId);
+            }
+        } catch (Exception e) {
+            System.out.println("Error creando alquiler temporal: " + e.getMessage());
+            return;
+        }
+
+        // 8. Añadir acompañante
+        String dniAcompanante = "22222222A";
+        
+        System.out.println("\n==== REQUEST 8: PATCH añadir acompañante ====");
+        try {
             org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
-            headers.set("Content-Type", "text/plain"); // IMPORTANTE: text/plain, no application/json
+            headers.set("Content-Type", "text/plain");
             
-            // Crear la entidad HTTP con el DNI como string en el body
             org.springframework.http.HttpEntity<String> entity = 
                 new org.springframework.http.HttpEntity<>(dniAcompanante, headers);
             
-            // Realizar la petición PATCH usando exchange()
             ResponseEntity<Alquiler> response = rest.exchange(
-                url,
+                baseURL + "/api/alquileres/" + alquilerId + "/acompanantes",
                 org.springframework.http.HttpMethod.PATCH,
                 entity,
                 Alquiler.class
             );
             
-            System.out.println("   ✓ ÉXITO - Status: " + response.getStatusCode());
-            Alquiler a = response.getBody();
-            System.out.println("- ID: " + a.getId() + 
-                ", Fechainicio: " + a.getFechainicio() + 
-                ", Fechafin: " + a.getFechafin() + 
-                ", Precio: " + a.getPrecio() + 
-                ", Plazas: " + a.getPlazas() + 
-                ", Usuario DNI: " + a.getUsuario_dni() + 
-                ", Matricula Embarcación: " + a.getMatricula_embarcacion());
-
-            if (a.getAcompanantes() != null && !a.getAcompanantes().isEmpty()) {
-                System.out.println("\n  Acompañantes:");
-                for (Acompanante acompanante : a.getAcompanantes()) {
-                    System.out.println("- DNI: " + acompanante.getDni() + " (ID: " + acompanante.getId() + ")");
-                }
-            } else {
-                System.out.println("\n  Acompañantes: Ninguno");
-            }
+            System.out.println("Status code: " + response.getStatusCode());
+            System.out.println(response.getBody());
         
         } catch (HttpClientErrorException e) { 
             System.out.println("Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString()); 
         }
 
-        // 9. Eliminar acompañante de alquiler futuro
-        String dniAcompananteEliminar = "22222222A"; // Acompañante existente en el alquiler
-        
+        // 9. Eliminar acompañante
         System.out.println("\n==== REQUEST 9: PATCH eliminar acompañante ====");
-        System.out.println("URL: " + baseURL + "/api/alquileres/" + alquilerId + "/acompanantes/" + dniAcompananteEliminar);
-        
         try {
             Alquiler a = rest.patchForObject(
-                baseURL + "/api/alquileres/" + alquilerId + "/acompanantes/" + dniAcompananteEliminar,
-                null, // Body vacío
-                Alquiler.class
-            );
-            System.out.println("- ID: " + a.getId() + 
-                ", Fechainicio: " + a.getFechainicio() + 
-                ", Fechafin: " + a.getFechafin() + 
-                ", Precio: " + a.getPrecio() + 
-                ", Plazas: " + a.getPlazas() + 
-                ", Usuario DNI: " + a.getUsuario_dni() + 
-                ", Matricula Embarcación: " + a.getMatricula_embarcacion());
-
-                if (a.getAcompanantes() != null && !a.getAcompanantes().isEmpty()) {
-                    System.out.println("\n  Acompañantes:");
-                    for (Acompanante acompanante : a.getAcompanantes()) {
-                        System.out.println("- DNI: " + acompanante.getDni() + " (ID: " + acompanante.getId() + ")");
-                    }
-                } else {
-                    System.out.println("\n  Acompañantes: Ninguno");
-                }
-        } catch (HttpClientErrorException e) { 
-            System.out.println("Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString()); 
-        }
-
-        // 10. Intentar añadir acompañante a alquiler pasado (error)
-        int alquilerPasadoId = 2; // Cambia por ID de alquiler pasado
-        String dniOtroAcompanante = "33333333A";
-        
-        System.out.println("\n==== REQUEST 10: PATCH añadir acompañante (alquiler pasado - error esperado) ====");
-        try {
-            rest.patchForObject(
-                baseURL + "/api/alquileres/" + alquilerPasadoId + "/acompanantes?dniSocio=" + dniOtroAcompanante,
+                baseURL + "/api/alquileres/" + alquilerId + "/acompanantes/" + dniAcompanante,
                 null,
                 Alquiler.class
             );
+            System.out.println("Éxito. Alquiler actualizado:");
+            System.out.println(a);
+        } catch (HttpClientErrorException e) { 
+            System.out.println("Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString()); 
+        }
+
+        // 10. Añadir otro acompañante
+        String dniOtroAcompanante = "33333333A";
+        
+        System.out.println("\n==== REQUEST 10: PATCH añadir otro acompañante ====");
+        try {
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.set("Content-Type", "text/plain");
+            
+            org.springframework.http.HttpEntity<String> entity = 
+                new org.springframework.http.HttpEntity<>(dniOtroAcompanante, headers);
+            
+            ResponseEntity<Alquiler> response = rest.exchange(
+                baseURL + "/api/alquileres/" + alquilerId + "/acompanantes",
+                org.springframework.http.HttpMethod.PATCH,
+                entity,
+                Alquiler.class
+            );
+            System.out.println("Status code: " + response.getStatusCode());
+            System.out.println(response.getBody());
         } catch (HttpClientErrorException e) {
-            System.out.println("Error esperado: " + e.getStatusCode());
+            System.out.println("Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
+        }
+        
+        // Limpiar
+        System.out.println("\nLimpieza: Eliminando alquiler temporal ID: " + alquilerId);
+        try {
+            rest.delete(baseURL + "/api/alquileres/" + alquilerId);
+        } catch (Exception e) {
+            System.out.println("Error eliminando alquiler temporal: " + e.getMessage());
         }
     }
 
@@ -284,18 +276,16 @@ public class ClienteAlquiler {
         System.out.println("\n********** [ALQUILERES] PRUEBAS DELETE **********");
 
         // 11. Cancelar alquiler futuro
-        // Primero creamos un alquiler para cancelarlo
+        System.out.println("==== REQUEST 11: DELETE cancelar alquiler futuro ====");
+        
         Alquiler alquilerParaCancelar = new Alquiler();
         alquilerParaCancelar.setFechainicio(LocalDate.of(2026, 10, 1));
         alquilerParaCancelar.setFechafin(LocalDate.of(2026, 10, 3));
-        alquilerParaCancelar.setPlazas(1);
+        alquilerParaCancelar.setPlazas(2);
         alquilerParaCancelar.setUsuario_dni("11111111A");
         alquilerParaCancelar.setMatricula_embarcacion("XXX111");
         
-        System.out.println("==== REQUEST 11: DELETE cancelar alquiler futuro ====");
-        
         try {
-            // Creamos un alquiler para luego cancelarlo
             ResponseEntity<Alquiler> responseCreate = rest.postForEntity(
                 baseURL + "/api/alquileres", 
                 alquilerParaCancelar, 
@@ -306,24 +296,29 @@ public class ClienteAlquiler {
                 Alquiler creado = responseCreate.getBody();
                 int idParaCancelar = creado.getId();
                 
-                System.out.println("Alquiler creado con ID: " + idParaCancelar + ", cancelando...");
+                System.out.println("Alquiler creado: " + creado);
                 
-                // Cancelamos el alquiler
                 rest.delete(baseURL + "/api/alquileres/" + idParaCancelar);
                 System.out.println("Alquiler cancelado correctamente.");
+                
+                try {
+                    rest.getForEntity(baseURL + "/api/alquileres/" + idParaCancelar, Alquiler.class);
+                } catch (HttpClientErrorException.NotFound e) {
+                    System.out.println("Confirmado: El alquiler ya no existe");
+                }
             }
         } catch (HttpClientErrorException e) { 
-            System.out.println("Error: " + e.getStatusCode()); 
+            System.out.println("Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString()); 
         }
 
-        // 12. Intentar cancelar alquiler pasado (error)
-        int alquilerPasadoId = 1; // Cambia por ID de alquiler pasado
+        // 12. Intentar cancelar alquiler inexistente
+        int alquilerInexistenteId = 9999;
         
-        System.out.println("\n==== REQUEST 12: DELETE cancelar alquiler pasado (error esperado) ====");
+        System.out.println("\n==== REQUEST 12: DELETE cancelar alquiler inexistente ====");
         try {
-            rest.delete(baseURL + "/api/alquileres/" + alquilerPasadoId);
+            rest.delete(baseURL + "/api/alquileres/" + alquilerInexistenteId);
         } catch (HttpClientErrorException e) {
-            System.out.println("Error esperado: " + e.getStatusCode());
+            System.out.println("Error esperado: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
         }
     }
 }
