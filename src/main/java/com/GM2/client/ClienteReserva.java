@@ -1,5 +1,6 @@
 package com.GM2.client;
 
+// Importaciones necesarias para manejo de fechas, colecciones y comunicación HTTP con Spring
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -8,202 +9,292 @@ import com.GM2.model.domain.Reserva;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException; // Importante para capturar errores del servidor (código 500)
 import org.springframework.web.client.RestTemplate;
 
 public class ClienteReserva {
 
+    // Variable estática (compartida por toda la clase) para guardar el ID de la reserva que crearemos en el POST.
+    // Se inicializa en null. Si el POST funciona, guardaremos aquí el ID (ej: 1, 2, etc.) para luego modificarla (PATCH) o borrarla (DELETE).
+    private static Integer reservaCreadaId = null;
+
     public static void main(String[] args) {
-        // 1. Configuración obligatoria para que RestTemplate soporte PATCH
+        // Inicializamos 'rest', el objeto que nos permite hacer peticiones HTTP (GET, POST, etc.).
+        // Se le pasa 'HttpComponentsClientHttpRequestFactory' explícitamente porque el RestTemplate estándar de Java
+        // a veces da problemas con el método PATCH. Esta configuración lo soluciona.
         RestTemplate rest = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+
+        // Definimos la URL base donde está corriendo nuestra API (Backend).
         String baseURL = "http://localhost:8080";
 
-        // 2. Ejecutar pruebas de LECTURA (GET)
+        // --- INICIO DEL FLUJO DE EJECUCIÓN ---
+
+        // 1. Llamamos al método que prueba las lecturas (GET).
         sendGetRequests(rest, baseURL);
 
-        // 3. Ejecutar prueba de CREACIÓN (POST) y capturar la ID generada
-        int idGenerada = sendPostRequests(rest, baseURL);
+        // 2. Llamamos al método que prueba la creación (POST).
+        sendPostRequests(rest, baseURL);
 
-        // 4. Si el POST funcionó, usar esa ID para probar MODIFICACIÓN y BORRADO
-        if (idGenerada != -1) {
-            sendPatchRequests(rest, baseURL, idGenerada);
-            sendDeleteRequests(rest, baseURL, idGenerada);
+        // 3. Lógica de control: Solo intentamos Modificar (PATCH) y Borrar (DELETE) si el paso anterior (POST) tuvo éxito.
+        // Si reservaCreadaId sigue siendo null, significa que falló el POST y no tenemos ID para borrar.
+        if (reservaCreadaId != null) {
+            sendPatchRequests(rest, baseURL);
+            sendDeleteRequests(rest, baseURL);
         } else {
-            System.out.println("⚠ ALERTA: No se ejecutan PATCH/DELETE porque la creación (POST) falló.");
+            // Mensaje de aviso si no se pudo continuar el flujo.
+            System.out.println("⚠ ALERTA: No se ejecutan PATCH/DELETE porque la reserva no se pudo crear (POST falló).");
         }
     }
 
     // ==========================================
-    // SECCIÓN GET (Lectura)
+    // 1. GET (Lectura) - Métodos para obtener datos
     // ==========================================
     private static void sendGetRequests(RestTemplate rest, String baseURL) {
         System.out.println("\n********** [RESERVAS] PRUEBAS GET **********");
 
-        // 1. Listar todas las reservas
+        // --- PRUEBA 1: Obtener TODAS las reservas ---
+        System.out.println("==== REQUEST 1: GET all reservas ====");
         try {
+            // Hacemos una petición GET a "/api/reservas". Esperamos recibir un Array de objetos Reserva (Reserva[].class).
+            // 'getForEntity' nos devuelve la respuesta completa (c headers, status code y body).
             ResponseEntity<Reserva[]> response = rest.getForEntity(baseURL + "/api/reservas", Reserva[].class);
-            System.out.println("==== REQUEST 1: GET all reservas ====");
 
-            if (response.getBody() != null && response.getBody().length > 0) {
+            // Imprimimos el código de estado HTTP (ej: 200 OK).
+            System.out.println("Status code: " + response.getStatusCode());
+
+            // Si hay datos en el cuerpo de la respuesta...
+            if (response.getBody() != null) {
+                // Convertimos el Array a una Lista para poder recorrerla fácilmente con un bucle.
                 List<Reserva> lista = Arrays.asList(response.getBody());
-                for(Reserva r : lista) imprimirReserva(r);
-            } else {
-                System.out.println("No hay reservas registradas (o status 204).");
+                for(Reserva r : lista) {
+                    // Llamamos al método auxiliar para imprimir los datos bonitos en consola.
+                    imprimirReserva(r);
+                    System.out.println("------------------------");
+                }
             }
         } catch (Exception e) {
-            System.out.println("Error en GET all: " + e.getMessage());
+            // Si algo falla (ej: servidor apagado), imprimimos el error.
+            System.out.println("Error: " + e.getMessage());
         }
 
-        // 2. Obtener reservas futuras
+        // --- PRUEBA 2: Obtener reservas filtradas por fecha ---
+        LocalDate fechaFiltro = LocalDate.of(2025, 1, 1); // Definimos una fecha de corte.
+        System.out.println();
+        System.out.println("==== REQUEST 2: GET reservas futuras (a partir de " + fechaFiltro + ") ====");
         try {
-            LocalDate fechaFiltro = LocalDate.now();
-            System.out.println("\n==== REQUEST 2: GET reservas futuras (después de " + fechaFiltro + ") ====");
-
+            // Hacemos GET pasando un parámetro en la URL (?fecha=2025-01-01).
             ResponseEntity<Reserva[]> response = rest.getForEntity(
                     baseURL + "/api/reservas?fecha=" + fechaFiltro,
                     Reserva[].class
             );
+            System.out.println("Status code: " + response.getStatusCode());
 
-            if (response.getBody() == null || response.getBody().length == 0) {
-                System.out.println("No hay reservas futuras.");
-            } else {
+            if (response.getBody() != null) {
                 List<Reserva> lista = Arrays.asList(response.getBody());
-                for(Reserva r : lista) imprimirReserva(r);
+                for(Reserva r : lista) {
+                    imprimirReserva(r);
+                    System.out.println("------------------------");
+                }
+                // Si la lista está vacía, avisamos por consola.
+                if (lista.isEmpty()) {
+                    System.out.println("No hay reservas futuras");
+                }
             }
         } catch (Exception e) {
-            System.out.println("Error en GET futuras: " + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
 
-        // 3. Obtener reserva por ID (Probamos con la ID 2 que sabemos que existe por tus logs)
+        // --- PRUEBA 3: Obtener una reserva específica por su ID ---
+        int reservaId = 2; // Suponemos que el ID 2 existe en la base de datos para probar.
+        System.out.println();
+        System.out.println("==== REQUEST 3: GET reserva by ID (" + reservaId + ") ====");
         try {
-            int idPrueba = 2;
-            System.out.println("\n==== REQUEST 3: GET reserva by ID (" + idPrueba + ") ====");
+            // Hacemos GET a "/api/reservas/2". Esperamos un único objeto Reserva.class (no un array).
             ResponseEntity<Reserva> response = rest.getForEntity(
-                    baseURL + "/api/reservas/" + idPrueba,
+                    baseURL + "/api/reservas/" + reservaId,
                     Reserva.class
             );
+            System.out.println("Status code: " + response.getStatusCode());
             imprimirReserva(response.getBody());
         } catch (HttpClientErrorException.NotFound e) {
-            System.out.println("La reserva ID 2 no existe.");
+            // Capturamos específicamente el error 404 (Not Found) si el ID no existe.
+            System.out.println("Reserva no encontrada con ID: " + reservaId);
         } catch (Exception e) {
+            // Capturamos cualquier otro error genérico.
             System.out.println("Error: " + e.getMessage());
         }
     }
 
     // ==========================================
-    // SECCIÓN POST (Creación)
+    // 2. POST (Creación) - Métodos para guardar datos
     // ==========================================
-    private static int sendPostRequests(RestTemplate rest, String baseURL) {
+    private static void sendPostRequests(RestTemplate rest, String baseURL) {
         System.out.println("\n********** [RESERVAS] PRUEBAS POST **********");
 
-        // 4. Crear reserva VÁLIDA
+        // --- PRUEBA 4: Crear una reserva VÁLIDA ---
         Reserva nuevaReserva = new Reserva();
-        // Usamos una fecha lejana para evitar conflictos (409) con tus pruebas anteriores
-        nuevaReserva.setFecha(LocalDate.of(2028, 8, 20));
+        // Configuramos los datos del objeto Java. Usamos una fecha lejana (2029) para asegurar que no choque con otras reservas.
+        nuevaReserva.setFecha(LocalDate.of(2026, 3, 22));
         nuevaReserva.setPlazas(4);
-        nuevaReserva.setUsuario_id("11111111A");     // Asegúrate que este socio existe
-        nuevaReserva.setMatricula_embarcacion("XXX111"); // Asegúrate que este barco existe
-        nuevaReserva.setDescripcion("Reserva generada automáticamente por Cliente Java");
+        nuevaReserva.setUsuario_id("11111111A"); // DNI de un usuario existente (clave ajena)
+        nuevaReserva.setMatricula_embarcacion("XXX111"); // Matrícula existente
+        nuevaReserva.setDescripcion("Viaje por el Atlántico");
 
-        System.out.println("==== REQUEST 4: POST crear reserva (válida) ====");
+        System.out.println("==== REQUEST 4: POST reserva (valid) ====");
         try {
+            // Enviamos la petición POST. El objeto 'nuevaReserva' se convierte automáticamente a JSON.
             ResponseEntity<Reserva> response = rest.postForEntity(
                     baseURL + "/api/reservas",
                     nuevaReserva,
                     Reserva.class
             );
-            Reserva creada = response.getBody();
-            System.out.println("   ✓ ÉXITO - Status: " + response.getStatusCode());
-            imprimirReserva(creada);
+            System.out.println("Status code: " + response.getStatusCode());
 
-            // Retornamos la ID real asignada por la BBDD para usarla después
-            return creada.getId();
-
+            if (response.getBody() != null) {
+                // ¡IMPORTANTE! Aquí capturamos el ID que la base de datos generó automáticamente.
+                // Lo guardamos en la variable estática 'reservaCreadaId' para usarlo en el PATCH y DELETE más adelante.
+                reservaCreadaId = response.getBody().getId();
+                imprimirReserva(response.getBody());
+            }
         } catch (HttpClientErrorException e) {
-            System.out.println("Error en POST: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
-            return -1; // Retornamos -1 para indicar fallo
+            // Si falla por validación (ej: 400 Bad Request), imprimimos el mensaje del servidor.
+            System.out.println("Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
         }
 
-        // (Opcional) Aquí podrías añadir las pruebas de POST inválidos (exceso de capacidad, etc.)
-        // si quieres ver los errores controlados.
+        // --- PRUEBA 5: Intentar crear reserva INVÁLIDA (Exceso de plazas) ---
+        Reserva reservaInvalida = new Reserva();
+        reservaInvalida.setFecha(LocalDate.of(2026, 3, 23));
+        reservaInvalida.setPlazas(50); // Ponemos 50 plazas, lo cual debería violar la lógica de negocio.
+        reservaInvalida.setUsuario_id("11111111A");
+        reservaInvalida.setMatricula_embarcacion("XXX111");
+
+        System.out.println();
+        System.out.println("==== REQUEST 5: POST reserva (invalid - plazas) ====");
+        try {
+            rest.postForEntity(baseURL + "/api/reservas", reservaInvalida, Reserva.class);
+        } catch (HttpClientErrorException e) {
+            // Esperamos que falle, así que capturamos el error y lo mostramos como "Error esperado".
+            System.out.println("Error esperado: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
+        }
+
+        // --- PRUEBA 6: Intentar crear reserva INVÁLIDA (Usuario no existe) ---
+        Reserva reservaSocioNoExiste = new Reserva();
+        reservaSocioNoExiste.setFecha(LocalDate.of(2026, 3, 24));
+        reservaSocioNoExiste.setPlazas(2);
+        reservaSocioNoExiste.setUsuario_id("99999999Z"); // Ponemos un DNI que no existe en BBDD.
+        reservaSocioNoExiste.setMatricula_embarcacion("XXX111");
+
+        System.out.println();
+        System.out.println("==== REQUEST 6: POST reserva (invalid - socio no existe) ====");
+        try {
+            rest.postForEntity(baseURL + "/api/reservas", reservaSocioNoExiste, Reserva.class);
+        } catch (HttpClientErrorException e) {
+            // Error cliente (4xx)
+            System.out.println("Error esperado (Cliente): " + e.getStatusCode());
+        } catch (HttpServerErrorException e) {
+            // Capturamos el 500 (Internal Server Error) que suele ocurrir cuando falla una clave foránea en BBDD.
+            // Esto evita que el programa Java se detenga abruptamente y muestra un mensaje limpio.
+            System.out.println("Error esperado (Servidor): " + e.getStatusCode() + " INTERNAL_SERVER_ERROR");
+        }
     }
 
     // ==========================================
-    // SECCIÓN PATCH (Modificación)
+    // 3. PATCH (Modificación) - Actualización parcial
     // ==========================================
-    private static void sendPatchRequests(RestTemplate rest, String baseURL, int idParaModificar) {
-        System.out.println("\n********** [RESERVAS] PRUEBAS PATCH (Usando ID: " + idParaModificar + ") **********");
+    private static void sendPatchRequests(RestTemplate rest, String baseURL) {
+        System.out.println("\n********** [RESERVAS] PRUEBAS PATCH **********");
 
-        // 7. Modificar fecha
+        // --- PRUEBA 7: Cambiar solo la fecha ---
         System.out.println("==== REQUEST 7: PATCH modificar fecha ====");
         Reserva patchFecha = new Reserva();
-        // Movemos la fecha un día después
-        patchFecha.setFecha(LocalDate.of(2028, 8, 21));
+        patchFecha.setFecha(LocalDate.of(2026, 4, 1)); // Definimos la nueva fecha en un objeto
 
         try {
+            // Usamos 'patchForObject'. La URL incluye el ID que guardamos antes: /api/reservas/{id}/fecha
             Reserva actualizada = rest.patchForObject(
-                    baseURL + "/api/reservas/" + idParaModificar + "/fecha",
+                    baseURL + "/api/reservas/" + reservaCreadaId + "/fecha",
                     patchFecha,
                     Reserva.class
             );
-            System.out.println("   ✓ ÉXITO - Fecha modificada correctamente.");
+            System.out.println("Fecha actualizada:");
             imprimirReserva(actualizada);
         } catch (HttpClientErrorException e) {
-            System.out.println("Error en PATCH fecha: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
+            System.out.println("Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
         }
 
-        // 8. Modificar detalles
-        System.out.println("\n==== REQUEST 8: PATCH modificar detalles ====");
+        // --- PRUEBA 8: Cambiar descripción y plazas ---
+        System.out.println();
+        System.out.println("==== REQUEST 8: PATCH modificar descripción y plazas ====");
         Reserva patchDetalles = new Reserva();
-        patchDetalles.setDescripcion("Descripción actualizada mediante PATCH");
-        patchDetalles.setPlazas(2); // Cambiamos las plazas
+        patchDetalles.setDescripcion("Viaje por el Mediterráneo"); //Cambio la descripción
+        patchDetalles.setPlazas(2); // Cambiamos plazas a 2
 
         try {
+            // Llamamos al endpoint específico para detalles: /api/reservas/{id}/detalles
             Reserva actualizada = rest.patchForObject(
-                    baseURL + "/api/reservas/" + idParaModificar + "/detalles",
+                    baseURL + "/api/reservas/" + reservaCreadaId + "/detalles",
                     patchDetalles,
                     Reserva.class
             );
-            System.out.println("   ✓ ÉXITO - Detalles modificados correctamente.");
+            System.out.println("Detalles actualizados:");
             imprimirReserva(actualizada);
         } catch (HttpClientErrorException e) {
-            System.out.println("Error en PATCH detalles: " + e.getStatusCode());
+            System.out.println("Error: " + e.getStatusCode());
         }
     }
 
     // ==========================================
-    // SECCIÓN DELETE (Borrado)
+    // 4. DELETE (Borrado) - Eliminar datos
     // ==========================================
-    private static void sendDeleteRequests(RestTemplate rest, String baseURL, int idParaBorrar) {
-        System.out.println("\n********** [RESERVAS] PRUEBAS DELETE (Usando ID: " + idParaBorrar + ") **********");
+    private static void sendDeleteRequests(RestTemplate rest, String baseURL) {
+        System.out.println("\n********** [RESERVAS] PRUEBAS DELETE **********");
 
-        // 11. Cancelar la reserva que acabamos de crear y modificar
-        System.out.println("==== REQUEST 11: DELETE cancelar la reserva creada ====");
-        try {
-            rest.delete(baseURL + "/api/reservas/" + idParaBorrar);
-            System.out.println("   ✓ ÉXITO - Reserva cancelada (Status 204 implícito).");
-
-            // Verificación: Intentamos buscarla de nuevo para asegurar que da 404
+        // Verificamos de nuevo que el ID exista
+        if (reservaCreadaId != null) {
+            // --- PRUEBA 9: Cancelar (Borrar) la reserva que creamos ---
+            System.out.println("==== REQUEST 9: DELETE cancelar reserva futura ====");
             try {
-                rest.getForEntity(baseURL + "/api/reservas/" + idParaBorrar, Reserva.class);
-            } catch (HttpClientErrorException.NotFound e) {
-                System.out.println("   ✓ Verificación Correcta: La reserva ya no existe (Devuelve 404).");
+                // Ejecutamos DELETE contra la URL con el ID específico.
+                rest.delete(baseURL + "/api/reservas/" + reservaCreadaId);
+                System.out.println("Reserva cancelada correctamente.");
+
+                // --- Verificación de borrado ---
+                // Intentamos leerla de nuevo. Debería dar un error 404 (Not Found).
+                try {
+                    rest.getForEntity(baseURL + "/api/reservas/" + reservaCreadaId, Reserva.class);
+                } catch (HttpClientErrorException.NotFound e) {
+                    System.out.println("Confirmado: La reserva ya no existe (404 OK)");
+                }
+            } catch (HttpClientErrorException e) {
+                System.out.println("Error: " + e.getStatusCode());
             }
+        }
+
+        // --- PRUEBA 10: Intentar borrar una reserva que no existe ---
+        System.out.println();
+        System.out.println("==== REQUEST 10: DELETE cancelar reserva inexistente ====");
+        try {
+            // Probamos con el ID 9999, que seguramente no existe.
+            rest.delete(baseURL + "/api/reservas/9999");
         } catch (HttpClientErrorException e) {
-            System.out.println("Error al borrar: " + e.getStatusCode());
+            // Esperamos que el servidor nos devuelva un error (ej: 404 Not Found).
+            System.out.println("Error esperado: " + e.getStatusCode());
         }
     }
 
-    // ==========================================
-    // UTILIDADES
-    // ==========================================
+    // Método auxiliar para imprimir bonito en consola los datos de una Reserva.
+    // Evita repetir System.out.println en cada parte del código principal.
     private static void imprimirReserva(Reserva r) {
-        if (r == null) return;
-        System.out.println("- ID: " + r.getId() +
-                " | Fecha: " + r.getFecha() +
-                " | Matricula: " + r.getMatricula_embarcacion() +
-                " | DNI: " + r.getUsuario_id() +
-                " | Plazas: " + r.getPlazas() +
-                " | Precio: " + r.getPrecio() + "€" +
-                " | Desc: " + (r.getDescripcion() != null ? r.getDescripcion() : "N/A"));
+        if (r == null) return; // Si el objeto es nulo, no hace nada para evitar errores.
+        System.out.println("Reserva {");
+        System.out.println("  ID: " + r.getId());
+        System.out.println("  Fecha: " + r.getFecha());
+        System.out.println("  Plazas: " + r.getPlazas());
+        System.out.println("  Precio: " + r.getPrecio() + "€");
+        System.out.println("  DNI Socio: " + r.getUsuario_id());
+        System.out.println("  Matrícula: " + r.getMatricula_embarcacion());
+        // Operador ternario: si descripción es null, imprime "N/A", si no, imprime la descripción.
+        System.out.println("  Descripción: " + (r.getDescripcion() != null ? r.getDescripcion() : "N/A"));
+        System.out.println("}");
     }
 }

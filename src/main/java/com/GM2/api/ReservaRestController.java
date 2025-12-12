@@ -224,13 +224,17 @@ public class ReservaRestController {
             if (datosNuevos.getPlazas() > 0) {
                 Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(reservaExistente.getMatricula_embarcacion());
 
-                // REGLA DE NEGOCIO: Plazas + 1 <= Capacidad total[cite: 104].
+                // REGLA DE NEGOCIO: Plazas + 1 <= Capacidad total.
                 if (embarcacion != null && (datosNuevos.getPlazas() + 1) > embarcacion.getPlazas()) {
                     return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY); // Error 422
                 }
+
+                // 1. Actualizamos las plazas
                 reservaExistente.setPlazas(datosNuevos.getPlazas());
 
-                // Opcional: Podrías recalcular el precio aquí si la lógica de negocio lo requiere.
+                // 2. AÑADE ESTO AQUÍ (Esto es lo que te falta):
+                double precioCalculado = 40.0 * datosNuevos.getPlazas();
+                reservaExistente.setPrecio(precioCalculado);
             }
 
             boolean exito = reservaRepository.updateReserva(reservaExistente);
