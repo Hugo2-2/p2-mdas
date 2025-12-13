@@ -42,7 +42,7 @@ public class HijosRepository extends AbstractRepository {
                                 rs.getString("nombre"),
                                 rs.getString("apellidos"),
                                 rs.getDate("fecha_nacimiento").toLocalDate(),
-                                rs.getInt("id_inscripcion")
+                                rs.getObject("id_inscripcion") != null ? rs.getInt("id_inscripcion") : 0
                         );
                     };
                 });
@@ -94,7 +94,7 @@ public class HijosRepository extends AbstractRepository {
                 String nombre = row.getString("nombre");
                 String apellidos = row.getString("apellidos");
                 LocalDate fechaNacimiento = row.getDate("fecha_nacimiento").toLocalDate();
-                int id_inscripcion = row.getInt("id_inscripcion");
+                int id_inscripcion = row.getObject("id_inscripcion") != null ? row.getInt("id_inscripcion") : 0;
 
                 Hijos hijo = new Hijos(dni, nombre, apellidos, fechaNacimiento, id_inscripcion);
                 return hijo;
@@ -144,7 +144,7 @@ public class HijosRepository extends AbstractRepository {
         String nombre = row.getString("nombre");
         String apellidos = row.getString("apellidos");
         LocalDate fechaNacimiento = row.getDate("fecha_nacimiento").toLocalDate();
-        int id_inscripcion = row.getInt("id_inscripcion");
+        int id_inscripcion = row.getObject("id_inscripcion") != null ? row.getInt("id_inscripcion") : 0;
 
         Hijos hijo = new Hijos(dni, nombre, apellidos, fechaNacimiento, id_inscripcion);
         return hijo;
@@ -229,14 +229,14 @@ public class HijosRepository extends AbstractRepository {
         if( findHijoByDni(hijo.getDni()) == null ) return false;
 
         try {
-            String query = sqlQueries.getProperty("update-Hijo");
+            String query = sqlQueries.getProperty("update-hijo");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
                         hijo.getNombre(),
                         hijo.getApellidos(),
                         hijo.getFechaNacimiento(),
-                        hijo.getId_inscripcion(),
-                        hijo.getId_inscripcion()
+                        hijo.getId_inscripcion() == 0 ? null : hijo.getId_inscripcion(),
+                        hijo.getDni()
                 );
 
                 if (result > 0)

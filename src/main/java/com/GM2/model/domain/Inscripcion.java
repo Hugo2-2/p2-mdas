@@ -153,4 +153,16 @@ public class Inscripcion {
     public void addHijo(Hijos hijo) {
         this.hijos.add(hijo);
     }
+
+    @Override
+    public String toString() {
+        return "Inscripcion{" +
+                "id=" + id +
+                ", socioTitularId='" + socioTitularId + '\'' +
+                ", cuotaAnual=" + cuotaAnual +
+                ", fechaCreacion=" + fechaCreacion +
+                ", segundoAdulto='" + segundoAudlto + '\'' +
+                ", hijos=" + hijos +
+                '}';
+    }
 }

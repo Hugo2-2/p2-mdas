@@ -253,8 +253,8 @@ public class SociosRestController {
     * 6. Eliminar a un socio si no está vinculado a ninguna inscripción (DELETE)
     * Busca en la tabla de socios y en la tabla de hijos
     */
-    @DeleteMapping
-    public ResponseEntity<Void> deleteSocio(@RequestBody String dni) {
+    @DeleteMapping("/{dni}")
+    public ResponseEntity<Void> deleteSocio(@PathVariable String dni) {
         try {
             // Validación
             if(dni == null || dni.isEmpty()) {

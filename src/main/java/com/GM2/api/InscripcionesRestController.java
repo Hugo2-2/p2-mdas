@@ -160,7 +160,7 @@ public class InscripcionesRestController {
             if(resultado) {
                 titular.setEsTitular(true);
                 socioRepository.updateSocio(titular);
-                return new ResponseEntity<>(inscripcion, HttpStatus.CREATED);
+                return new ResponseEntity<>(inscripcionRepository.findInscripcionByDNITitular(inscripcion.getSocioTitularId()), HttpStatus.CREATED);
             } else {
                 // Falló la creación (puede que ya exista una inscripción para ese titular)
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT);
@@ -188,7 +188,7 @@ public class InscripcionesRestController {
     miembro ya se ha registrado previamente como socio (PATCH)
 
     */
-    @PatchMapping(value = "/addMiembro/{idInscripcion}", consumes = "application/json")
+    @PatchMapping(value = "/addMiembro/{idInscripcion}")
     public ResponseEntity<Inscripcion> addMiembroAFamiliar( @PathVariable int idInscripcion, @RequestBody String dniNuevoMiembro ) {
 
         try {
@@ -215,8 +215,9 @@ public class InscripcionesRestController {
             
             Hijos hijo = hijosRepository.findHijoByDni(dniNuevoMiembro);
             if(hijo != null) {
+
                 hijo.setId_inscripcion(idInscripcion);
-                resHijos = hijosRepository.updateHijo(hijo) == true;
+                resHijos = hijosRepository.updateHijo(hijo);
                 inscripcion.setCuotaAnual(inscripcion.getCuotaAnual() + 100);
                 
             }
@@ -224,7 +225,7 @@ public class InscripcionesRestController {
             resInscripcion = inscripcionRepository.updateInscripcion(inscripcion).equals("EXITO");
 
             if((resHijos && resInscripcion) || (resInscripcion && hijo == null)) {
-                return new ResponseEntity<>(inscripcion, HttpStatus.OK);
+                return new ResponseEntity<>(inscripcionRepository.findInscripcionById(idInscripcion), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -239,7 +240,7 @@ public class InscripcionesRestController {
     /*
     * 7. Desvincular a un miembro de una inscripción familiar, sin borrar al socio (PATCH)
     */
-    @PatchMapping(value = "/removeMiembro/{idInscripcion}", consumes = "application/json")
+    @PatchMapping(value = "/removeMiembro/{idInscripcion}")
     public ResponseEntity<Inscripcion> removeMiembroDeFamiliar( @PathVariable int idInscripcion, @RequestBody String dniMiembro ) {
 
         try {
@@ -253,25 +254,29 @@ public class InscripcionesRestController {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
-            boolean resultado = false;
+            boolean resInscripcion = false;
+            boolean resHijo = false;
 
             // Validar si estamos añadiendo un hijo o un segundo adulto
             Socio socio = socioRepository.findSocioByDNI(dniMiembro);
 
             if(socio != null) {
                 inscripcion.setSegundoAudlto(null);
-                resultado = inscripcionRepository.updateInscripcion(inscripcion).equals("EXITO");
+                inscripcion.setCuotaAnual(inscripcion.getCuotaAnual() - 250);
+
             }
 
             Hijos hijo = hijosRepository.findHijoByDni(dniMiembro);
             if(hijo != null) {
                 hijo.setId_inscripcion(0);
-                resultado = hijosRepository.updateHijo(hijo) == true;
+                inscripcion.setCuotaAnual(inscripcion.getCuotaAnual() - 100);
+                resHijo = hijosRepository.updateHijo(hijo) == true;
             }
 
+            resInscripcion = inscripcionRepository.updateInscripcion(inscripcion).equals("EXITO");
             inscripcion = inscripcionRepository.findInscripcionById(idInscripcion);
             
-            if(resultado == true) {
+            if((resHijo && resInscripcion) || (resInscripcion && hijo == null)) {
                 return new ResponseEntity<>(inscripcion, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -289,8 +294,8 @@ public class InscripcionesRestController {
     * 8. Cancelar una inscripción individual o familiar, dado el DNI del socio titular, sin
         borrar a los socios (DELETE)
     */
-    @DeleteMapping
-    public ResponseEntity<Void> deleteInscripcion(@RequestBody String dniTitular) {
+    @DeleteMapping("/{dni}")
+    public ResponseEntity<Void> deleteInscripcion(@PathVariable("dni") String dniTitular) {
         try {
             // Validación
             if(dniTitular == null || dniTitular.isEmpty()) {
@@ -317,7 +322,5 @@ public class InscripcionesRestController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    
 
 }

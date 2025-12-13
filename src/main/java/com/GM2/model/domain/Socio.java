@@ -95,6 +95,15 @@ public class Socio {
         this.esTitular = false;
     }
 
+    public Socio(String nombre, String apellidos, String dni, LocalDate fechaNacimiento, String direccion, Boolean tieneLicenciaPatron) {
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+        this.dni = dni;
+        this.fechaNacimiento = fechaNacimiento;
+        this.direccion = direccion;
+        this.tieneLicenciaPatron = tieneLicenciaPatron;
+    }
+
     // Getters y Setters
 
     public String getNombre() {
@@ -172,6 +181,20 @@ public class Socio {
         LocalDate hoy = LocalDate.now();
         int edad = Period.between(fechaNacimiento, hoy).getYears();
         return edad >= 18;
+    }
+
+    @Override
+    public String toString() {
+        return "Socio{" +
+                "nombre='" + nombre + '\'' +
+                ", apellidos='" + apellidos + '\'' +
+                ", dni='" + dni + '\'' +
+                ", fechaNacimiento=" + fechaNacimiento +
+                ", direccion='" + direccion + '\'' +
+                ", fechaInscripcion=" + fechaInscripcion +
+                ", esTitular=" + esTitular +
+                ", tieneLicenciaPatron=" + tieneLicenciaPatron +
+                '}';
     }
 }
 
