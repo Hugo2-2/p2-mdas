@@ -167,6 +167,13 @@ public class AcompananteRepository extends AbstractRepository {
         }
     }
 
+    /**
+     * Elimina un acompanante de la base de datos.
+     * 
+     * @param id ID del acompanante a eliminar
+     * @param dniSocio DNI del socio al que pertenece
+     * @return true si se eliminó correctamente, false en caso contrario
+     */
     public boolean deleteAcompanante(int id, String dniSocio) {
         try {
             String query = sqlQueries.getProperty("delete-deleteAcompanante");

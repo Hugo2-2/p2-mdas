@@ -19,6 +19,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controlador REST de la API de alquileres.
+ * Permite realizar operaciones CRUD sobre alquileres.
+ * 
+ * @author gm2equipo1
+ * @version 1.0
+ */
 @RestController()
 @RequestMapping(path = "api/alquileres", produces = "application/json")
 public class AlquilerRestController {
@@ -29,6 +36,15 @@ public class AlquilerRestController {
     ReservaRepository reservaRepository;
     AcompananteRepository acompanantesRepository;
 
+    /**
+     * Constructor de la clase.
+     * 
+     * @param alquilerRepository Instancia de AlquilerRepository
+     * @param embarcacionRepository Instancia de EmbarcacionRepository
+     * @param socioRepository Instancia de SocioRepository
+     * @param reservaRepository Instancia de ReservaRepository
+     * @param acompanantesRepository Instancia de AcompananteRepository
+     */
     public AlquilerRestController(AlquilerRepository alquilerRepository, 
                                  EmbarcacionRepository embarcacionRepository,
                                  SocioRepository socioRepository,
@@ -50,6 +66,9 @@ public class AlquilerRestController {
 
     /**
      * 1. Obtener la lista completa de alquileres (GET)
+     * 
+     * @return ResponseEntity con la lista de alquileres y estado 200 (OK) si se ha podido obtener correctamente
+     * y en caso de error: 404 (Not Found) o 500 (Internal Server Error)
      */
     @GetMapping
     public ResponseEntity<List<Alquiler>> getAllAlquileres() {
@@ -69,6 +88,10 @@ public class AlquilerRestController {
 
     /**
      * 2. Obtener la lista de alquileres futuros dada una fecha (GET)
+     * 
+     * @param fecha Fecha de inicio de los alquileres futuros
+     * @return ResponseEntity con la lista de alquileres futuros y estado 200 (OK) si se ha podido obtener correctamente
+     * y en caso de error: 404 (Not Found) o 500 (Internal Server Error)
      */
     @GetMapping(params = "fecha")
     public ResponseEntity<List<Alquiler>> getAlquileresFuturos(@RequestParam LocalDate fecha) {
@@ -98,6 +121,10 @@ public class AlquilerRestController {
 
     /**
      * 3. Obtener la información concreta de un alquiler dado su identificador (GET)
+     * 
+     * @param id Identificador del alquiler
+     * @return ResponseEntity con la información del alquiler y estado 200 (OK) si se ha podido obtener correctamente
+     * y en caso de error: 404 (Not Found) o 500 (Internal Server Error)
      */
     @GetMapping("/{id}")
     public ResponseEntity<Alquiler> getAlquilerById(@PathVariable Integer id) {
@@ -117,6 +144,11 @@ public class AlquilerRestController {
 
     /**
      * 4. Obtener las embarcaciones disponibles dada una fecha de inicio y de fin (GET)
+     * 
+     * @param fechaInicio Fecha de inicio de las embarcaciones
+     * @param fechaFin Fecha de fin de las embarcaciones
+     * @return ResponseEntity con la lista de embarcaciones disponibles y estado 200 (OK) o 204 (No Content) si no se ha podido obtener ninguna embarcación
+     * Tambien en caso de error 500 (Internal Server Error)
      */
     @GetMapping("/disponibles")
     public ResponseEntity<List<Embarcacion>> getEmbarcacionesDisponibles(
@@ -187,6 +219,10 @@ public class AlquilerRestController {
     /**
      * 5. Crear un alquiler para una embarcación disponible, sin incluir la vinculación de 
      *    los socios que participan en ella (POST)
+     * 
+     * @param nuevoAlquiler Alquiler a crear
+     * @return ResponseEntity con el alquiler creado y estado 200 OK si se ha podido crear correctamente
+     * y en caso de error: 400 (Bad Request), 404 (Not Found), 409 (Conflict), 422 (Unprocessable Entity) o 500 (Internal Server Error)
      */
     @PostMapping(consumes = "application/json")
     public ResponseEntity<Alquiler> createAlquiler(@RequestBody Alquiler nuevoAlquiler) {
@@ -194,7 +230,6 @@ public class AlquilerRestController {
 
             //Verificar datos del alquiler no nulos
             if (nuevoAlquiler.getFechainicio() == null || nuevoAlquiler.getFechafin() == null ||
-                nuevoAlquiler.getPlazas() <= 0 ||
                 nuevoAlquiler.getUsuario_dni() == null || nuevoAlquiler.getUsuario_dni().trim().isEmpty() ||
                 nuevoAlquiler.getMatricula_embarcacion() == null || nuevoAlquiler.getMatricula_embarcacion().trim().isEmpty()) {
                 
@@ -224,11 +259,6 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
-            // Verificar que no excede las plazas disponibles
-            if (nuevoAlquiler.getPlazas() > embarcacion.getPlazas()) {
-                return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-            }
-
             // Verificar disponibilidad de la embarcación en las fechas solicitadas
             List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
             List<Reserva> reservas = reservaRepository.findAllReservas();
@@ -251,10 +281,11 @@ public class AlquilerRestController {
                 }
             }   
 
-            // Calcular precio (20€ por plaza por día)
+            // Calcular precio inicial (20€ por día para el creador del alquiler)
             long dias = ChronoUnit.DAYS.between(nuevoAlquiler.getFechainicio(), nuevoAlquiler.getFechafin()) + 1;
-            double precio = 20.0 * nuevoAlquiler.getPlazas() * dias;
+            double precio = 20.0 * dias;
             nuevoAlquiler.setPrecio(precio);
+            nuevoAlquiler.setPlazas(1);
 
             // Crear el alquiler
             boolean exito = alquilerRepository.addAlquiler(nuevoAlquiler);
@@ -271,6 +302,14 @@ public class AlquilerRestController {
     }
 
 
+    /**
+     * 6. Vincular a un nuevo socio (no titular) a un alquiler futuro, actualizando el coste y el número de plazas reservadas (PATCH)
+     * 
+     * @param id Identificador del alquiler
+     * @param dniSocio DNI del acompanante
+     * @return ResponseEntity con el alquiler actualizado y estado 200 (OK) si se ha podido actualizar correctamente
+     * y en caso de error: 404 (Not Found), 409 (Conflict), 422 (Unprocessable Entity) o 500 (Internal Server Error)
+     */
     @PatchMapping("/{id}/acompanantes")
     public ResponseEntity<Alquiler> addAcompanante(@PathVariable Integer id, @RequestBody String dniSocio) {
         try {
@@ -290,7 +329,6 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
-
             // Verificar que no es el socio titular
             if (dniSocio.equals(alquiler.getUsuario_dni())) {
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT);
@@ -304,10 +342,15 @@ public class AlquilerRestController {
                 }
             }
 
+            // Obtener embarcación para verificar límite de plazas
+            Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(alquiler.getMatricula_embarcacion());
+            if (embarcacion == null) {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
 
-            // Verificar que hay plazas disponibles
-            int plazasOcupadas = acompanantes.size() + 1; // +1 por el titular
-            if (plazasOcupadas > alquiler.getPlazas()) {
+            // Verificar que hay plazas disponibles en la embarcación
+            int totalPersonas = acompanantes.size() + 1; // +1 por el titular
+            if (totalPersonas >= embarcacion.getPlazas()) {
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT);
             }
 
@@ -321,8 +364,19 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
+            // Actualizar número de plazas (1 titular + acompañantes)
+            int nuevasPlazas = totalPersonas + 1; // Añadimos el nuevo acompañante
+            alquiler.setPlazas(nuevasPlazas);
+            
+            // Recalcular precio
+            long dias = ChronoUnit.DAYS.between(alquiler.getFechainicio(), alquiler.getFechafin()) + 1;
+            double nuevoPrecio = 20.0 * alquiler.getPlazas() * dias;
+            alquiler.setPrecio(nuevoPrecio);
+
             boolean actualizado = alquilerRepository.updateAlquiler(alquiler);
             if (!actualizado) {
+                // Si falla la actualización, revertir la adición del acompañante
+                acompanantesRepository.deleteAcompanante(id, dniSocio);
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
@@ -337,9 +391,18 @@ public class AlquilerRestController {
         }
     }
 
+    /**
+     * 7. Desvincular a un socio (no titular) de un alquiler futuro, actualizando el coste y el número de plazas reservadas (PATCH)
+     * 
+     * @param id Identificador del alquiler
+     * @param dniSocio DNI del acompanante
+     * 
+     * @return ResponseEntity con el alquiler actualizado y estado 200 (OK) si se ha podido actualizar correctamente
+     * y en caso de error: 404 (Not Found), 409 (Conflict), 422 (Unprocessable Entity) o 500 (Internal Server Error)
+     */
     @PatchMapping("/{id}/acompanantes/{dniSocio}")
     public ResponseEntity<Alquiler> removeAcompanante(@PathVariable Integer id, 
-                                                     @PathVariable String dniSocio) {
+                                                    @PathVariable String dniSocio) {
         try {
             // Verificar que el alquiler existe y es futuro
             Alquiler alquiler = alquilerRepository.findAlquilerById(id);
@@ -349,6 +412,11 @@ public class AlquilerRestController {
 
             if (alquiler.getFechainicio().isBefore(LocalDate.now())) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+
+            // Verificar que no se intenta eliminar al titular
+            if (dniSocio.equals(alquiler.getUsuario_dni())) {
+                return new ResponseEntity<>(null, HttpStatus.CONFLICT);
             }
 
             boolean encontrado = false;
@@ -371,6 +439,16 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
+            // Obtener lista actualizada de acompañantes
+            acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
+            // Actualizar plazas (1 titular + acompañantes restantes)
+            alquiler.setPlazas(acompanantes.size() + 1);
+
+            // Recalcular precio
+            long dias = ChronoUnit.DAYS.between(alquiler.getFechainicio(), alquiler.getFechafin()) + 1;
+            double nuevoPrecio = 20.0 * alquiler.getPlazas() * dias;
+            alquiler.setPrecio(nuevoPrecio);
+
             boolean actualizado = alquilerRepository.updateAlquiler(alquiler);
             if (!actualizado) {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -388,7 +466,14 @@ public class AlquilerRestController {
         }
     }
 
-
+    /**
+     * 8. Cancelar un alquiler que aún no se haya realizado (DELETE)
+     * 
+     * @param id Identificador del alquiler
+     * 
+     * @return ResponseEntity con estado 204 (No Content) si se ha podido cancelar correctamente
+     * y en caso de error: 404 (Not Found), 422 (Unprocessable Entity) o 500 (Internal Server Error)
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> cancelAlquiler(@PathVariable Integer id) {
         try {

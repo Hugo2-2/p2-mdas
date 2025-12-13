@@ -11,10 +11,21 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * Cliente de la API de alquileres.
+ * 
+ * @author gm2equipo1
+ * @version 1.0
+ */
 public class ClienteAlquiler {
 
     private static Integer alquilerCreadoId = null;
 
+    /**
+     * Método principal del cliente.
+     * 
+     * @param args Argumentos de la línea de comandos
+     */ 
     public static void main(String[] args) {
         RestTemplate rest = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
         String baseURL = "http://localhost:8080";
@@ -29,6 +40,12 @@ public class ClienteAlquiler {
         sendDeleteRequests(rest, baseURL);
     }
 
+    /**
+     * Método para realizar las pruebas GET de los endpoints de la API de alquileres.
+     * 
+     * @param rest Instancia de RestTemplate
+     * @param baseURL URL base de la API
+     */
     private static void sendGetRequests(RestTemplate rest, String baseURL) {
         System.out.println("\n********** [ALQUILERES] PRUEBAS GET **********");
 
@@ -45,7 +62,7 @@ public class ClienteAlquiler {
             System.out.println("Error: " + e.getMessage()); 
         }
 
-        LocalDate fechaFutura = LocalDate.of(2025, 1, 1);
+        LocalDate fechaFutura = LocalDate.of(2025, 2, 9);
         System.out.println();
         System.out.println("==== REQUEST 2: GET alquileres futuros (a partir de " + fechaFutura + ") ====");
         try {
@@ -82,8 +99,8 @@ public class ClienteAlquiler {
             System.out.println("Error: " + e.getMessage()); 
         }
 
-        LocalDate fechaInicio = LocalDate.of(2025, 6, 1);
-        LocalDate fechaFin = LocalDate.of(2025, 6, 7);
+        LocalDate fechaInicio = LocalDate.of(2025, 2, 1);
+        LocalDate fechaFin = LocalDate.of(2025, 2, 6);
         System.out.println();
         System.out.println("==== REQUEST 4: GET embarcaciones disponibles (" + fechaInicio + " a " + fechaFin + ") ====");
         try {
@@ -105,6 +122,12 @@ public class ClienteAlquiler {
         }
     }
 
+    /**
+     * Método para realizar las pruebas POST de los endpoints de la API de alquileres.
+     * 
+     * @param rest Instancia de RestTemplate
+     * @param baseURL URL base de la API
+     */
     private static void sendPostRequests(RestTemplate rest, String baseURL) {
         System.out.println("\n********** [ALQUILERES] PRUEBAS POST **********");
 
@@ -165,6 +188,12 @@ public class ClienteAlquiler {
         }
     }
 
+    /**
+     * Método para realizar las pruebas PATCH de los endpoints de la API de alquileres.
+     * 
+     * @param rest Instancia de RestTemplate
+     * @param baseURL URL base de la API
+     */
     private static void sendPatchRequests(RestTemplate rest, String baseURL) {
         System.out.println("\n********** [ALQUILERES] PRUEBAS PATCH **********");
 
@@ -218,6 +247,12 @@ public class ClienteAlquiler {
         }
     }
 
+    /**
+     * Método para realizar las pruebas DELETE de los endpoints de la API de alquileres.
+     * 
+     * @param rest Instancia de RestTemplate
+     * @param baseURL URL base de la API     
+     */
     private static void sendDeleteRequests(RestTemplate rest, String baseURL) {
         System.out.println("\n********** [ALQUILERES] PRUEBAS DELETE **********");
 

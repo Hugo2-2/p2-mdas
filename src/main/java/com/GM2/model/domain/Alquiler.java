@@ -197,6 +197,11 @@ public class Alquiler {
     }
 
 
+    /**
+     * Representación de un alquiler en String.
+     * 
+     * @return Representación de un alquiler en String
+     */
     @Override
     public String toString() {
         String result = "Alquiler {\n";

@@ -177,6 +177,12 @@ public class AlquilerRepository extends AbstractRepository{
         return false;
     }
 
+    /**
+     * Actualiza un alquiler en la base de datos.
+     * 
+     * @param alquiler Objeto {@link Alquiler} a actualizar
+     * @return true si se actualizó correctamente, false en caso contrario
+     */
     public boolean updateAlquiler(Alquiler alquiler) {
         try {
             String query = sqlQueries.getProperty("update-updateAlquiler");
@@ -207,6 +213,12 @@ public class AlquilerRepository extends AbstractRepository{
         return false;
     }
 
+    /**
+     * Elimina un alquiler de la base de datos.
+     * 
+     * @param id ID del alquiler a eliminar
+     * @return true si se eliminó correctamente, false en caso contrario     
+     */
     public boolean deleteAlquiler(int id) {
         try {
             //Eliminar acompanantes

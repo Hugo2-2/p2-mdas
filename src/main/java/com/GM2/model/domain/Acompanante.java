@@ -87,7 +87,11 @@ public class Acompanante {
     }
 
 
-    // Versión compacta para Acompanante
+    /**
+     * Representación de un acompanante en String.
+     * 
+     * @return Representación de un acompanante en String
+     */
     @Override
     public String toString() {
         return "DNI='" + dni + "'";
