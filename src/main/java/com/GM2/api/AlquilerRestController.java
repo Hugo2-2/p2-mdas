@@ -109,7 +109,7 @@ public class AlquilerRestController {
             }
 
             if (alquileresFuturos.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
             return new ResponseEntity<>(alquileresFuturos, HttpStatus.OK);
