@@ -13,7 +13,8 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * Cliente de la API de reservas.
- * * @author gm2equipo1
+ *
+ * @author gm2equipo1
  * @version 1.0
  */
 public class ClienteReserva {
@@ -22,7 +23,8 @@ public class ClienteReserva {
 
     /**
      * Método principal del cliente.
-     * * @param args Argumentos de la línea de comandos
+     *
+     * @param args Argumentos de la línea de comandos
      */
     public static void main(String[] args) {
         RestTemplate rest = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
@@ -35,13 +37,14 @@ public class ClienteReserva {
             sendPatchRequests(rest, baseURL);
             sendDeleteRequests(rest, baseURL);
         } else {
-            System.out.println("⚠ ALERTA: No se ejecutan PATCH/DELETE porque la reserva no se pudo crear (POST falló).");
+            System.out.println("No se ejecutan PATCH/DELETE porque la reserva no se pudo crear (POST falló).");
         }
     }
 
     /**
      * Método para realizar las pruebas GET de los endpoints de la API de reservas.
-     * * @param rest Instancia de RestTemplate
+     *
+     * @param rest Instancia de RestTemplate
      * @param baseURL URL base de la API
      */
     private static void sendGetRequests(RestTemplate rest, String baseURL) {
@@ -106,7 +109,8 @@ public class ClienteReserva {
 
     /**
      * Método para realizar las pruebas POST de los endpoints de la API de reservas.
-     * * @param rest Instancia de RestTemplate
+     *
+     * @param rest Instancia de RestTemplate
      * @param baseURL URL base de la API
      */
     private static void sendPostRequests(RestTemplate rest, String baseURL) {
@@ -169,7 +173,8 @@ public class ClienteReserva {
 
     /**
      * Método para realizar las pruebas PATCH de los endpoints de la API de reservas.
-     * * @param rest Instancia de RestTemplate
+     *
+     * @param rest Instancia de RestTemplate
      * @param baseURL URL base de la API
      */
     private static void sendPatchRequests(RestTemplate rest, String baseURL) {
@@ -212,7 +217,8 @@ public class ClienteReserva {
 
     /**
      * Método para realizar las pruebas DELETE de los endpoints de la API de reservas.
-     * * @param rest Instancia de RestTemplate
+     *
+     * @param rest Instancia de RestTemplate
      * @param baseURL URL base de la API
      */
     private static void sendDeleteRequests(RestTemplate rest, String baseURL) {
@@ -245,7 +251,8 @@ public class ClienteReserva {
 
     /**
      * Método auxiliar para imprimir los datos de una reserva.
-     * * @param r Objeto Reserva a imprimir
+     *
+     * @param r Objeto Reserva a imprimir
      */
     private static void imprimirReserva(Reserva r) {
         if (r == null) return;

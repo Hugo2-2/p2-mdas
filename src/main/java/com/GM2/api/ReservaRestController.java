@@ -15,12 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controlador REST para la gestión de Reservas (Actividades).
- * <p>
- * Este controlador maneja las peticiones HTTP definidas en la Práctica 2:
- * - Semana 1: GET (Listados) y POST (Creación).
- * - Semana 2 (Apartado D): PATCH (Modificación) y DELETE (Cancelación)[cite: 101].
- * </p>
+ * Controlador REST de la API de reservas.
+ *
+ * @author gm2equipo1
+ * @version 1.0
  */
 @RestController // Indica que es un componente de controlador REST (devuelve JSON, no HTML).
 @RequestMapping(path = "api/reservas", produces = "application/json") // Define la URL base común para todos los métodos.
@@ -51,8 +49,10 @@ public class ReservaRestController {
     // ========================================================================================
 
     /**
-     * Obtiene la lista completa de reservas.
-     * Requisito: D.1 de Semana 1[cite: 69].
+     * Obtener la lista completa de reservas (GET)
+     *
+     * @return ResponseEntity con la lista de reservas y estado 200 (OK) si se ha podido obtener correctamente,
+     * 204 (No Content) si la lista está vacía, y en caso de error: 500 (Internal Server Error)
      */
     @GetMapping
     public ResponseEntity<List<Reserva>> getAllReservas() {
@@ -70,9 +70,11 @@ public class ReservaRestController {
     }
 
     /**
-     * Obtiene reservas futuras filtradas por fecha.
-     * Requisito: D.2 de Semana 1[cite: 70].
-     * Uso: GET /api/reservas?fecha=2023-12-01
+     * Obtener la lista de reservas futuras dada una fecha (GET)
+     *
+     * @param fecha Fecha de referencia para filtrar las reservas futuras
+     * @return ResponseEntity con la lista de reservas futuras y estado 200 (OK) si se ha podido obtener correctamente,
+     * 204 (No Content) si no hay resultados, y en caso de error: 500 (Internal Server Error)
      */
     @GetMapping(params = "fecha")
     public ResponseEntity<List<Reserva>> getReservasFuturas(@RequestParam LocalDate fecha) {
@@ -101,8 +103,11 @@ public class ReservaRestController {
     }
 
     /**
-     * Obtiene una reserva específica por su ID.
-     * Requisito: D.3 de Semana 1[cite: 71].
+     * Obtener la información concreta de una reserva dado su identificador (GET)
+     *
+     * @param id Identificador de la reserva
+     * @return ResponseEntity con la información de la reserva y estado 200 (OK) si se ha podido obtener correctamente
+     * y en caso de error: 404 (Not Found) o 500 (Internal Server Error)
      */
     @GetMapping("/{id}")
     public ResponseEntity<Reserva> getReservaById(@PathVariable Integer id) {
@@ -123,8 +128,11 @@ public class ReservaRestController {
     // ========================================================================================
 
     /**
-     * Crea una nueva reserva.
-     * Requisito: D.4 de Semana 1[cite: 72].
+     * Crea una nueva reserva (POST)
+     *
+     * @param nuevaReserva Reserva a crear
+     * @return ResponseEntity con la reserva creada y estado 201 (Created) si se ha podido crear correctamente
+     * y en caso de error: 409 (Conflict), 422 (Unprocessable Entity) o 500 (Internal Server Error)
      */
     @PostMapping(consumes = "application/json")
     public ResponseEntity<Reserva> createReserva(@RequestBody Reserva nuevaReserva) {
@@ -169,8 +177,12 @@ public class ReservaRestController {
     // ========================================================================================
 
     /**
-     * Modifica la fecha de una reserva futura.
-     * Requisito: D.1 de Semana 2 - "Modificar la fecha... solo si la embarcación está disponible"[cite: 102].
+     * Modificar la fecha de una reserva futura (PATCH)
+     *
+     * @param id Identificador de la reserva
+     * @param datosNuevos Objeto Reserva con la nueva fecha
+     * @return ResponseEntity con la reserva actualizada y estado 200 (OK) si se ha podido actualizar correctamente
+     * y en caso de error: 400 (Bad Request), 404 (Not Found), 409 (Conflict) o 500 (Internal Server Error)
      */
     @PatchMapping("/{id}/fecha")
     public ResponseEntity<Reserva> updateReservaFecha(@PathVariable Integer id, @RequestBody Reserva datosNuevos) {
@@ -206,8 +218,12 @@ public class ReservaRestController {
     }
 
     /**
-     * Modifica descripción y plazas de una reserva.
-     * Requisito: D.2 de Semana 2 - "Comprobar que no exceda la capacidad máxima"[cite: 103, 104].
+     * Modificar descripción y plazas de una reserva (PATCH)
+     *
+     * @param id Identificador de la reserva
+     * @param datosNuevos Objeto Reserva con los nuevos detalles
+     * @return ResponseEntity con la reserva actualizada y estado 200 (OK) si se ha podido actualizar correctamente
+     * y en caso de error: 404 (Not Found), 422 (Unprocessable Entity) o 500 (Internal Server Error)
      */
     @PatchMapping("/{id}/detalles")
     public ResponseEntity<Reserva> updateReservaDetalles(@PathVariable Integer id, @RequestBody Reserva datosNuevos) {
@@ -248,8 +264,11 @@ public class ReservaRestController {
     }
 
     /**
-     * Cancela una reserva existente.
-     * Requisito: D.3 de Semana 2 - "Cancelar una reserva... que aún no se haya realizado"[cite: 105].
+     * Cancelar una reserva existente (DELETE)
+     *
+     * @param id Identificador de la reserva
+     * @return ResponseEntity con estado 204 (No Content) si se ha podido cancelar correctamente
+     * y en caso de error: 400 (Bad Request), 404 (Not Found) o 500 (Internal Server Error)
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReserva(@PathVariable Integer id) {
@@ -279,9 +298,10 @@ public class ReservaRestController {
     /**
      * Método auxiliar para comprobar si una embarcación está ocupada en una fecha específica.
      * Revisa conflictos tanto en la tabla de ALQUILERES como en la de RESERVAS.
-     * * @param matricula Matrícula del barco.
-     * @param fecha Fecha que queremos comprobar.
-     * @return true si está ocupada, false si está libre.
+     *
+     * @param matricula Matrícula de la embarcación
+     * @param fecha Fecha a comprobar
+     * @return true si está ocupada, false si está libre
      */
     private boolean isEmbarcacionOcupada(String matricula, LocalDate fecha) {
         // 1. Comprobar conflictos con ALQUILERES (Rango de fechas).
