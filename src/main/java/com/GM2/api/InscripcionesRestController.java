@@ -16,14 +16,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
 
+/**
+ * Controlador REST de la API de inscripciones.
+ * Permite realizar operaciones CRUD sobre inscripciones.
+ * 
+ * @author gm2equipo1
+ * @version 1.0
+ */
 @RestController
 @RequestMapping(value = "api/inscripciones", produces = "application/json")
 public class InscripcionesRestController {
@@ -31,6 +36,13 @@ public class InscripcionesRestController {
     HijosRepository hijosRepository;
     SocioRepository socioRepository;
 
+    /**
+     * Constructor de la clase.
+     * 
+     * @param inscripcionRepository Instancia de InscripcionRepository
+     * @param hijosRepository Instancia de HijosRepository
+     * @param socioRepository Instancia de SocioRepository
+     */
     public InscripcionesRestController(InscripcionRepository inscripcionRepository, HijosRepository hijosRepository, SocioRepository socioRepository) {
         this.inscripcionRepository = inscripcionRepository;
         this.hijosRepository = hijosRepository;
@@ -43,10 +55,13 @@ public class InscripcionesRestController {
         this.socioRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
-    /*
-    * 1. Obtener la lista de inscripciones individuales (GET)
-    * Una inscripción es individual cuando la cuota es igual a 300
-    */
+    /**
+     * 1. Obtener la lista de inscripciones individuales (GET)
+     * Una inscripción es individual cuando la cuota es igual a 300
+     * 
+     * @return ResponseEntity con la lista de inscripciones individuales y estado 200 (OK) si se ha podido obtener correctamente
+     * y en caso de error: 204 (No Content) o 500 (Internal Server Error)
+     */
     @GetMapping("/individuales")
     public ResponseEntity<List<Inscripcion>> getInscripcionesIndividuales() {
         try {
@@ -74,10 +89,13 @@ public class InscripcionesRestController {
     }
 
 
-    /*
-    * 2. Obtener la lista de inscripciones familiares (GET)
-    * Una inscripción es familiar cuando la cuota es mayor que 300
-    */
+    /**
+     * 2. Obtener la lista de inscripciones familiares (GET)
+     * Una inscripción es familiar cuando la cuota es mayor que 300
+     * 
+     * @return ResponseEntity con la lista de inscripciones familiares y estado 200 (OK) si se ha podido obtener correctamente
+     * y en caso de error: 204 (No Content) o 500 (Internal Server Error)
+     */
     @GetMapping("/familiares")
     public ResponseEntity<List<Inscripcion>> getInscripcionesFamiliares() {
         try {
@@ -104,10 +122,13 @@ public class InscripcionesRestController {
         }
     }
 
-    /*
-    /*
-    * 3. Obtener la información de una inscripción dado el DNI del socio titular (GET)
-    */
+    /**
+     * 3. Obtener la información de una inscripción dado el DNI del socio titular (GET)
+     * 
+     * @param dniTitular DNI del socio titular
+     * @return ResponseEntity con la información de la inscripción y estado 200 (OK) si se ha podido obtener correctamente
+     * y en caso de error: 404 (Not Found) o 500 (Internal Server Error)
+     */
     @GetMapping("/titular/{dniTitular}")
     public ResponseEntity<Inscripcion> getInscripcionByDniTitular(@PathVariable String dniTitular) {
         try {
@@ -125,9 +146,13 @@ public class InscripcionesRestController {
         }
     }
 
-    /*
-    * 4. Crear una inscripción para un socio titular (POST)
-    */
+    /**
+     * 4. Crear una inscripción para un socio titular (POST)
+     * 
+     * @param inscripcionBody Cuerpo de la inscripción a crear
+     * @return ResponseEntity con la inscripción creada y estado 201 (Created) si se ha podido crear correctamente
+     * y en caso de error: 400 (Bad Request), 404 (Not Found), 409 (Conflict) o 500 (Internal Server Error)
+     */
     @PostMapping(consumes = "application/json")
     public ResponseEntity<Inscripcion> createInscripcion(@RequestBody Inscripcion inscripcionBody) {
         try {
@@ -183,11 +208,15 @@ public class InscripcionesRestController {
 
     */
 
-    /*
-    * 6. Vincular a un nuevo miembro en una inscripción familiar, asumiendo que el nuevo
-    miembro ya se ha registrado previamente como socio (PATCH)
-
-    */
+    /**
+     * 6. Vincular a un nuevo miembro en una inscripción familiar, asumiendo que el nuevo
+     * miembro ya se ha registrado previamente como socio (PATCH)
+     * 
+     * @param idInscripcion Identificador de la inscripción
+     * @param dniNuevoMiembro DNI del nuevo miembro a añadir
+     * @return ResponseEntity con la inscripción actualizada y estado 200 (OK) si se ha podido actualizar correctamente
+     * y en caso de error: 400 (Bad Request), 404 (Not Found) o 500 (Internal Server Error)
+     */
     @PatchMapping(value = "/addMiembro/{idInscripcion}")
     public ResponseEntity<Inscripcion> addMiembroAFamiliar( @PathVariable int idInscripcion, @RequestBody String dniNuevoMiembro ) {
 
@@ -237,9 +266,14 @@ public class InscripcionesRestController {
 
     }
 
-    /*
-    * 7. Desvincular a un miembro de una inscripción familiar, sin borrar al socio (PATCH)
-    */
+    /**
+     * 7. Desvincular a un miembro de una inscripción familiar, sin borrar al socio (PATCH)
+     * 
+     * @param idInscripcion Identificador de la inscripción
+     * @param dniMiembro DNI del miembro a eliminar
+     * @return ResponseEntity con la inscripción actualizada y estado 200 (OK) si se ha podido actualizar correctamente
+     * y en caso de error: 400 (Bad Request), 404 (Not Found) o 500 (Internal Server Error)
+     */
     @PatchMapping(value = "/removeMiembro/{idInscripcion}")
     public ResponseEntity<Inscripcion> removeMiembroDeFamiliar( @PathVariable int idInscripcion, @RequestBody String dniMiembro ) {
 
@@ -290,10 +324,14 @@ public class InscripcionesRestController {
 
     }
 
-    /*
-    * 8. Cancelar una inscripción individual o familiar, dado el DNI del socio titular, sin
-        borrar a los socios (DELETE)
-    */
+    /**
+     * 8. Cancelar una inscripción individual o familiar, dado el DNI del socio titular, sin
+     * borrar a los socios (DELETE)
+     * 
+     * @param dniTitular DNI del socio titular
+     * @return ResponseEntity con estado 204 (No Content) si se ha podido cancelar correctamente
+     * y en caso de error: 400 (Bad Request), 404 (Not Found) o 500 (Internal Server Error)
+     */
     @DeleteMapping("/{dni}")
     public ResponseEntity<Void> deleteInscripcion(@PathVariable("dni") String dniTitular) {
         try {

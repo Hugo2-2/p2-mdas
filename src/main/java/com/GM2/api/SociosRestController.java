@@ -15,6 +15,13 @@ import java.util.Map;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Controlador REST de la API de socios.
+ * Permite realizar operaciones CRUD sobre socios.
+ * 
+ * @author gm2equipo1
+ * @version 1.0
+ */
 @RestController
 @RequestMapping(value = "api/socios", produces = "application/json")
 public class SociosRestController {
@@ -22,6 +29,13 @@ public class SociosRestController {
     InscripcionRepository inscripcionRepository;
     HijosRepository hijosRepository;
 
+    /**
+     * Constructor de la clase.
+     * 
+     * @param socioRepository Instancia de SocioRepository
+     * @param inscripcionRepository Instancia de InscripcionRepository
+     * @param hijosRepository Instancia de HijosRepository
+     */
     public SociosRestController(SocioRepository socioRepository, InscripcionRepository inscripcionRepository, HijosRepository hijosRepository) {
         this.socioRepository = socioRepository;
         this.inscripcionRepository = inscripcionRepository;
@@ -33,9 +47,12 @@ public class SociosRestController {
         this.hijosRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
-    /*
-    * 1. Obtener la lista completa de socios (GET)
-    */
+    /**
+     * 1. Obtener la lista completa de socios (GET)
+     * 
+     * @return ResponseEntity con la lista de socios y estado 200 (OK) si se ha podido obtener correctamente
+     * y en caso de error: 204 (No Content) o 500 (Internal Server Error)
+     */
     @GetMapping
     public ResponseEntity<List<Socio>> getAllSocios() {
         try {
@@ -53,9 +70,13 @@ public class SociosRestController {
         }
     }
 
-    /*
-    * 2. Obtener un información de un socio dado su DNI (GET)
-    */
+    /**
+     * 2. Obtener la información de un socio dado su DNI (GET)
+     * 
+     * @param dni DNI del socio
+     * @return ResponseEntity con la información del socio y estado 200 (OK) si se ha podido obtener correctamente
+     * y en caso de error: 204 (No Content) o 500 (Internal Server Error)
+     */
     @GetMapping("/{dni}")
     public ResponseEntity<Socio> getSocioByDNI(@PathVariable String dni) {
         try {
@@ -71,10 +92,13 @@ public class SociosRestController {
         }
     }
 
-    /*
+    /**
      * 3. Crear socio sin inscripción (POST)
+     * 
+     * @param socio Objeto Socio a crear
+     * @return ResponseEntity con el socio creado y estado 200 (OK) si se ha podido crear correctamente
+     * y en caso de error: 400 (Bad Request) o 500 (Internal Server Error)
      */
-
     @PostMapping(value = "/socioSinInscripcion", consumes = "application/json")
     public ResponseEntity<Socio> createSocioSinInscripcion(@RequestBody Socio socio) {
 
@@ -119,10 +143,11 @@ public class SociosRestController {
     }
 
     /**
-     * 4. Crear socio asociandolo a una inscripción familiar ya existente.
+     * 4. Crear socio asociandolo a una inscripción familiar ya existente (POST)
      * 
      * @param requestBody Objeto que contiene los datos del socio y el DNI del titular
-     * @return ResponseEntity con el socio creado o error
+     * @return ResponseEntity con el socio creado y estado 201 (Created) si se ha podido crear correctamente
+     * y en caso de error: 400 (Bad Request), 404 (Not Found) o 500 (Internal Server Error)
      */
     @PostMapping(value = "/socioConInscripcion", consumes = "application/json")
     public ResponseEntity<Socio> createSocioConInscripcion(@RequestBody SocioConInscripcionRequest requestBody) {
@@ -198,9 +223,14 @@ public class SociosRestController {
         }
     }
 
-    /*
-    * 5. Actualizar los campos de información de un socio, excepto el DNI (PATCH)
-    */
+    /**
+     * 5. Actualizar los campos de información de un socio, excepto el DNI (PATCH)
+     * 
+     * @param dni DNI del socio a actualizar
+     * @param updates Mapa con los campos a actualizar
+     * @return ResponseEntity con el socio actualizado y estado 200 (OK) si se ha podido actualizar correctamente
+     * y en caso de error: 404 (Not Found) o 500 (Internal Server Error)
+     */
     @PatchMapping(value = "/{dni}", consumes = "application/json")
     public ResponseEntity<Socio> updateSocio(@PathVariable String dni, @RequestBody Map<String, Object> updates) {
         try {
@@ -249,10 +279,14 @@ public class SociosRestController {
         }
     }
 
-    /*
-    * 6. Eliminar a un socio si no está vinculado a ninguna inscripción (DELETE)
-    * Busca en la tabla de socios y en la tabla de hijos
-    */
+    /**
+     * 6. Eliminar a un socio si no está vinculado a ninguna inscripción (DELETE)
+     * Busca en la tabla de socios y en la tabla de hijos
+     * 
+     * @param dni DNI del socio a eliminar
+     * @return ResponseEntity con estado 204 (No Content) si se ha podido eliminar correctamente
+     * y en caso de error: 400 (Bad Request), 404 (Not Found), 409 (Conflict) o 500 (Internal Server Error)
+     */
     @DeleteMapping("/{dni}")
     public ResponseEntity<Void> deleteSocio(@PathVariable String dni) {
         try {

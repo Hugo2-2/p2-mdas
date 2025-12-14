@@ -12,10 +12,21 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * Cliente de la API de socios.
+ * 
+ * @author gm2equipo1
+ * @version 1.0
+ */
 public class ClienteSocio {
 
     private static String socioCreadoDni = null;
 
+    /**
+     * Método principal del cliente.
+     * 
+     * @param args Argumentos de la línea de comandos
+     */
     public static void main(String[] args) {
         RestTemplate rest = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
         String baseURL = "http://localhost:8080";
@@ -30,6 +41,12 @@ public class ClienteSocio {
         sendDeleteRequests(rest, baseURL);
     }
 
+    /**
+     * Método para realizar las pruebas GET de los endpoints de la API de socios.
+     * 
+     * @param rest Instancia de RestTemplate
+     * @param baseURL URL base de la API
+     */
     private static void sendGetRequests(RestTemplate rest, String baseURL) {
         System.out.println("\n********** [SOCIOS] PRUEBAS GET **********");
 
@@ -78,6 +95,12 @@ public class ClienteSocio {
         }
     }
 
+    /**
+     * Método para realizar las pruebas POST de los endpoints de la API de socios.
+     * 
+     * @param rest Instancia de RestTemplate
+     * @param baseURL URL base de la API
+     */
     private static void sendPostRequests(RestTemplate rest, String baseURL) {
         System.out.println("\n********** [SOCIOS] PRUEBAS POST **********");
 
@@ -147,6 +170,12 @@ public class ClienteSocio {
         }
     }
 
+    /**
+     * Método para realizar las pruebas PATCH de los endpoints de la API de socios.
+     * 
+     * @param rest Instancia de RestTemplate
+     * @param baseURL URL base de la API
+     */
     private static void sendPatchRequests(RestTemplate rest, String baseURL) {
         System.out.println("\n********** [SOCIOS] PRUEBAS PATCH **********");
 
@@ -221,6 +250,12 @@ public class ClienteSocio {
         }
     }
 
+    /**
+     * Método para realizar las pruebas DELETE de los endpoints de la API de socios.
+     * 
+     * @param rest Instancia de RestTemplate
+     * @param baseURL URL base de la API
+     */
     private static void sendDeleteRequests(RestTemplate rest, String baseURL) {
         System.out.println("\n********** [SOCIOS] PRUEBAS DELETE **********");
         socioCreadoDni = "55555555A";
