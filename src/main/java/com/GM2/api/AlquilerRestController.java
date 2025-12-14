@@ -242,6 +242,24 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
+            LocalDate inicio = nuevoAlquiler.getFechainicio();
+            LocalDate fin = nuevoAlquiler.getFechafin();
+            long dias = ChronoUnit.DAYS.between(inicio, fin) + 1;
+            
+            int mesInicio = inicio.getMonthValue();
+            
+            if (mesInicio >= 10 || mesInicio <= 4) {
+                if (dias > 3) {
+                    return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+                }
+            } 
+            else if (mesInicio >= 5 && mesInicio <= 9) {
+                if (dias != 7 && dias != 14) {
+                    return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+                }
+            }
+
+
             Socio socioAlquiler = socioRepository.findSocioByDNI(nuevoAlquiler.getUsuario_dni());
             // Verificar que el socio existe
             if ( socioAlquiler == null) {
@@ -282,7 +300,6 @@ public class AlquilerRestController {
             }   
 
             // Calcular precio inicial (20€ por día para el creador del alquiler)
-            long dias = ChronoUnit.DAYS.between(nuevoAlquiler.getFechainicio(), nuevoAlquiler.getFechafin()) + 1;
             double precio = 20.0 * dias;
             nuevoAlquiler.setPrecio(precio);
             nuevoAlquiler.setPlazas(1);
@@ -369,6 +386,7 @@ public class AlquilerRestController {
             alquiler.setPlazas(nuevasPlazas);
             
             // Recalcular precio
+
             long dias = ChronoUnit.DAYS.between(alquiler.getFechainicio(), alquiler.getFechafin()) + 1;
             double nuevoPrecio = 20.0 * alquiler.getPlazas() * dias;
             alquiler.setPrecio(nuevoPrecio);
