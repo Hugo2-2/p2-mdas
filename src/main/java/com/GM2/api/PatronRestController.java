@@ -15,6 +15,9 @@ import java.util.List;
  * Controlador REST para la gestión de recursos de tipo Patron.
  * Permite realizar operaciones CRUD, así como gestionar la vinculación
  * y desvinculación de patrones con las embarcaciones.
+ *
+ * @author gm2equipo1
+ * @version 1.0
  */
 @RestController()
 @RequestMapping(path="api/patrones", produces="application/json")
@@ -83,7 +86,7 @@ public class PatronRestController {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
 
-            // Validar si el DNI ya está registrado (Unicidad)
+            // Validar si el DNI ya está registrado
             if (patronRepository.isRegistered(nuevoPatron.getDni())) {
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT);
             }
@@ -125,6 +128,10 @@ public class PatronRestController {
         Patron patronActual = patronRepository.findPatronByDNI(dni);
         if (patronActual == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        if(newPatron.getDni() != null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
         // Actualización parcial de campos
@@ -245,7 +252,7 @@ public class PatronRestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        // Validar integridad referencial: ¿Tiene barco asignado?
+        // Validar si tiene barco asignado
         if (embarcacionRepository.isPatronAssignedToEmbarcacion(dni)) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }

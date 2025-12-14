@@ -12,6 +12,9 @@ import java.util.List;
 /**
  * Controlador REST para la gestión de recursos de tipo Embarcacion.
  * Expone los endpoints para realizar operaciones CRUD sobre la flota.
+ *
+ * @author gm2equipo1
+ * @version 1.0
  */
 @RestController()
 @RequestMapping(path="api/embarcaciones", produces="application/json")
@@ -144,6 +147,11 @@ public class EmbarcacionRestController {
             Embarcacion embarcacionActual = embarcacionRepository.findEmbarcacionByMatricula(matricula);
             if (embarcacionActual == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+
+            // 2. Comprobar que no se quiera cambiar la matricula
+            if(nuevaEmbarcacion.getMatricula() != null) {
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
 
             // --- VALIDACIONES Y ACTUALIZACIÓN DE CAMPOS ---
