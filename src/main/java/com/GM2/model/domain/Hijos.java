@@ -35,6 +35,13 @@ public class Hijos {
         this.id_inscripcion = id_inscripcion;
     }
 
+    public Hijos(String dni, String nombre, String apellidos, LocalDate fechaNacimiento) {
+        this.dni = dni;
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
     /**
      * Constructor por defecto.
      * Necesario para algunas librerías (como Spring MVC) para crear instancias.
@@ -83,5 +90,16 @@ public class Hijos {
 
     public void setFechaNacimiento(LocalDate fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
+    }
+
+    @Override
+    public String toString() {
+        return "Hijos{" +
+                "dni='" + dni + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", apellidos='" + apellidos + '\'' +
+                ", fechaNacimiento=" + fechaNacimiento +
+                ", id_inscripcion=" + id_inscripcion +
+                '}';
     }
 }

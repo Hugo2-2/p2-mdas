@@ -176,7 +176,7 @@ public class SocioRepository extends AbstractRepository {
         }
 
         // Creamos su inscripcion simple que posteriormente podrá se ampliada
-        if(socio.getEsTitular()) {
+        if(socio.getEsTitular() && socio.getEsTitular() != null) {
 
             Inscripcion inscripcion = new Inscripcion(socio.getDni());
 
@@ -194,6 +194,91 @@ public class SocioRepository extends AbstractRepository {
             return "EXITO";
         } else {
             return "No se ha podido guardar el socio";
+        }
+    }
+
+    /**
+     * Actualiza la información de un socio existente en la base de datos.
+     * No permite actualizar el DNI (se usa como clave primaria).
+     * Verifica que el socio exista antes de realizar la actualización.
+     *
+     * @param socio El objeto {@link Socio} con los datos actualizados.
+     * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
+     */
+    public String updateSocio(Socio socio) {
+        if(socio == null) {
+            return "No se ha ingresado el socio";
+        }
+
+        if(socio.getDni() == null || socio.getDni().isEmpty()) {
+            return "El DNI es obligatorio para actualizar el socio";
+        }
+
+        // Verificar que el socio existe
+        Socio socioExistente = findSocioByDNI(socio.getDni());
+        if(socioExistente == null) {
+            return "No se puede actualizar, el socio no existe";
+        }
+
+        try {
+            String query = sqlQueries.getProperty("update-socio");
+            if(query != null) {
+                int result = jdbcTemplate.update(query,
+                    socio.getNombre(),
+                    socio.getApellidos(),
+                    socio.getFechaNacimiento(),
+                    socio.getDireccion(),
+                    socio.getFechaInscripcion(),
+                    socio.getEsTitular(),
+                    socio.getTieneLicenciaPatron(),
+                    socio.getDni()
+                );
+
+                if(result > 0) {
+                    return "EXITO";
+                } else {
+                    return "No se ha podido actualizar el socio";
+                }
+            } else {
+                return "No se ha podido actualizar el socio";
+            }
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to update socio in the database");
+            exception.printStackTrace();
+            return "No se ha podido actualizar el socio";
+        }
+    }
+
+    /**
+     * Elimina un socio de la base de datos por su DNI.
+     * IMPORTANTE: Solo debe usarse si el socio no está vinculado a ninguna inscripción.
+     *
+     * @param dni El DNI del socio a eliminar.
+     * @return true si la eliminación fue exitosa, false en caso contrario.
+     */
+    public boolean deleteSocio(String dni) {
+        if(dni == null || dni.isEmpty()) {
+            return false;
+        }
+
+        // Verificar que el socio existe
+        Socio socio = findSocioByDNI(dni);
+        if(socio == null) {
+            return false;
+        }
+
+        try {
+            String query = sqlQueries.getProperty("delete-deleteSocio");
+            if(query != null) {
+                int result = jdbcTemplate.update(query, dni);
+                return result > 0;
+            } else {
+                return false;
+            }
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to delete socio from the database");
+            exception.printStackTrace();
+            return false;
         }
     }
 }

@@ -147,4 +147,24 @@ public class Embarcacion {
     public void setMatricula(String matricula) {
         this.matricula = matricula;
     }
+
+    /**
+     * Devuelve una representación en forma de cadena de texto de la embarcación.
+     * Este método es útil para la depuración y el registro (logging), mostrando
+     * los atributos principales como matrícula, nombre, tipo, plazas, dimensiones
+     * y el identificador del patrón asignado.
+     *
+     * @return Una cadena (String) con los detalles de la embarcación.
+     */
+    @Override
+    public String toString() {
+        return "Embarcacion {" +
+                "matricula='" + matricula + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", tipo='" + tipo + '\'' +
+                ", plazas=" + plazas +
+                ", dimensiones='" + dimensiones + '\'' +
+                ", idPatron='" + (idPatron != null ? idPatron : "Ninguno") + '\'' +
+                '}';
+    }
 }

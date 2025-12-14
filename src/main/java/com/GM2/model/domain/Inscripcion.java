@@ -43,6 +43,22 @@ public class Inscripcion {
         this.hijos = null;
     }
 
+    public Inscripcion(String socioTitularId, String segundoAdulto, List<Hijos> hijos) {
+        this.socioTitularId = socioTitularId;
+        this.cuotaAnual = 300;
+        this.fechaCreacion = LocalDate.now();
+
+        if( segundoAdulto != null && !segundoAdulto.isEmpty()) {
+            this.segundoAudlto = segundoAdulto;
+            this.cuotaAnual += 250;
+        }
+
+        if( hijos != null && !hijos.isEmpty()) {
+            this.hijos = hijos;
+            this.cuotaAnual += hijos.size() * 100;
+        }
+    }
+
     /**
      * Constructor para crear una inscripción con datos básicos.
      *
@@ -132,5 +148,21 @@ public class Inscripcion {
 
     public void setHijos(List<Hijos> hijos) {
         this.hijos = hijos;
+    }
+
+    public void addHijo(Hijos hijo) {
+        this.hijos.add(hijo);
+    }
+
+    @Override
+    public String toString() {
+        return "Inscripcion{" +
+                "id=" + id +
+                ", socioTitularId='" + socioTitularId + '\'' +
+                ", cuotaAnual=" + cuotaAnual +
+                ", fechaCreacion=" + fechaCreacion +
+                ", segundoAdulto='" + segundoAudlto + '\'' +
+                ", hijos=" + hijos +
+                '}';
     }
 }

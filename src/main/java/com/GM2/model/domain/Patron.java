@@ -91,4 +91,22 @@ public class Patron {
     public void setFechaExpedicionTitulo(LocalDate fechaExpedicionTitulo) {
         this.fechaExpedicionTitulo = fechaExpedicionTitulo;
     }
+
+    /**
+     * Devuelve una representación en forma de cadena de texto del patrón.
+     * Muestra la información personal del patrón, incluyendo su identificador único (DNI),
+     * nombre completo y fechas de nacimiento y expedición del título.
+     *
+     * @return Una cadena (String) con la información del patrón.
+     */
+    @Override
+    public String toString() {
+        return "Patron {" +
+                "dni='" + dni + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", apellidos='" + apellidos + '\'' +
+                ", fechaNacimiento=" + fechaNacimiento +
+                ", fechaExpedicionTitulo=" + fechaExpedicionTitulo +
+                '}';
+    }
 }

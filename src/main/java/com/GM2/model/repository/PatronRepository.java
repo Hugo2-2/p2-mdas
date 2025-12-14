@@ -178,4 +178,56 @@ public class PatronRepository extends AbstractRepository {
         return false;
     }
 
+    /**
+     * Actualiza los datos personales de un patrón.
+     * NO actualiza el DNI.
+     * @param patron Objeto con los datos ya modificados.
+     * @return true si se actualizó correctamente.
+     */
+    public boolean updatePatronInfo(Patron patron) {
+        try {
+            String query = sqlQueries.getProperty("update-updatePatronInfo");
+            if (query != null) {
+                int result = jdbcTemplate.update(query,
+                        patron.getNombre(),
+                        patron.getApellidos(),
+                        patron.getFechaNacimiento(),
+                        patron.getFechaExpedicionTitulo(),
+                        patron.getDni()
+                );
+                return result > 0;
+            }
+            return false;
+        } catch (DataAccessException e) {
+            System.err.println("Error al actualizar el patrón: " + patron.getDni());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Elimina un patrón de la base de datos.
+     * Utiliza el DNI proporcionado para localizar y borrar el registro correspondiente.
+     *
+     * @param dni El DNI del patrón que se desea eliminar.
+     * @return true si la operación de borrado afectó a alguna fila (éxito),
+     * false si no se encontró el patrón o si ocurrió un error durante la ejecución.
+     */
+    public boolean deletePatron(String dni) {
+        try {
+            String query = sqlQueries.getProperty("delete-deletePatron");
+
+            if (query != null) {
+                int rows = jdbcTemplate.update(query, dni);
+
+                // Si rows > 0 significa que al menos un registro fue eliminado
+                return rows > 0;
+            }
+        } catch (Exception e) {
+            System.err.println("Error al eliminar el patrón: " + dni);
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }

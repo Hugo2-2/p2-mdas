@@ -42,7 +42,7 @@ public class HijosRepository extends AbstractRepository {
                                 rs.getString("nombre"),
                                 rs.getString("apellidos"),
                                 rs.getDate("fecha_nacimiento").toLocalDate(),
-                                rs.getInt("id_inscripcion")
+                                rs.getObject("id_inscripcion") != null ? rs.getInt("id_inscripcion") : 0
                         );
                     };
                 });
@@ -65,7 +65,7 @@ public class HijosRepository extends AbstractRepository {
      */
     public Hijos findHijoByDni(String dni) {
         try {
-            String query = sqlQueries.getProperty("select-findHijoByDni");
+            String query = sqlQueries.getProperty("select-findHijoByDNI");
             Hijos result = jdbcTemplate.query(query, this::mapRowToHijos, dni);
             if( result != null )
                 return result;
@@ -94,7 +94,7 @@ public class HijosRepository extends AbstractRepository {
                 String nombre = row.getString("nombre");
                 String apellidos = row.getString("apellidos");
                 LocalDate fechaNacimiento = row.getDate("fecha_nacimiento").toLocalDate();
-                int id_inscripcion = row.getInt("id_inscripcion");
+                int id_inscripcion = row.getObject("id_inscripcion") != null ? row.getInt("id_inscripcion") : 0;
 
                 Hijos hijo = new Hijos(dni, nombre, apellidos, fechaNacimiento, id_inscripcion);
                 return hijo;
@@ -144,7 +144,7 @@ public class HijosRepository extends AbstractRepository {
         String nombre = row.getString("nombre");
         String apellidos = row.getString("apellidos");
         LocalDate fechaNacimiento = row.getDate("fecha_nacimiento").toLocalDate();
-        int id_inscripcion = row.getInt("id_inscripcion");
+        int id_inscripcion = row.getObject("id_inscripcion") != null ? row.getInt("id_inscripcion") : 0;
 
         Hijos hijo = new Hijos(dni, nombre, apellidos, fechaNacimiento, id_inscripcion);
         return hijo;
@@ -166,7 +166,7 @@ public class HijosRepository extends AbstractRepository {
                         hijo.getNombre(),
                         hijo.getApellidos(),
                         hijo.getFechaNacimiento(),
-                        hijo.getId_inscripcion()
+                        hijo.getId_inscripcion() == 0 ? null : hijo.getId_inscripcion()
                 );
 
                 if (result > 0)
@@ -213,5 +213,74 @@ public class HijosRepository extends AbstractRepository {
         }
 
         return true;
+    }
+
+    /**
+     * Elimina un hijo de la base de datos por su DNI.
+     *
+     * @param Hijo El objeto hijo a actualizar.
+     * @return true si la actualización fue exitosa, false en caso contrario.
+     */
+
+    public boolean updateHijo(Hijos hijo) {
+
+        if( hijo == null ) return false;
+
+        if( findHijoByDni(hijo.getDni()) == null ) return false;
+
+        try {
+            String query = sqlQueries.getProperty("update-hijo");
+            if(query != null) {
+                int result = jdbcTemplate.update(query,
+                        hijo.getNombre(),
+                        hijo.getApellidos(),
+                        hijo.getFechaNacimiento(),
+                        hijo.getId_inscripcion() == 0 ? null : hijo.getId_inscripcion(),
+                        hijo.getDni()
+                );
+
+                if (result > 0)
+                    return true;
+                else return false;
+
+            } else return false;
+
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to update hijo in the database");
+            exception.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Elimina un hijo de la base de datos por su DNI.
+     *
+     * @param dni El DNI del hijo a eliminar.
+     * @return true si la eliminación fue exitosa, false en caso contrario.
+     */
+    public boolean deleteHijo(String dni) {
+        if(dni == null || dni.isEmpty()) {
+            return false;
+        }
+
+        // Verificar que el hijo existe
+        Hijos hijo = findHijoByDni(dni);
+        if(hijo == null) {
+            return false;
+        }
+
+        try {
+            String query = sqlQueries.getProperty("delete-deleteHijo");
+            if(query != null) {
+                int result = jdbcTemplate.update(query, dni);
+                return result > 0;
+            } else {
+                return false;
+            }
+        } catch (DataAccessException ex) {
+            System.err.println("Unable to delete hijo from the database");
+            ex.printStackTrace();
+            return false;
+        }
     }
 }

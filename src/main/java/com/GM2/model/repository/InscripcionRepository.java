@@ -334,4 +334,38 @@ public class InscripcionRepository extends AbstractRepository{
         return updateInscripcion(inscripcion);
 
     }
+
+    /**
+     * Elimina una inscripción por el DNI del titular.
+     * IMPORTANTE: Solo elimina la inscripción, no los socios ni los hijos.
+     * Los hijos quedan huérfanos y deberían ser gestionados por separado si es necesario.
+     *
+     * @param dniTitular El DNI del socio titular de la inscripción a eliminar.
+     * @return true si la eliminación fue exitosa, false en caso contrario.
+     */
+    public boolean deleteInscripcionByDniTitular(String dniTitular) {
+        if(dniTitular == null || dniTitular.isEmpty()) {
+            return false;
+        }
+
+        // Verificar que la inscripción existe
+        Inscripcion inscripcion = findInscripcionByDNITitular(dniTitular);
+        if(inscripcion == null) {
+            return false;
+        }
+
+        try {
+            String query = sqlQueries.getProperty("delete-deleteInscripcionByDniTitular");
+            if(query != null) {
+                int result = jdbcTemplate.update(query, dniTitular);
+                return result > 0;
+            } else {
+                return false;
+            }
+        } catch (DataAccessException ex) {
+            System.err.println("Unable to delete inscription from the database");
+            ex.printStackTrace();
+            return false;
+        }
+    }
 }

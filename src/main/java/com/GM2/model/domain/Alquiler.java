@@ -196,4 +196,33 @@ public class Alquiler {
         this.matricula_embarcacion = matricula_embarcacion;
     }
 
+
+    /**
+     * Representación de un alquiler en String.
+     * 
+     * @return Representación de un alquiler en String
+     */
+    @Override
+    public String toString() {
+        String result = "Alquiler {\n";
+        result += "  ID: " + id + "\n";
+        result += "  Fecha inicio: " + fechaInicio + "\n";
+        result += "  Fecha fin: " + fechaFin + "\n";
+        result += "  Plazas: " + plazas + "\n";
+        result += "  Precio: " + precio + "€\n";
+        result += "  DNI Socio: " + usuario_dni + "\n";
+        result += "  Matrícula: " + matricula_embarcacion + "\n";
+        
+        if (acompanantes != null && !acompanantes.isEmpty()) {
+            result += "  Acompañantes (" + acompanantes.size() + "):\n";
+            for (Acompanante a : acompanantes) {
+                result += "    - " + a + "\n"; // Llama a a.toString()
+            }
+        } else {
+            result += "  Acompañantes: Ninguno\n";
+        }
+        
+        result += "}";
+        return result;
+    }   
 }

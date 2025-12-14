@@ -176,4 +176,76 @@ public class AlquilerRepository extends AbstractRepository{
 
         return false;
     }
+
+    /**
+     * Actualiza un alquiler en la base de datos.
+     * 
+     * @param alquiler Objeto {@link Alquiler} a actualizar
+     * @return true si se actualizó correctamente, false en caso contrario
+     */
+    public boolean updateAlquiler(Alquiler alquiler) {
+        try {
+            String query = sqlQueries.getProperty("update-updateAlquiler");
+            if(query != null) {
+                int result = jdbcTemplate.update(query,
+                        Date.valueOf(alquiler.getFechainicio()),
+                        Date.valueOf(alquiler.getFechafin()),
+                        alquiler.getPrecio(),
+                        alquiler.getPlazas(),
+                        alquiler.getUsuario_dni(),
+                        alquiler.getMatricula_embarcacion(),
+                        alquiler.getId()
+                );
+
+                if (result <= 0){
+                    return false;
+                }
+
+                return true;
+
+            } else return false;
+
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to update alquileres in the database");
+            exception.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
+     * Elimina un alquiler de la base de datos.
+     * 
+     * @param id ID del alquiler a eliminar
+     * @return true si se eliminó correctamente, false en caso contrario     
+     */
+    public boolean deleteAlquiler(int id) {
+        try {
+            //Eliminar acompanantes
+            String deleteAcom = sqlQueries.getProperty("delete-deleteAcompanantesByAlquiler");
+            jdbcTemplate.update(deleteAcom, id);
+
+            //Eliminar alquiler
+            String query = sqlQueries.getProperty("delete-deteleAlquiler");
+            if(query != null) {
+                int result = jdbcTemplate.update(query, id);
+
+                if (result <= 0){
+                    return false;
+                }
+
+                return true;
+
+            } else return false;
+
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to delete alquileres in the database");
+            exception.printStackTrace();
+        }
+
+        return false;
+    }
+
+
+
 }
