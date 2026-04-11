@@ -53,8 +53,9 @@ public class ClienteAlquiler {
         try {
             ResponseEntity<Alquiler[]> response = rest.getForEntity(baseURL + "/api/alquileres", Alquiler[].class);
             System.out.println("Status code: " + response.getStatusCode());
-            List<Alquiler> lista = Arrays.asList(response.getBody());
-            for(Alquiler a : lista) {
+            //Clean Code - Reglas de nombrado: el nombre de una coleccion ayuda a entender su contenido (lista -> rentalList)
+            List<Alquiler> rentalList = Arrays.asList(response.getBody());
+            for(Alquiler a : rentalList) {
                 System.out.println(a);
                 System.out.println("------------------------");
             }
@@ -71,12 +72,13 @@ public class ClienteAlquiler {
                 Alquiler[].class
             );
             System.out.println("Status code: " + response.getStatusCode());
-            List<Alquiler> lista = Arrays.asList(response.getBody());
-            for(Alquiler a : lista) {
+            //Clean Code - Reglas de nombrado: el nombre de una coleccion ayuda a entender su contenido (lista -> FutureRentalList)
+            List<Alquiler> futureRentalList = Arrays.asList(response.getBody());
+            for(Alquiler a : futureRentalList) {
                 System.out.println(a);
                 System.out.println("------------------------");
             }
-            if (lista.isEmpty()) {
+            if (futureRentalList.isEmpty()) {
                 System.out.println("No hay alquileres futuros");
             }
         } catch (Exception e) { 
