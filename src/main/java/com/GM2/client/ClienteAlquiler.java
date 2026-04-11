@@ -234,14 +234,15 @@ public class ClienteAlquiler {
     private static void sendPatchRequests(RestTemplate rest, String baseURL) {
         System.out.println("\n********** [ALQUILERES] PRUEBAS PATCH **********");
 
-        String dniAcompanante1 = "22222222A";
+        // Clean Code - Reglas de nombrado: Sustituir numeracion por nombre con sentido (dniAcompanante1 -> firstCompanionDni)
+        String firstCompanionDni = "22222222A";
         
         System.out.println("==== REQUEST 10: PATCH añadir acompañante ====");
         try {
             // Para PATCH con body, usamos patchForObject
             Alquiler alquilerActualizado = rest.patchForObject(
                 baseURL + "/api/alquileres/" + alquilerCreadoId + "/acompanantes",
-                dniAcompanante1,
+                firstCompanionDni,
                 Alquiler.class
             );
             
@@ -257,7 +258,7 @@ public class ClienteAlquiler {
         try {
             Alquiler alquilerActualizado = rest.patchForObject(
                 baseURL + "/api/alquileres/" + alquilerCreadoId + "/acompanantes",
-                dniAcompanante1,
+                firstCompanionDni,
                 Alquiler.class
             );
             
@@ -286,7 +287,7 @@ public class ClienteAlquiler {
         try {
             // Para DELETE de acompañante, patchForObject también funciona
             Alquiler alquilerActualizado = rest.patchForObject(
-                baseURL + "/api/alquileres/" + alquilerCreadoId + "/acompanantes/" + dniAcompanante1,
+                baseURL + "/api/alquileres/" + alquilerCreadoId + "/acompanantes/" + firstCompanionDni,
                 null,
                 Alquiler.class
             );
