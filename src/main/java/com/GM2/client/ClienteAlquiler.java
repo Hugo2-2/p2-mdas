@@ -127,12 +127,13 @@ public class ClienteAlquiler {
                 Embarcacion[].class
             );
             System.out.println("Status code: " + response.getStatusCode());
-            List<Embarcacion> lista = Arrays.asList(response.getBody());
-            for(Embarcacion e : lista) {
+            //Clean Code - Reglas de nombrado: el nombre de una coleccion ayuda a entender su contenido (lista -> availableBoats)
+            List<Embarcacion> availableBoats = Arrays.asList(response.getBody());
+            for(Embarcacion e : availableBoats) {
                 System.out.println(e);
                 System.out.println("------------------------");
             }
-            if (lista.isEmpty()) {
+            if (availableBoats.isEmpty()) {
                 System.out.println("No hay embarcaciones disponibles en esas fechas");
             }
         } catch (Exception e) { 
