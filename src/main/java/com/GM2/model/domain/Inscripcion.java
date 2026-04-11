@@ -18,7 +18,8 @@ public class Inscripcion {
     private String socioTitularId;
     private float cuotaAnual;
     private LocalDate fechaCreacion;
-    private String segundoAudlto;
+    // Clean Code - Reglas de nombrado: cambiar nombre de variable por nombre pronunciable (segundoAudlto -> secondAdult)
+    private String secondAdult;
     private List<Hijos> hijos;
 
     /**
@@ -39,7 +40,7 @@ public class Inscripcion {
         this.socioTitularId = socioTitularId;
         this.cuotaAnual = 300;
         this.fechaCreacion = LocalDate.now();
-        this.segundoAudlto = null;
+        this.secondAdult = null;
         this.hijos = null;
     }
 
@@ -49,7 +50,7 @@ public class Inscripcion {
         this.fechaCreacion = LocalDate.now();
 
         if( segundoAdulto != null && !segundoAdulto.isEmpty()) {
-            this.segundoAudlto = segundoAdulto;
+            this.secondAdult = segundoAdulto;
             this.cuotaAnual += 250;
         }
 
@@ -90,7 +91,7 @@ public class Inscripcion {
         this.socioTitularId = socioTitularId;
         this.cuotaAnual = cuotaAnual;
         this.fechaCreacion = fechaCreacion;
-        this.segundoAudlto = segundoAudlto;
+        this.secondAdult = segundoAudlto;
 
         if(!hijos.isEmpty())
             this.hijos = hijos;
@@ -135,11 +136,11 @@ public class Inscripcion {
     }
 
     public String getSegundoAudlto() {
-        return segundoAudlto;
+        return secondAdult;
     }
 
     public void setSegundoAudlto(String segundoAudlto) {
-        this.segundoAudlto = segundoAudlto;
+        this.secondAdult = segundoAudlto;
     }
 
     public List<Hijos> getHijos() {
@@ -161,7 +162,7 @@ public class Inscripcion {
                 ", socioTitularId='" + socioTitularId + '\'' +
                 ", cuotaAnual=" + cuotaAnual +
                 ", fechaCreacion=" + fechaCreacion +
-                ", segundoAdulto='" + segundoAudlto + '\'' +
+                ", segundoAdulto='" + secondAdult + '\'' +
                 ", hijos=" + hijos +
                 '}';
     }
