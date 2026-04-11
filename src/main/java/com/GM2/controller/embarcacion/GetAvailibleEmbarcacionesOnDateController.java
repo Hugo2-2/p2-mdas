@@ -95,7 +95,9 @@ public class GetAvailibleEmbarcacionesOnDateController {
             // Buscar embarcaciones disponibles entre dos fechas
             List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcaciones();
             List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
-            List<Embarcacion> disponibles = new ArrayList<>();
+
+            // Clean Code - Reglas de nombrado: el nombre de una coleccion ayuda a entender su contenido (disponibles -> availableBoats)
+            List<Embarcacion> availableBoats = new ArrayList<>();
             List<Reserva> reservas = reservaRepository.findAllReservas();
 
             // Comprobar null
@@ -131,10 +133,10 @@ public class GetAvailibleEmbarcacionesOnDateController {
                 }
 
                 if (!ocupada) {
-                    disponibles.add(e);
+                    availableBoats.add(e);
                 }
             }
-            modelAndView.addObject("disponibles", disponibles);
+            modelAndView.addObject("disponibles", availableBoats);
             modelAndView.addObject("fechaInicio", fechaInicio);
             modelAndView.addObject("fechaFin", fechaFin);
             modelAndView.addObject("mostrarResultados", true);
