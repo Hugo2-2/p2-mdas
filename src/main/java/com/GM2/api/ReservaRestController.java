@@ -158,8 +158,10 @@ public class ReservaRestController {
             // 4. LOGICA DE NEGOCIO: Calcular precio.
             // CAMBIO: Al igual que en AddReservaController, FORZAMOS el cálculo en el servidor.
             // Ignoramos cualquier precio que venga en el JSON para evitar fraudes.
-            double precioCalculado = 40.0 * nuevaReserva.getPlazas();
-            nuevaReserva.setPrecio(precioCalculado);
+
+            // Clean Code - Reglas de nombrado: variable con unidad (precioCalculado -> calculatedPriceInEuros )
+            double calculatedPriceInEuros = 40.0 * nuevaReserva.getPlazas();
+            nuevaReserva.setPrecio(calculatedPriceInEuros);
 
             // 5. PERSISTENCIA: Guardar en BBDD.
             boolean exito = reservaRepository.addReserva(nuevaReserva);
@@ -249,8 +251,9 @@ public class ReservaRestController {
                 reservaExistente.setPlazas(datosNuevos.getPlazas());
 
                 // 2. AÑADE ESTO AQUÍ (Esto es lo que te falta):
-                double precioCalculado = 40.0 * datosNuevos.getPlazas();
-                reservaExistente.setPrecio(precioCalculado);
+                // Clean Code - Reglas de nombrado: variable con unidad (precioCalculado -> calculatedPriceInEuros )
+                double calculatedPriceInEuros = 40.0 * datosNuevos.getPlazas();
+                reservaExistente.setPrecio(calculatedPriceInEuros);
             }
 
             boolean exito = reservaRepository.updateReserva(reservaExistente);
