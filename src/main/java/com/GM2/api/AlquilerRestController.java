@@ -244,17 +244,18 @@ public class AlquilerRestController {
 
             LocalDate inicio = nuevoAlquiler.getFechainicio();
             LocalDate fin = nuevoAlquiler.getFechafin();
-            long dias = ChronoUnit.DAYS.between(inicio, fin) + 1;
+            // Clean Code - Reglas de nombrado: variable con unidad (dias -> totalDays)
+            long totalDays = ChronoUnit.DAYS.between(inicio, fin) + 1;
             
             int mesInicio = inicio.getMonthValue();
             
             if (mesInicio >= 10 || mesInicio <= 4) {
-                if (dias > 3) {
+                if (totalDays > 3) {
                     return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
                 }
             } 
             else if (mesInicio >= 5 && mesInicio <= 9) {
-                if (dias != 7 && dias != 14) {
+                if (totalDays != 7 && totalDays != 14) {
                     return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
                 }
             }
@@ -300,7 +301,7 @@ public class AlquilerRestController {
             }   
 
             // Calcular precio inicial (20€ por día para el creador del alquiler)
-            double precio = 20.0 * dias;
+            double precio = 20.0 * totalDays;
             nuevoAlquiler.setPrecio(precio);
             nuevoAlquiler.setPlazas(1);
 
@@ -387,8 +388,9 @@ public class AlquilerRestController {
             
             // Recalcular precio
 
-            long dias = ChronoUnit.DAYS.between(alquiler.getFechainicio(), alquiler.getFechafin()) + 1;
-            double nuevoPrecio = 20.0 * alquiler.getPlazas() * dias;
+            // Clean Code - Reglas de nombrado: variable con unidad (dias -> totalDays)
+            long totalDays = ChronoUnit.DAYS.between(alquiler.getFechainicio(), alquiler.getFechafin()) + 1;
+            double nuevoPrecio = 20.0 * alquiler.getPlazas() * totalDays;
             alquiler.setPrecio(nuevoPrecio);
 
             boolean actualizado = alquilerRepository.updateAlquiler(alquiler);
@@ -463,8 +465,9 @@ public class AlquilerRestController {
             alquiler.setPlazas(acompanantes.size() + 1);
 
             // Recalcular precio
-            long dias = ChronoUnit.DAYS.between(alquiler.getFechainicio(), alquiler.getFechafin()) + 1;
-            double nuevoPrecio = 20.0 * alquiler.getPlazas() * dias;
+            // Clean Code - Reglas de nombrado: variable con unidad (dias -> totalDays)
+            long totalDays = ChronoUnit.DAYS.between(alquiler.getFechainicio(), alquiler.getFechafin()) + 1;
+            double nuevoPrecio = 20.0 * alquiler.getPlazas() * totalDays;
             alquiler.setPrecio(nuevoPrecio);
 
             boolean actualizado = alquilerRepository.updateAlquiler(alquiler);
