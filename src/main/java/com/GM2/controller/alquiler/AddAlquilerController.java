@@ -107,7 +107,8 @@ public class AddAlquilerController {
 
         LocalDate inicio = alquiler.getFechainicio();
         LocalDate fin = alquiler.getFechafin();
-        long dias = ChronoUnit.DAYS.between(inicio, fin) + 1;
+        // Clean Code - Reglas de nombrado: variable con unidad (dias -> totalDays)
+        long totalDays = ChronoUnit.DAYS.between(inicio, fin) + 1;
 
         if (inicio.isAfter(fin)){ 
             resultado = "La fecha de inicio no puede ser posterior a la de fin.";
@@ -119,7 +120,7 @@ public class AddAlquilerController {
 
         int mesInicio = inicio.getMonthValue();
         if (mesInicio >= 10 || mesInicio <= 4) {
-            if (dias > 3){
+            if (totalDays > 3){
                 resultado = "Solo se permiten hasta 3 días entre octubre y abril.";
                 modelAndView.setViewName("alquiler/addAlquilerView");
                 modelAndView.addObject("mensajeError", resultado);
@@ -127,7 +128,7 @@ public class AddAlquilerController {
                 return modelAndView;
             }
         } else if (mesInicio >= 5 && mesInicio <= 9) {
-            if (dias != 7 && dias != 14){ 
+            if (totalDays != 7 && totalDays != 14){ 
                 resultado = "Solo se permiten alquileres de 7 o 14 días entre mayo y septiembre.";
                 modelAndView.setViewName("alquiler/addAlquilerView");
                 modelAndView.addObject("mensajeError", resultado);
@@ -212,7 +213,7 @@ public class AddAlquilerController {
 
 
         // Clean Code - Reglas de nombrado: variable con unidad (precio -> priceInEuros )
-        double priceInEuros = 20.0 * alquiler.getPlazas() * dias;
+        double priceInEuros = 20.0 * alquiler.getPlazas() * totalDays;
         alquiler.setPrecio(priceInEuros);
 
         boolean insertado = alquilerRepository.addAlquiler(alquiler);
