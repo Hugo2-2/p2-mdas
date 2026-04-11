@@ -211,9 +211,9 @@ public class AddAlquilerController {
         }
 
 
-
-        double precio = 20.0 * alquiler.getPlazas() * dias;
-        alquiler.setPrecio(precio);
+        // Clean Code - Reglas de nombrado: variable con unidad (precio -> priceInEuros )
+        double priceInEuros = 20.0 * alquiler.getPlazas() * dias;
+        alquiler.setPrecio(priceInEuros);
 
         boolean insertado = alquilerRepository.addAlquiler(alquiler);
         if (insertado) {
