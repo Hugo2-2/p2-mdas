@@ -48,15 +48,16 @@ public class ShowAllPatronesController {
      *
      * @return ModelAndView con la vista "showAllPatronesView" y los datos de los patrones.
      */
+    // Clean Code - Regla 9: Renombrado de la función 'showAllEmbarcaciones' a 'getAll' para adecuar su longitud a su nivel de uso/alcance global (endpoint público).
     @GetMapping("/showAllPatrones")
-    ModelAndView showAllEmbarcaciones() {
-        List<Patron> embarcaciones = patronRepository.findAllPatrones();
+    ModelAndView getAll() {
+        List<Patron> patrones = patronRepository.findAllPatrones();
 
-        if(embarcaciones.isEmpty()){
+        if(patrones.isEmpty()){
             this.modelAndView.addObject("listaPatrones", null);
         }
         else {
-            this.modelAndView.addObject("listaPatrones", embarcaciones);
+            this.modelAndView.addObject("listaPatrones", patrones);
         }
 
         return modelAndView;
