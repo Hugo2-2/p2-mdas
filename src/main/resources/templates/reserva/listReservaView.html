@@ -76,11 +76,11 @@
                     <tbody>
                     <tr th:each="reserva : ${reservas}">
                         <td th:text="${reserva.id}">1</td>
-                        <td th:text="${reserva.usuario_id}">Socio ID</td>
-                        <td style= "text-align: center;" th:text="${reserva.matricula_embarcacion}">Matricula</td>
+                        <td th:text="${reserva.userId}">Socio ID</td>
+                        <td style= "text-align: center;" th:text="${reserva.boatRegistration}">Matricula</td>
                         <td th:text="${#temporals.format(reserva.fecha, 'dd-MM-yyyy')}">Fecha</td>
-                        <td th:text="${reserva.descripcion}">Descripción</td>
-                        <td style="font-weight: bold; text-align: center;" th:text="${reserva.plazas}">0</td>
+                        <td th:text="${reserva.description}">Descripción</td>
+                        <td style="font-weight: bold; text-align: center;" th:text="${reserva.seats}">0</td>
 
                         <td style="white-space: nowrap; font-weight: bold;"
                             th:text="${#numbers.formatDecimal(reserva.precio, 0, 'POINT', 2, 'COMMA') + ' €'}">
@@ -88,7 +88,7 @@
                         </td>
 
 
-                        <td class="text-center" th:with="esPasada=${#temporals.createToday().isAfter(reserva.fecha)}">
+                        <td class="text-center" th:with="esPasada=${#temporals.createToday().isAfter(reserva.date)}">
                         <span th:classappend="${esPasada} ? 'bg-secondary' : 'bg-success'" class="badge p-2">
                             <span th:text="${esPasada} ? 'Finalizada' : 'Activa'"></span>
                         </span>

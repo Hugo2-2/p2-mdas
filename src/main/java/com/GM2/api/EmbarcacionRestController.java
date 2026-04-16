@@ -97,24 +97,24 @@ public class EmbarcacionRestController {
         try {
 
             // Verificar que los datos obligatorios no sean nulos ni estén vacíos
-            if (nuevaEmbarcacion.getMatricula() == null || nuevaEmbarcacion.getMatricula().trim().isEmpty() ||
-                    nuevaEmbarcacion.getNombre() == null || nuevaEmbarcacion.getNombre().trim().isEmpty() ||
-                    nuevaEmbarcacion.getTipo() == null || nuevaEmbarcacion.getTipo().trim().isEmpty() ||
-                    nuevaEmbarcacion.getDimensiones() == null || nuevaEmbarcacion.getDimensiones().trim().isEmpty() ||
-                    nuevaEmbarcacion.getPlazas() <= 0) {
+            if (nuevaEmbarcacion.getRegistration() == null || nuevaEmbarcacion.getRegistration().trim().isEmpty() ||
+                    nuevaEmbarcacion.getName() == null || nuevaEmbarcacion.getName().trim().isEmpty() ||
+                    nuevaEmbarcacion.getType() == null || nuevaEmbarcacion.getType().trim().isEmpty() ||
+                    nuevaEmbarcacion.getDimensions() == null || nuevaEmbarcacion.getDimensions().trim().isEmpty() ||
+                    nuevaEmbarcacion.getSeats() <= 0) {
 
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
 
             // No se le debe asociar ningún patron al crear, para cumplir lo que dice el enunciado
-            nuevaEmbarcacion.setIdPatron(null);
+            nuevaEmbarcacion.setSkipperId(null);
 
             // Validar la duplicidad de datos (Matrícula y Nombre deben ser únicos)
-            if (embarcacionRepository.findEmbarcacionByMatricula(nuevaEmbarcacion.getMatricula()) != null) {
+            if (embarcacionRepository.findEmbarcacionByMatricula(nuevaEmbarcacion.getRegistration()) != null) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
-            if (embarcacionRepository.findEmbarcacionByNombre(nuevaEmbarcacion.getNombre()) != null) {
+            if (embarcacionRepository.findEmbarcacionByNombre(nuevaEmbarcacion.getName()) != null) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
@@ -150,47 +150,47 @@ public class EmbarcacionRestController {
             }
 
             // 2. Comprobar que no se quiera cambiar la matricula
-            if(nuevaEmbarcacion.getMatricula() != null) {
+            if(nuevaEmbarcacion.getRegistration() != null) {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
 
             // --- VALIDACIONES Y ACTUALIZACIÓN DE CAMPOS ---
 
             // A) Validación de NOMBRE (Si se envía y es diferente al actual)
-            if (nuevaEmbarcacion.getNombre() != null && !nuevaEmbarcacion.getNombre().equals(embarcacionActual.getNombre())) {
+            if (nuevaEmbarcacion.getName() != null && !nuevaEmbarcacion.getName().equals(embarcacionActual.getName())) {
                 // Comprobamos si el nuevo nombre ya está usado por OTRA embarcación
-                Embarcacion otraEmbarcacion = embarcacionRepository.findEmbarcacionByNombre(nuevaEmbarcacion.getNombre());
+                Embarcacion otraEmbarcacion = embarcacionRepository.findEmbarcacionByNombre(nuevaEmbarcacion.getName());
                 if (otraEmbarcacion != null) {
                     return new ResponseEntity<>(null, HttpStatus.CONFLICT);
                 }
-                embarcacionActual.setNombre(nuevaEmbarcacion.getNombre());
+                embarcacionActual.setName(nuevaEmbarcacion.getName());
             }
 
             // B) Actualización de TIPO (Debe ser un tipo válido de la lista predefinida)
-            if (nuevaEmbarcacion.getTipo() != null) {
-                if (!TIPOS_VALIDOS.contains(nuevaEmbarcacion.getTipo())) {
+            if (nuevaEmbarcacion.getType() != null) {
+                if (!TIPOS_VALIDOS.contains(nuevaEmbarcacion.getType())) {
                     return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
                 }
-                embarcacionActual.setTipo(nuevaEmbarcacion.getTipo());
+                embarcacionActual.setType(nuevaEmbarcacion.getType());
             }
 
             // C) Validación de PLAZAS (Debe ser un número positivo mayor o igual a 2)
-            if (nuevaEmbarcacion.getPlazas() != 0) { // Si viene dato de plazas
-                if (nuevaEmbarcacion.getPlazas() < 2) {
+            if (nuevaEmbarcacion.getSeats() != 0) { // Si viene dato de plazas
+                if (nuevaEmbarcacion.getSeats() < 2) {
                     return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
                 }
-                embarcacionActual.setPlazas(nuevaEmbarcacion.getPlazas());
+                embarcacionActual.setSeats(nuevaEmbarcacion.getSeats());
             }
 
             // D) Validación de DIMENSIONES (Formato numérico válido y mayor que 1)
-            if (nuevaEmbarcacion.getDimensiones() != null) {
+            if (nuevaEmbarcacion.getDimensions() != null) {
                 try {
                     // Intentamos parsear para validar formato y lógica
-                    double dimensionesNum = Double.parseDouble(nuevaEmbarcacion.getDimensiones());
+                    double dimensionesNum = Double.parseDouble(nuevaEmbarcacion.getDimensions());
                     if (dimensionesNum < 1) {
                         return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
                     }
-                    embarcacionActual.setDimensiones(nuevaEmbarcacion.getDimensiones());
+                    embarcacionActual.setDimensions(nuevaEmbarcacion.getDimensions());
                 } catch (NumberFormatException e) {
                     return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); // 400
                 }

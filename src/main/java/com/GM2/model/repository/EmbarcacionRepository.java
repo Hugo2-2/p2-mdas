@@ -189,12 +189,12 @@ public class EmbarcacionRepository extends AbstractRepository {
             String query = sqlQueries.getProperty("insert-addEmbarcacion");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
-                        embarcacion.getMatricula(),
-                        embarcacion.getNombre(),
-                        embarcacion.getTipo(),
-                        embarcacion.getPlazas(),
-                        embarcacion.getDimensiones(),
-                        embarcacion.getIdPatron()
+                        embarcacion.getRegistration(),
+                        embarcacion.getName(),
+                        embarcacion.getType(),
+                        embarcacion.getSeats(),
+                        embarcacion.getDimensions(),
+                        embarcacion.getSkipperId()
                 );
 
                 if(result > 0)
@@ -286,11 +286,11 @@ public class EmbarcacionRepository extends AbstractRepository {
 
             if (query != null) {
                 int result = jdbcTemplate.update(query,
-                        embarcacion.getNombre(),
-                        embarcacion.getTipo(),
-                        embarcacion.getPlazas(),
-                        embarcacion.getDimensiones(),
-                        embarcacion.getMatricula()
+                        embarcacion.getName(),
+                        embarcacion.getType(),
+                        embarcacion.getSeats(),
+                        embarcacion.getDimensions(),
+                        embarcacion.getRegistration()
                 );
 
                 return result > 0;
@@ -298,7 +298,7 @@ public class EmbarcacionRepository extends AbstractRepository {
             return false;
 
         } catch (DataAccessException e) {
-            System.err.println("Error al actualizar la embarcación: " + embarcacion.getMatricula());
+            System.err.println("Error al actualizar la embarcación: " + embarcacion.getRegistration());
             e.printStackTrace();
             return false;
         }

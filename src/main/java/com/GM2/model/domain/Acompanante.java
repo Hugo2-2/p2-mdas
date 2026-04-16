@@ -10,8 +10,8 @@ package com.GM2.model.domain;
  */
 public class Acompanante {
     private int id;
-    private String dni;
-    private int id_alquiler;
+    private String nationalId;
+    private int rentalId;
 
     /**
      * Constructor por defecto.
@@ -23,13 +23,13 @@ public class Acompanante {
      * Constructor completo para crear un acompanante con todos sus datos.
      * 
      * @param id ID del acompanante
-     * @param dni DNI del acompanante
-     * @param id_alquiler ID del alquiler al que pertenece
+     * @param nationalId DNI del acompanante
+     * @param rentalId ID del alquiler al que pertenece
      */
-    public Acompanante(int id, String dni, int id_alquiler) {
+    public Acompanante(int id, String nationalId, int rentalId) {
         this.id = id;
-        this.dni = dni;
-        this.id_alquiler = id_alquiler;
+        this.nationalId = nationalId;
+        this.rentalId = rentalId;
     }
 
     /**
@@ -55,17 +55,17 @@ public class Acompanante {
      * 
      * @return DNI del acompanante
      */
-    public String getDni() {
-        return dni;
+    public String getNationalId() {
+        return nationalId;
     }
 
     /**
      * Establece el DNI del acompanante.
      * 
-     * @param dni DNI del acompanante
+     * @param nationalId DNI del acompanante
      */
-    public void setDni(String dni) {
-        this.dni = dni;
+    public void setNationalId(String nationalId) {
+        this.nationalId = nationalId;
     }
 
     /**
@@ -73,17 +73,17 @@ public class Acompanante {
      * 
      * @return ID del alquiler
      */
-    public int getId_alquiler() {
-        return id_alquiler;
+    public int getRentalId() {
+        return rentalId;
     }
 
     /**
      * Establece el ID del alquiler al que pertenece.
      * 
-     * @param id_alquiler ID del alquiler
+     * @param rentalId ID del alquiler
      */
-    public void setId_alquiler(int id_alquiler) {
-        this.id_alquiler = id_alquiler;
+    public void setRentalId(int rentalId) {
+        this.rentalId = rentalId;
     }
 
 
@@ -94,6 +94,6 @@ public class Acompanante {
      */
     @Override
     public String toString() {
-        return "DNI='" + dni + "'";
+        return "DNI='" + nationalId + "'";
     }
 }

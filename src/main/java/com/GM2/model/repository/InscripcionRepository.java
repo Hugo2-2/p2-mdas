@@ -182,15 +182,15 @@ public class InscripcionRepository extends AbstractRepository{
 
         if( inscripcion == null ) return false;
 
-        if( findInscripcionByDNITitular( inscripcion.getSocioTitularId() ) != null ) return false;
+        if( findInscripcionByDNITitular( inscripcion.getTitularMemberId() ) != null ) return false;
 
         try {
             String query = sqlQueries.getProperty("insert-addInscripcion");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
-                    inscripcion.getSocioTitularId(),
-                    inscripcion.getCuotaAnual(),
-                    inscripcion.getFechaCreacion()
+                    inscripcion.getTitularMemberId(),
+                    inscripcion.getAnnualFee(),
+                    inscripcion.getCreationDate()
                 );
 
                 if(result > 0)
@@ -218,18 +218,18 @@ public class InscripcionRepository extends AbstractRepository{
 
         if( inscripcion == null ) return "No se ha podido ingresar la inscripcion";
 
-        if( findInscripcionByDNITitular(inscripcion.getSocioTitularId()) == null )
+        if( findInscripcionByDNITitular(inscripcion.getTitularMemberId()) == null )
             return "No puedes actualizar la inscripcion porque no existe";
 
-        inscripcion.setFechaCreacion();
+        inscripcion.setCreationDate();
 
         try {
             String query = sqlQueries.getProperty("update-Inscripcion");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
-                    inscripcion.getCuotaAnual(),
-                    inscripcion.getFechaCreacion(),
-                    inscripcion.getSegundoAudlto(),
+                    inscripcion.getAnnualFee(),
+                    inscripcion.getCreationDate(),
+                    inscripcion.getSecondAdult(),
                     inscripcion.getId()
                 );
 
@@ -265,7 +265,7 @@ public class InscripcionRepository extends AbstractRepository{
             return "El segundo adulto no está registrado como socio.";
         }
 
-        if(!socioRepository.findSocioByDNI(dniTitular).getEsTitular()) {
+        if(!socioRepository.findSocioByDNI(dniTitular).getIsTitular()) {
             return "El socio introducido como titular no es titular de ninguna inscripción";
         }
 
@@ -275,8 +275,8 @@ public class InscripcionRepository extends AbstractRepository{
             return "No puedes actualizar la inscripcion porque no existe";
         }
 
-        inscripcion.setCuotaAnual(inscripcion.getCuotaAnual() + 250);
-        inscripcion.setSegundoAudlto(dniSegundoAdulto);
+        inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 250);
+        inscripcion.setSecondAdult(dniSegundoAdulto);
 
         return updateInscripcion(inscripcion);
 
@@ -309,16 +309,16 @@ public class InscripcionRepository extends AbstractRepository{
             if (dni != null && !dni.trim().isEmpty()) {
 
                 Hijos hijo = new Hijos();
-                hijo.setDni(dni);
-                hijo.setNombre(nombreHijos.get(i));
-                hijo.setApellidos(apellidosHijos.get(i));
+                hijo.setNationalId(dni);
+                hijo.setName(nombreHijos.get(i));
+                hijo.setSurname(apellidosHijos.get(i));
 
                 // Asignamos el ID de la inscripción principal
-                hijo.setId_inscripcion(inscripcion.getId());
+                hijo.setRegistrationId(inscripcion.getId());
 
                 // Parseamos y validamos la fecha
                 try {
-                    hijo.setFechaNacimiento(fechaNacimientoHijos.get(i));
+                    hijo.setBirthDate(fechaNacimientoHijos.get(i));
                 } catch (DateTimeParseException e) {
                     return "Error: El formato de fecha del hijo " + (i + 1) + " no es válido (use AAAA-MM-DD).";
                 }
@@ -327,7 +327,7 @@ public class InscripcionRepository extends AbstractRepository{
                 hijosRepository.addHijo(hijo);
 
                 // Actualizamos la cuota en el objeto de inscripción (100€ por hijo)
-                inscripcion.setCuotaAnual(inscripcion.getCuotaAnual() + 100);
+                inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 100);
             }
         }
 

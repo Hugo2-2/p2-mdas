@@ -157,11 +157,11 @@ public class PatronRepository extends AbstractRepository {
             String query = sqlQueries.getProperty("insert-addPatron");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
-                        patron.getNombre(),
-                        patron.getApellidos(),
-                        patron.getDni(),
-                        patron.getFechaNacimiento(),
-                        patron.getFechaExpedicionTitulo()
+                        patron.getName(),
+                        patron.getSurname(),
+                        patron.getNationalId(),
+                        patron.getBirthDate(),
+                        patron.getTitleIssueDate()
                 );
 
                 if (result > 0)
@@ -189,17 +189,17 @@ public class PatronRepository extends AbstractRepository {
             String query = sqlQueries.getProperty("update-updatePatronInfo");
             if (query != null) {
                 int result = jdbcTemplate.update(query,
-                        patron.getNombre(),
-                        patron.getApellidos(),
-                        patron.getFechaNacimiento(),
-                        patron.getFechaExpedicionTitulo(),
-                        patron.getDni()
+                        patron.getName(),
+                        patron.getSurname(),
+                        patron.getBirthDate(),
+                        patron.getTitleIssueDate(),
+                        patron.getNationalId()
                 );
                 return result > 0;
             }
             return false;
         } catch (DataAccessException e) {
-            System.err.println("Error al actualizar el patrón: " + patron.getDni());
+            System.err.println("Error al actualizar el patrón: " + patron.getNationalId());
             e.printStackTrace();
             return false;
         }

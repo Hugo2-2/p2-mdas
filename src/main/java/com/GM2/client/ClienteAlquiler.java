@@ -151,11 +151,11 @@ public class ClienteAlquiler {
         System.out.println("\n********** [ALQUILERES] PRUEBAS POST **********");
 
         Alquiler nuevoAlquiler = new Alquiler();
-        nuevoAlquiler.setFechainicio(LocalDate.of(2025, 12, 20));
-        nuevoAlquiler.setFechafin(LocalDate.of(2025, 12, 22));
-        nuevoAlquiler.setPlazas(5);
-        nuevoAlquiler.setUsuario_dni("11111111A");
-        nuevoAlquiler.setMatricula_embarcacion("XXX111");
+        nuevoAlquiler.setStartDate(LocalDate.of(2025, 12, 20));
+        nuevoAlquiler.setEndDate(LocalDate.of(2025, 12, 22));
+        nuevoAlquiler.setSeats(5);
+        nuevoAlquiler.setUserNationalId("11111111A");
+        nuevoAlquiler.setBoatRegistration("XXX111");
         
         System.out.println("==== REQUEST 6: POST alquiler (valid) ====");
         try {
@@ -173,11 +173,11 @@ public class ClienteAlquiler {
         }
 
         Alquiler alquilerInvalido = new Alquiler();
-        alquilerInvalido.setFechainicio(LocalDate.of(2025, 8, 10));
-        alquilerInvalido.setFechafin(LocalDate.of(2025, 8, 1));
-        alquilerInvalido.setPlazas(5);
-        alquilerInvalido.setUsuario_dni("11111111A");
-        alquilerInvalido.setMatricula_embarcacion("XXX111");
+        alquilerInvalido.setStartDate(LocalDate.of(2025, 8, 10));
+        alquilerInvalido.setEndDate(LocalDate.of(2025, 8, 1));
+        alquilerInvalido.setSeats(5);
+        alquilerInvalido.setUserNationalId("11111111A");
+        alquilerInvalido.setBoatRegistration("XXX111");
         
         System.out.println();
         System.out.println("==== REQUEST 7: POST alquiler (invalid - fechas) ====");
@@ -190,11 +190,11 @@ public class ClienteAlquiler {
         }
 
         Alquiler alquilerSocioNoExiste = new Alquiler();
-        alquilerSocioNoExiste.setFechainicio(LocalDate.of(2026, 9, 1));
-        alquilerSocioNoExiste.setFechafin(LocalDate.of(2026, 9, 3));
-        alquilerSocioNoExiste.setPlazas(4);
-        alquilerSocioNoExiste.setUsuario_dni("99999999Z");
-        alquilerSocioNoExiste.setMatricula_embarcacion("XXX111");
+        alquilerSocioNoExiste.setStartDate(LocalDate.of(2026, 9, 1));
+        alquilerSocioNoExiste.setEndDate(LocalDate.of(2026, 9, 3));
+        alquilerSocioNoExiste.setSeats(4);
+        alquilerSocioNoExiste.setUserNationalId("99999999Z");
+        alquilerSocioNoExiste.setBoatRegistration("XXX111");
         
         System.out.println();
         System.out.println("==== REQUEST 8: POST alquiler (invalid - socio no existe) ====");
@@ -208,11 +208,11 @@ public class ClienteAlquiler {
 
 
         Alquiler alquilerSocioNoPatron = new Alquiler();
-        alquilerSocioNoPatron.setFechainicio(LocalDate.of(2026, 9, 1));
-        alquilerSocioNoPatron.setFechafin(LocalDate.of(2026, 9, 3));
-        alquilerSocioNoPatron.setPlazas(4);
-        alquilerSocioNoPatron.setUsuario_dni("33333333A");
-        alquilerSocioNoPatron.setMatricula_embarcacion("XXX111");
+        alquilerSocioNoPatron.setStartDate(LocalDate.of(2026, 9, 1));
+        alquilerSocioNoPatron.setEndDate(LocalDate.of(2026, 9, 3));
+        alquilerSocioNoPatron.setSeats(4);
+        alquilerSocioNoPatron.setUserNationalId("33333333A");
+        alquilerSocioNoPatron.setBoatRegistration("XXX111");
         
         System.out.println();
         System.out.println("==== REQUEST 9: POST alquiler (invalid - socio sin licencia de patrón) ====");

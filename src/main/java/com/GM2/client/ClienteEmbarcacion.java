@@ -114,8 +114,8 @@ public class ClienteEmbarcacion {
 
         // 5. Actualizar datos básicos (Nombre y Plazas)
         Embarcacion cambios = new Embarcacion();
-        cambios.setNombre("Lancha Muy Rápida");
-        cambios.setPlazas(8);
+        cambios.setName("Lancha Muy Rápida");
+        cambios.setSeats(8);
         System.out.println("==== REQUEST 5: PATCH update embarcacion (valid) ====");
         try {
             Embarcacion actualizado = rest.patchForObject(baseURL + "/api/embarcaciones/L-999", cambios, Embarcacion.class);
@@ -131,7 +131,7 @@ public class ClienteEmbarcacion {
         System.out.println("==== REQUEST 6: PATCH vincular patron (/patron) ====");
         try {
             Patron p = rest.patchForObject(baseURL + "/api/patrones/L-999/patron", dniPatron, Patron.class);
-            System.out.println("Éxito. Vinculado patrón: " + p.getDni());
+            System.out.println("Éxito. Vinculado patrón: " + p.getNationalId());
 
             // Verificación: Mostrar que el barco tiene ahora el idPatron asignado
             ResponseEntity<Embarcacion> response = rest.getForEntity(baseURL + "/api/embarcaciones/L-999", Embarcacion.class);
@@ -143,7 +143,7 @@ public class ClienteEmbarcacion {
         System.out.println("==== REQUEST 7: PATCH desvincular patron (/noPatron) ====");
         try {
             Patron p = rest.patchForObject(baseURL + "/api/patrones/L-999/noPatron", dniPatron, Patron.class);
-            System.out.println("Éxito. Desvinculado patrón: " + p.getDni());
+            System.out.println("Éxito. Desvinculado patrón: " + p.getNationalId());
 
             // Verificación: Mostrar que el barco ya NO tiene el idPatron asignado
             ResponseEntity<Embarcacion> response = rest.getForEntity(baseURL + "/api/embarcaciones/L-999", Embarcacion.class);

@@ -84,7 +84,7 @@ public class AddReservaController {
 
         // 1. Validar el Socio
         // Busca al socio en la base de datos usando el DNI (usuario_id) de la reserva
-        Socio socio = socioRepository.findSocioByDNI(reserva.getUsuario_id());
+        Socio socio = socioRepository.findSocioByDNI(reserva.getUserId());
 
         // --- VALIDACIONES ---
         if (socio == null) {
@@ -101,20 +101,20 @@ public class AddReservaController {
 
         } else {
             // 2. Validar la Embarcación
-            Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(reserva.getMatricula_embarcacion());
+            Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(reserva.getBoatRegistration());
             if (embarcacion == null) {
                 resultado = "La embarcación no existe.";
                 modelAndView.addObject("mensajeError", resultado);
                 status.setComplete();
                 return modelAndView;
 
-            } else if (embarcacion.getIdPatron() == null || embarcacion.getIdPatron().isEmpty()) {
+            } else if (embarcacion.getSkipperId() == null || embarcacion.getSkipperId().isEmpty()) {
                 resultado = "La embarcación no tiene patrón asignado.";
                 modelAndView.addObject("mensajeError", resultado);
                 status.setComplete();
                 return modelAndView;
 
-            } else if (embarcacion.getPlazas() < reserva.getPlazas() + 1) {
+            } else if (embarcacion.getSeats() < reserva.getSeats() + 1) {
                 // Se suma 1 a las plazas reservadas para contar al patrón
                 resultado = "Capacidad insuficiente (recuerda sumar 1 para el patrón).";
                 modelAndView.addObject("mensajeError", resultado);
@@ -124,7 +124,7 @@ public class AddReservaController {
             } else {
                 // --- DISPONIBILIDAD ---
                 // 3. Validar Disponibilidad de la Embarcación
-                LocalDate fecha = reserva.getFecha();
+                LocalDate fecha = reserva.getDate();
                 boolean disponible = true;
 
                 // Obtiene todos los alquileres y reservas existentes para verificar conflictos
@@ -134,11 +134,11 @@ public class AddReservaController {
                 // 3.1. Verificar conflictos con Alquileres
                 for (Alquiler a : alquileres) {
                     // Conflicto si la matrícula es la misma Y la fecha de reserva cae dentro del rango de alquiler
-                    if (a.getMatricula_embarcacion().equals(embarcacion.getMatricula())
+                    if (a.getBoatRegistration().equals(embarcacion.getRegistration())
                             // `!fecha.isBefore(a.getFechainicio)`: la fecha es igual o posterior a la fecha de inicio
-                            && !fecha.isBefore(a.getFechainicio())
+                            && !fecha.isBefore(a.getStartDate())
                             // `!fecha.isAfter(a.getFechafin)`: la fecha es igual o anterior a la fecha de fin
-                            && !fecha.isAfter(a.getFechafin())) {
+                            && !fecha.isAfter(a.getEndDate())) {
                         disponible = false;
                         break;
                     }
@@ -148,8 +148,8 @@ public class AddReservaController {
                 if (disponible) {
                     for (Reserva r : reservas) {
                         // Conflicto si la matrícula es la misma Y la fecha de reserva es la misma
-                        if (r.getMatricula_embarcacion().equals(embarcacion.getMatricula())
-                                && r.getFecha().equals(fecha)) {
+                        if (r.getBoatRegistration().equals(embarcacion.getRegistration())
+                                && r.getDate().equals(fecha)) {
                             disponible = false;
                             break;
                         }
@@ -163,7 +163,7 @@ public class AddReservaController {
                     // --- GUARDAR RESERVA ---
                     // 4. Procesar y Guardar
                     // Calcula y establece el precio de la reserva (Plazas * 40.0)
-                    reserva.setPrecio(reserva.getPlazas() * 40.0);
+                    reserva.setPrice(reserva.getSeats() * 40.0);
                     // Llama al repositorio para insertar la reserva en la base de datos
                     boolean insertado = reservaRepository.addReserva(reserva);
                     resultado = insertado ? "EXITO" : "Error al guardar la reserva.";

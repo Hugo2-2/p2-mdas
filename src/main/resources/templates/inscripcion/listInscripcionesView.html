@@ -41,18 +41,18 @@
                     <tbody>
                     <tr th:each="inscripcion : ${inscripciones}">
 
-                        <td th:text="${inscripcion.socioTitularId}">[DNI Titular]</td>
+                        <td th:text="${inscripcion.titularMemberId}">[DNI Titular]</td>
 
                         <td>
                             <th:block th:with="
                                         hijosCount = ${inscripcion.hijos == null ? 0 : inscripcion.hijos.size()},
-                                        adultoCount = ${inscripcion.segundoAudlto == null || inscripcion.segundoAudlto.trim().isEmpty() ? 1 : 2}
+                                        adultoCount = ${inscripcion.secondAdult == null || inscripcion.secondAdult.trim().isEmpty() ? 1 : 2}
                                     ">
                                 <span th:text="${hijosCount + adultoCount}">0</span>
                             </th:block>
                         </td>
 
-                        <td th:text="${#numbers.formatCurrency(inscripcion.cuotaAnual)}">[Cuota]</td>
+                        <td th:text="${#numbers.formatCurrency(inscripcion.annualFee)}">[Cuota]</td>
                     </tr>
                     </tbody>
                 </table>

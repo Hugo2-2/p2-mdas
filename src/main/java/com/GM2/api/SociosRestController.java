@@ -103,13 +103,13 @@ public class SociosRestController {
     public ResponseEntity<Socio> createSocioSinInscripcion(@RequestBody Socio socio) {
 
             // Validaciones
-            if(socio.getDni().isEmpty() || socio.getNombre().isEmpty() || socio.getApellidos().isEmpty() ) {
+            if(socio.getNationalId().isEmpty() || socio.getName().isEmpty() || socio.getSurname().isEmpty() ) {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
 
-            if(socio.getFechaNacimiento().getYear() > 2007) {
-                Hijos hijo = new Hijos(socio.getDni(), socio.getNombre(), socio.getApellidos(), socio.getFechaNacimiento());
-                hijo.setId_inscripcion(0); // Sin inscripción
+            if(socio.getBirthDate().getYear() > 2007) {
+                Hijos hijo = new Hijos(socio.getNationalId(), socio.getName(), socio.getSurname(), socio.getBirthDate());
+                hijo.setRegistrationId(0); // Sin inscripción
 
                 try {
                     Boolean res = hijosRepository.addHijo(hijo) == true;
@@ -123,8 +123,8 @@ public class SociosRestController {
                     return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             } else {
-                socio.setEsTitular(false);
-                socio.setFechaInscripcion(LocalDate.now());
+                socio.setIsTitular(false);
+                socio.setRegistrationDate(LocalDate.now());
 
                 try {
                     Boolean res = socioRepository.addSocio(socio).equals("EXITO");
@@ -153,38 +153,38 @@ public class SociosRestController {
     public ResponseEntity<Socio> createSocioConInscripcion(@RequestBody SocioConInscripcionRequest requestBody) {
         
         // Validaciones de los campos del socio
-        if(requestBody.getDni() == null || requestBody.getDni().isEmpty() || 
-           requestBody.getNombre() == null || requestBody.getNombre().isEmpty() || 
-           requestBody.getApellidos() == null || requestBody.getApellidos().isEmpty() || 
-           requestBody.getDireccion() == null || requestBody.getDireccion().isEmpty() ||
-           requestBody.getFechaNacimiento() == null) {
+        if(requestBody.getNationalId() == null || requestBody.getNationalId().isEmpty() || 
+           requestBody.getName() == null || requestBody.getName().isEmpty() || 
+           requestBody.getSurname() == null || requestBody.getSurname().isEmpty() || 
+           requestBody.getAddress() == null || requestBody.getAddress().isEmpty() ||
+           requestBody.getBirthDate() == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
         // Validación del DNI del titular
-        if(requestBody.getDniTitular() == null || requestBody.getDniTitular().isEmpty()) {
+        if(requestBody.getTitularNationalId() == null || requestBody.getTitularNationalId().isEmpty()) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
         try {
             // Verificar que la inscripción existe
-            Inscripcion inscripcion = inscripcionRepository.findInscripcionByDNITitular(requestBody.getDniTitular());
+            Inscripcion inscripcion = inscripcionRepository.findInscripcionByDNITitular(requestBody.getTitularNationalId());
             
             if(inscripcion == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
-            Socio socio = new Socio(requestBody.getNombre(), requestBody.getApellidos(), requestBody.getDni(), requestBody.getFechaNacimiento(), requestBody.getDireccion(), LocalDate.now(), requestBody.getPatron());
+            Socio socio = new Socio(requestBody.getName(), requestBody.getSurname(), requestBody.getNationalId(), requestBody.getBirthDate(), requestBody.getAddress(), LocalDate.now(), requestBody.getIsSkipper());
 
 
-            if(socio.getFechaNacimiento().getYear() > 2007) {
-                Hijos hijo = new Hijos(socio.getDni(), socio.getNombre(), socio.getApellidos(), socio.getFechaNacimiento());
-                hijo.setId_inscripcion(inscripcion.getId()); // Inscripción existente
+            if(socio.getBirthDate().getYear() > 2007) {
+                Hijos hijo = new Hijos(socio.getNationalId(), socio.getName(), socio.getSurname(), socio.getBirthDate());
+                hijo.setRegistrationId(inscripcion.getId()); // Inscripción existente
 
                 try {
                     Boolean res = hijosRepository.addHijo(hijo) == true;
 
-                    inscripcion.setCuotaAnual(inscripcion.getCuotaAnual() + 100);
+                    inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 100);
 
                     if(!res) {
                         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -201,10 +201,10 @@ public class SociosRestController {
                     return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
                 }
 
-                if(inscripcion.getSegundoAudlto() == null)
-                    inscripcion.setCuotaAnual(inscripcion.getCuotaAnual() + 250);
+                if(inscripcion.getSecondAdult() == null)
+                    inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 250);
 
-                inscripcion.setSegundoAudlto(socio.getDni());
+                inscripcion.setSecondAdult(socio.getNationalId());
 
             }
 
@@ -243,25 +243,25 @@ public class SociosRestController {
 
             // Aplicar las actualizaciones parciales
             if(updates.containsKey("nombre")) {
-                socio.setNombre((String) updates.get("nombre"));
+                socio.setName((String) updates.get("nombre"));
             }
             if(updates.containsKey("apellidos")) {
-                socio.setApellidos((String) updates.get("apellidos"));
+                socio.setSurname((String) updates.get("apellidos"));
             }
             if(updates.containsKey("fechaNacimiento")) {
-                socio.setFechaNacimiento(LocalDate.parse((String) updates.get("fechaNacimiento")));
+                socio.setBirthDate(LocalDate.parse((String) updates.get("fechaNacimiento")));
             }
             if(updates.containsKey("direccion")) {
-                socio.setDireccion((String) updates.get("direccion"));
+                socio.setAddress((String) updates.get("direccion"));
             }
             if(updates.containsKey("fechaInscripcion")) {
-                socio.setFechaInscripcion(LocalDate.parse((String) updates.get("fechaInscripcion")));
+                socio.setRegistrationDate(LocalDate.parse((String) updates.get("fechaInscripcion")));
             }
             if(updates.containsKey("esTitular")) {
-                socio.setEsTitular((Boolean) updates.get("esTitular"));
+                socio.setIsTitular((Boolean) updates.get("esTitular"));
             }
             if(updates.containsKey("tieneLicenciaPatron")) {
-                socio.setTieneLicenciaPatron((Boolean) updates.get("tieneLicenciaPatron"));
+                socio.setHasSkipperLicense((Boolean) updates.get("tieneLicenciaPatron"));
             }
 
             // Guardar los cambios
@@ -302,7 +302,7 @@ public class SociosRestController {
                 // Es un socio adulto - verificar que no esté vinculado a inscripciones
                 
                 // Verificar si es titular de alguna inscripción
-                if(socio.getEsTitular()) {
+                if(socio.getIsTitular()) {
                     Inscripcion inscripcion = inscripcionRepository.findInscripcionByDNITitular(dni);
                     if(inscripcion != null) {
                         return new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -313,7 +313,7 @@ public class SociosRestController {
                 List<Inscripcion> todasInscripciones = inscripcionRepository.findAllInscripciones();
                 if(todasInscripciones != null) {
                     for(Inscripcion insc : todasInscripciones) {
-                        if(insc.getSegundoAudlto() != null && insc.getSegundoAudlto().equals(dni)) {
+                        if(insc.getSecondAdult() != null && insc.getSecondAdult().equals(dni)) {
                             return new ResponseEntity<>(HttpStatus.CONFLICT);
                         }
                     }
@@ -333,7 +333,7 @@ public class SociosRestController {
             
             if(hijo != null) {
                 // Es un hijo - verificar que no esté vinculado a una inscripción (id_inscripcion > 0)
-                if(hijo.getId_inscripcion() > 0) {
+                if(hijo.getRegistrationId() > 0) {
                     return new ResponseEntity<>(HttpStatus.CONFLICT);
                 }
 

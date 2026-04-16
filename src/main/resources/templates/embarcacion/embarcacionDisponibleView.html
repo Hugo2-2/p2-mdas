@@ -92,17 +92,17 @@
                             </thead>
                             <tbody>
                                 <tr th:each="embarcacion : ${disponibles}">
-                                    <td><strong class="text-primary" th:text="${embarcacion.matricula}"></strong></td>
-                                    <td th:text="${embarcacion.nombre}"></td>
-                                    <td><span class="badge badge-primary" th:text="${embarcacion.tipo}"></span></td>
-                                    <td><span class="badge badge-warning" th:text="${embarcacion.plazas}"></span></td>
-                                    <td th:text="${embarcacion.dimensiones}"></td>
+                                    <td><strong class="text-primary" th:text="${embarcacion.registration}"></strong></td>
+                                    <td th:text="${embarcacion.name}"></td>
+                                    <td><span class="badge badge-primary" th:text="${embarcacion.type}"></span></td>
+                                    <td><span class="badge badge-warning" th:text="${embarcacion.seats}"></span></td>
+                                    <td th:text="${embarcacion.dimensions}"></td>
                                     <td>
-                                        <span th:if="${embarcacion.idPatron != null and embarcacion.idPatron != ''}" 
+                                        <span th:if="${embarcacion.skipperId != null and embarcacion.skipperId != ''}" 
                                               class="badge badge-primary" 
-                                              th:text="${embarcacion.idPatron}">
+                                              th:text="${embarcacion.skipperId}">
                                         </span>
-                                        <span th:if="${embarcacion.idPatron == null or embarcacion.idPatron == ''}" 
+                                        <span th:if="${embarcacion.skipperId == null or embarcacion.skipperId == ''}" 
                                               class="badge badge-warning">
                                             Sin patrón
                                         </span>

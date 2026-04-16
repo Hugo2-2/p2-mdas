@@ -38,15 +38,15 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="matricula" class="form-label">Matrícula:</label>
-                            <input type="text" id="matricula" th:field="*{matricula}" class="form-control" required>
+                            <label for="registration" class="form-label">Matrícula:</label>
+                            <input type="text" id="registration" th:field="*{registration}" class="form-control" required>
                         </div>
                     </div>
                     
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="nombre" class="form-label">Nombre:</label>
-                            <input type="text" id="nombre" th:field="*{nombre}" class="form-control" required>
+                            <label for="name" class="form-label">Nombre:</label>
+                            <input type="text" id="name" th:field="*{name}" class="form-control" required>
                         </div>
                     </div>
                 </div>
@@ -54,8 +54,8 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="tipo" class="form-label">Tipo:</label>
-                            <select id="tipo" th:field="*{tipo}" class="form-control" required>
+                            <label for="type" class="form-label">Tipo:</label>
+                            <select id="type" th:field="*{type}" class="form-control" required>
                                 <option value="">-- Selecciona un tipo --</option>
                                 <option value="VELERO">Velero</option>
                                 <option value="YATE">Yate</option>
@@ -68,8 +68,8 @@
                     
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="plazas" class="form-label">Plazas:</label>
-                            <input type="number" id="plazas" th:field="*{plazas}" class="form-control" required>
+                            <label for="seats" class="form-label">Plazas:</label>
+                            <input type="number" id="seats" th:field="*{seats}" class="form-control" required>
                         </div>
                     </div>
                 </div>
@@ -77,15 +77,15 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="dimensiones" class="form-label">Dimensiones(m2):</label>
-                            <input type="text" id="dimensiones" th:field="*{dimensiones}" class="form-control" required>
+                            <label for="dimensions" class="form-label">Dimensiones(m2):</label>
+                            <input type="text" id="dimensions" th:field="*{dimensions}" class="form-control" required>
                         </div>
                     </div>
                     
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="idPatron" class="form-label">DNI del Patrón:</label>
-                            <input type="text" id="idPatron" th:field="*{idPatron}" class="form-control" minlength="9" maxlength="9">
+                            <label for="skipperId" class="form-label">DNI del Patrón:</label>
+                            <input type="text" id="skipperId" th:field="*{skipperId}" class="form-control" minlength="9" maxlength="9">
                             <div class="form-text">Opcional - dejar vacío si no tiene patrón asignado</div>
                         </div>
                     </div>

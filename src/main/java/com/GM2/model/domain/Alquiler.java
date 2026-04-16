@@ -13,43 +13,43 @@ import java.util.List;
  */
 public class Alquiler {
     private int id;
-    private LocalDate fechaInicio;
-    private LocalDate fechaFin;
-    private double precio;
-    private int plazas;
-    private String usuario_dni;
-    private String matricula_embarcacion;
-    private List<Acompanante> acompanantes;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private double price;
+    private int seats;
+    private String userNationalId;
+    private String boatRegistration;
+    private List<Acompanante> companions;
 
     /**
      * Constructor por defecto.
      * Necesario para algunas librerías (como Spring MVC) para crear instancias.
      */
     public Alquiler() {
-        this.acompanantes = new ArrayList<>();
+        this.companions = new ArrayList<>();
     }
 
     /**
      * Constructor con todos los parámetros.
      * 
      * @param id ID del alquiler
-     * @param fechaInicio Fecha de inicio del alquiler
-     * @param fechaFin Fecha de fin del alquiler
-     * @param precio Precio total del alquiler
-     * @param plazas Número de plazas reservadas
-     * @param usuario_dni DNI del usuario que realiza el alquiler
-     * @param matricula_embarcacion Matrícula de la embarcación alquilada
-     * @param acompanantes Lista de acompañantes
+     * @param startDate Fecha de inicio del alquiler
+     * @param endDate Fecha de fin del alquiler
+     * @param price Precio total del alquiler
+     * @param seats Número de plazas reservadas
+     * @param userNationalId DNI del usuario que realiza el alquiler
+     * @param boatRegistration Matrícula de la embarcación alquilada
+     * @param companions Lista de acompañantes
      */
-    public Alquiler(int id, LocalDate fechaInicio, LocalDate fechaFin, double precio, int plazas, String usuario_dni, String matricula_embarcacion, List<Acompanante> acompanantes) {
+    public Alquiler(int id, LocalDate startDate, LocalDate endDate, double price, int seats, String userNationalId, String boatRegistration, List<Acompanante> companions) {
         this.id = id;
-        this.fechaInicio = fechaInicio;
-        this.fechaFin = fechaFin;
-        this.precio = precio;
-        this.plazas = plazas;
-        this.usuario_dni = usuario_dni;
-        this.matricula_embarcacion = matricula_embarcacion;
-        this.acompanantes = acompanantes;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.price = price;
+        this.seats = seats;
+        this.userNationalId = userNationalId;
+        this.boatRegistration = boatRegistration;
+        this.companions = companions;
     }
 
     /**
@@ -75,17 +75,17 @@ public class Alquiler {
      * 
      * @return Fecha de inicio del alquiler         
      */
-    public LocalDate getFechainicio() {
-        return fechaInicio;
+    public LocalDate getStartDate() {
+        return startDate;
     }
     
     /**
      * Establece la fecha de inicio del alquiler.
      * 
-     * @param fechainicio Fecha de inicio del alquiler         
+     * @param startDate Fecha de inicio del alquiler         
      */
-    public void setFechainicio(LocalDate fechainicio) {
-        this.fechaInicio = fechainicio;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
     
     /**
@@ -93,17 +93,17 @@ public class Alquiler {
      * 
      * @return Fecha de fin del alquiler         
      */
-    public LocalDate getFechafin() {
-        return fechaFin;
+    public LocalDate getEndDate() {
+        return endDate;
     }
     
     /**
      * Establece la fecha de fin del alquiler.
      * 
-     * @param fechafin Fecha de fin del alquiler         
+     * @param endDate Fecha de fin del alquiler         
      */
-    public void setFechafin(LocalDate fechafin) {
-        this.fechaFin = fechafin;
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
     
     /**
@@ -111,17 +111,17 @@ public class Alquiler {
      * 
      * @return Precio total del alquiler         
      */
-    public double getPrecio() {
-        return precio;
+    public double getPrice() {
+        return price;
     }
     
     /**
      * Establece el precio total del alquiler.
      * 
-     * @param precio Precio total del alquiler         
+     * @param price Precio total del alquiler         
      */
-    public void setPrecio(double precio) {
-        this.precio = precio;
+    public void setPrice(double price) {
+        this.price = price;
     }
     
     /**
@@ -129,17 +129,17 @@ public class Alquiler {
      * 
      * @return Número de plazas reservadas         
      */
-    public int getPlazas() {
-        return plazas;
+    public int getSeats() {
+        return seats;
     }
     
     /**
      * Establece el número de plazas reservadas.
      * 
-     * @param plazas Número de plazas reservadas         
+     * @param seats Número de plazas reservadas         
      */
-    public void setPlazas(int plazas) {
-        this.plazas = plazas;
+    public void setSeats(int seats) {
+        this.seats = seats;
     }
 
     /**
@@ -147,17 +147,17 @@ public class Alquiler {
      * 
      * @return DNI del usuario         
      */
-    public String getUsuario_dni() {
-        return usuario_dni;
+    public String getUserNationalId() {
+        return userNationalId;
     }
 
     /**
      * Establece el DNI del usuario que realiza el alquiler.
      * 
-     * @param usuario_dni DNI del usuario         
+     * @param userNationalId DNI del usuario         
      */
-    public void setUsuario_dni(String usuario_dni) {
-        this.usuario_dni = usuario_dni;
+    public void setUserNationalId(String userNationalId) {
+        this.userNationalId = userNationalId;
     }
 
     /**
@@ -165,17 +165,17 @@ public class Alquiler {
      * 
      * @return Lista de acompañantes del alquiler         
      */
-    public List<Acompanante> getAcompanantes() {
-        return acompanantes;
+    public List<Acompanante> getCompanions() {
+        return companions;
     }
 
     /**
      * Establece la lista de acompañantes del alquiler.
      * 
-     * @param acompanantes Lista de acompañantes del alquiler         
+     * @param companions Lista de acompañantes del alquiler         
      */
-    public void setAcompanantes(List<Acompanante> acompanantes) {
-        this.acompanantes = acompanantes;
+    public void setCompanions(List<Acompanante> companions) {
+        this.companions = companions;
     }
 
     /**
@@ -183,17 +183,17 @@ public class Alquiler {
      * 
      * @return Matrícula de la embarcación alquilada         
      */
-    public String getMatricula_embarcacion() {
-        return matricula_embarcacion;
+    public String getBoatRegistration() {
+        return boatRegistration;
     }
 
     /**
      * Establece la matrícula de la embarcación alquilada.
      * 
-     * @param matricula_embarcacion Matrícula de la embarcación alquilada         
+     * @param boatRegistration Matrícula de la embarcación alquilada         
      */
-    public void setMatricula_embarcacion(String matricula_embarcacion) {
-        this.matricula_embarcacion = matricula_embarcacion;
+    public void setBoatRegistration(String boatRegistration) {
+        this.boatRegistration = boatRegistration;
     }
 
 
@@ -206,16 +206,16 @@ public class Alquiler {
     public String toString() {
         String result = "Alquiler {\n";
         result += "  ID: " + id + "\n";
-        result += "  Fecha inicio: " + fechaInicio + "\n";
-        result += "  Fecha fin: " + fechaFin + "\n";
-        result += "  Plazas: " + plazas + "\n";
-        result += "  Precio: " + precio + "€\n";
-        result += "  DNI Socio: " + usuario_dni + "\n";
-        result += "  Matrícula: " + matricula_embarcacion + "\n";
+        result += "  Fecha inicio: " + startDate + "\n";
+        result += "  Fecha fin: " + endDate + "\n";
+        result += "  Plazas: " + seats + "\n";
+        result += "  Precio: " + price + "€\n";
+        result += "  DNI Socio: " + userNationalId + "\n";
+        result += "  Matrícula: " + boatRegistration + "\n";
         
-        if (acompanantes != null && !acompanantes.isEmpty()) {
-            result += "  Acompañantes (" + acompanantes.size() + "):\n";
-            for (Acompanante a : acompanantes) {
+        if (companions != null && !companions.isEmpty()) {
+            result += "  Acompañantes (" + companions.size() + "):\n";
+            for (Acompanante a : companions) {
                 result += "    - " + a + "\n"; // Llama a a.toString()
             }
         } else {

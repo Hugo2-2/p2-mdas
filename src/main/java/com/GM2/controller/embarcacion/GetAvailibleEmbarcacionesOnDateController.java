@@ -110,8 +110,8 @@ public class GetAvailibleEmbarcacionesOnDateController {
                 boolean ocupada = false;
 
                 for (Alquiler a : alquileres) {
-                    if (a.getMatricula_embarcacion().equals(e.getMatricula())) {
-                        if (!(fechaFin.isBefore(a.getFechainicio()) || fechaInicio.isAfter(a.getFechafin()))) {
+                    if (a.getBoatRegistration().equals(e.getRegistration())) {
+                        if (!(fechaFin.isBefore(a.getStartDate()) || fechaInicio.isAfter(a.getEndDate()))) {
                             ocupada = true;
                             break;
                         }
@@ -120,10 +120,10 @@ public class GetAvailibleEmbarcacionesOnDateController {
 
                 if (!ocupada) {
                     for (Reserva r : reservas) {
-                        if (r.getMatricula_embarcacion().equals(e.getMatricula())) {
+                        if (r.getBoatRegistration().equals(e.getRegistration())) {
                             // Una reserva ocupa la embarcación por UN DÍA específico
                             // Verificar si alguna fecha del rango de alquiler coincide con la fecha de reserva
-                            LocalDate fechaReserva = r.getFecha();
+                            LocalDate fechaReserva = r.getDate();
                             if (!fechaReserva.isBefore(fechaInicio) && !fechaReserva.isAfter(fechaFin)) {
                                 ocupada = true;
                                 break;

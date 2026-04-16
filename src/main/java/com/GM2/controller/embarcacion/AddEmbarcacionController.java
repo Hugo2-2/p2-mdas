@@ -85,32 +85,32 @@ public class AddEmbarcacionController {
                                  SessionStatus sessionStatus,
                                  RedirectAttributes redirectAttributes){
 
-        System.out.println("[EmbarcacionController] Informacion recivida: matricula=" + newEmbarcacion.getMatricula() +
-                " nombre=" + newEmbarcacion.getNombre() +
-                " tipo=" + newEmbarcacion.getTipo() +
-                " dimensiones=" + newEmbarcacion.getDimensiones() +
-                " id_patron=" + newEmbarcacion.getIdPatron() +
-                " plazas=" + newEmbarcacion.getPlazas());
+        System.out.println("[EmbarcacionController] Informacion recivida: matricula=" + newEmbarcacion.getRegistration() +
+                " nombre=" + newEmbarcacion.getName() +
+                " tipo=" + newEmbarcacion.getType() +
+                " dimensiones=" + newEmbarcacion.getDimensions() +
+                " id_patron=" + newEmbarcacion.getSkipperId() +
+                " plazas=" + newEmbarcacion.getSeats());
 
         // 1. Comprobamos que la matrícula sea única, al igual con el nombre
-        if (embarcacionRepository.findEmbarcacionByMatricula(newEmbarcacion.getMatricula()) != null) {
+        if (embarcacionRepository.findEmbarcacionByMatricula(newEmbarcacion.getRegistration()) != null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: Ya existe una embarcación con esa matrícula");
             sessionStatus.setComplete();
             return "redirect:/api/embarcaciones/addEmbarcacion";
-        } else if (embarcacionRepository.findEmbarcacionByNombre(newEmbarcacion.getNombre()) != null) {
+        } else if (embarcacionRepository.findEmbarcacionByNombre(newEmbarcacion.getName()) != null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: Ya existe una embarcación con dicho nombre asociado");
             sessionStatus.setComplete();
             return "redirect:/api/embarcaciones/addEmbarcacion";
         }
         // 2. Comprobamos que al menos sea 2 plazas (1 para patron y otra para quien reserva)
-        else if (newEmbarcacion.getPlazas() < 2) {
+        else if (newEmbarcacion.getSeats() < 2) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: El número mínimo de plazas debe ser 2");
             sessionStatus.setComplete();
             return "redirect:/api/embarcaciones/addEmbarcacion";
         }
         // 3. Validación de dimensiones, se mete en un try catch, ya que hay que pasar de string a double las dimensiones
         else try {
-                double dimensiones = Double.parseDouble(newEmbarcacion.getDimensiones());
+                double dimensiones = Double.parseDouble(newEmbarcacion.getDimensions());
                 if (dimensiones < 1) {
                     redirectAttributes.addFlashAttribute("errorMessage", "Error: La embarcación debe tener al menos 1m2");
                     sessionStatus.setComplete();
@@ -118,7 +118,7 @@ public class AddEmbarcacionController {
                 }
 
                 // 4. Validación de Patrón
-                String patronDni = newEmbarcacion.getIdPatron();
+                String patronDni = newEmbarcacion.getSkipperId();
                 //El dni del patron no debe estar nulo, ni dejarse vacío
                 if (patronDni != null && !patronDni.trim().isEmpty()) {
                     if (patronRepository.findPatronByDNI(patronDni) == null) {

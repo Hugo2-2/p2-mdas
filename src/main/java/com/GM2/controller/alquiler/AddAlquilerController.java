@@ -88,7 +88,7 @@ public class AddAlquilerController {
         ModelAndView modelAndView = new ModelAndView();
 
         String resultado;
-        Socio socio = socioRepository.findSocioByDNI(alquiler.getUsuario_dni());
+        Socio socio = socioRepository.findSocioByDNI(alquiler.getUserNationalId());
 
         if (socio == null){
             resultado = "El socio no existe.";
@@ -97,7 +97,7 @@ public class AddAlquilerController {
             status.setComplete();
             return modelAndView;
         }
-        if (!socio.getTieneLicenciaPatron()){ 
+        if (!socio.getHasSkipperLicense()){ 
             resultado = "El socio no tiene título de patrón.";
             modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
@@ -105,8 +105,8 @@ public class AddAlquilerController {
             return modelAndView;
         }
 
-        LocalDate inicio = alquiler.getFechainicio();
-        LocalDate fin = alquiler.getFechafin();
+        LocalDate inicio = alquiler.getStartDate();
+        LocalDate fin = alquiler.getEndDate();
         // Clean Code - Reglas de nombrado: variable con unidad (dias -> totalDays)
         long totalDays = ChronoUnit.DAYS.between(inicio, fin) + 1;
 
@@ -137,7 +137,7 @@ public class AddAlquilerController {
             }
         }
 
-        Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(alquiler.getMatricula_embarcacion());
+        Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(alquiler.getBoatRegistration());
         if (embarcacion == null){
             resultado = "Embarcación no encontrada.";
             modelAndView.setViewName("alquiler/addAlquilerView");
@@ -145,7 +145,7 @@ public class AddAlquilerController {
             status.setComplete();
             return modelAndView;
         }
-        if (alquiler.getPlazas() > embarcacion.getPlazas()){
+        if (alquiler.getSeats() > embarcacion.getSeats()){
             resultado = "No hay suficientes plazas.";
             modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
@@ -170,8 +170,8 @@ public class AddAlquilerController {
             boolean ocupada = false;
 
             for (Alquiler a : alquileres) {
-                if (a.getMatricula_embarcacion().equals(e.getMatricula())) {
-                    if (!(inicio.isAfter(a.getFechafin()) || fin.isBefore(a.getFechainicio()))) {
+                if (a.getBoatRegistration().equals(e.getRegistration())) {
+                    if (!(inicio.isAfter(a.getEndDate()) || fin.isBefore(a.getStartDate()))) {
                         ocupada = true;
                         break;
                     }
@@ -180,10 +180,10 @@ public class AddAlquilerController {
 
             if (!ocupada) {
                 for (Reserva r : reservas) {
-                    if (r.getMatricula_embarcacion().equals(e.getMatricula())) {
+                    if (r.getBoatRegistration().equals(e.getRegistration())) {
                         // Una reserva ocupa la embarcación por UN DÍA específico
                         // Verificar si alguna fecha del rango de alquiler coincide con la fecha de reserva
-                        LocalDate fechaReserva = r.getFecha();
+                        LocalDate fechaReserva = r.getDate();
                         if (!fechaReserva.isBefore(inicio) && !fechaReserva.isAfter(fin)) {
                             ocupada = true;
                             break;
@@ -199,7 +199,7 @@ public class AddAlquilerController {
         
         boolean disponible = false;
         for (Embarcacion e : availableBoats) {
-            if (e.getMatricula().equals(alquiler.getMatricula_embarcacion())) {
+            if (e.getRegistration().equals(alquiler.getBoatRegistration())) {
                 disponible = true;
                 break;
             }
@@ -215,8 +215,8 @@ public class AddAlquilerController {
 
 
         // Clean Code - Reglas de nombrado: variable con unidad (precio -> priceInEuros )
-        double priceInEuros = 20.0 * alquiler.getPlazas() * totalDays;
-        alquiler.setPrecio(priceInEuros);
+        double priceInEuros = 20.0 * alquiler.getSeats() * totalDays;
+        alquiler.setPrice(priceInEuros);
 
         boolean insertado = alquilerRepository.addAlquiler(alquiler);
         if (insertado) {
@@ -230,7 +230,7 @@ public class AddAlquilerController {
         
             // Extraer el id del alquiler
             Integer alquilerId = Integer.parseInt(resultado.substring(3));
-            int plazas = alquiler.getPlazas();
+            int plazas = alquiler.getSeats();
             if( plazas > 1){
                 modelAndView.setViewName("redirect:/api/acompanantes/" + alquilerId + "/" + plazas);
             }

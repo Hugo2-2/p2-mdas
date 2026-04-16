@@ -128,7 +128,7 @@ public class ClienteInscripciones {
             dniTitularTest = "11111111A"; // DNI de prueba
             
             Inscripcion nuevaInscripcion = new Inscripcion();
-            nuevaInscripcion.setSocioTitularId(dniTitularTest);
+            nuevaInscripcion.setTitularMemberId(dniTitularTest);
             
             ResponseEntity<Inscripcion> response = rest.postForEntity(
                 baseURL + "/api/inscripciones", 
@@ -153,7 +153,7 @@ public class ClienteInscripciones {
         System.out.println("==== REQUEST 6: POST crear inscripción duplicada (error esperado) ====");
         try {
             Inscripcion inscripcionDuplicada = new Inscripcion();
-            inscripcionDuplicada.setSocioTitularId(dniTitularTest);
+            inscripcionDuplicada.setTitularMemberId(dniTitularTest);
             
             rest.postForEntity(
                 baseURL + "/api/inscripciones", 
@@ -171,7 +171,7 @@ public class ClienteInscripciones {
         System.out.println("==== REQUEST 7: POST crear inscripción para titular inexistente (error esperado) ====");
         try {
             Inscripcion inscripcionInvalida = new Inscripcion();
-            inscripcionInvalida.setSocioTitularId("00000000Z");
+            inscripcionInvalida.setTitularMemberId("00000000Z");
             
             rest.postForEntity(
                 baseURL + "/api/inscripciones", 

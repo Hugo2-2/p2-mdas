@@ -63,7 +63,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="alquiler : ${alquileres}" th:class="${alquiler.fechafin.isBefore(T(java.time.LocalDate).now())} ? 'table-secondary'">
+                            <tr th:each="alquiler : ${alquileres}" th:class="${alquiler.endDate.isBefore(T(java.time.LocalDate).now())} ? 'table-secondary'">
                                 <!-- ID -->
                                 <td>
                                     <strong th:text="${alquiler.id}">1</strong>
@@ -80,24 +80,24 @@
                                 <!-- Duración -->
                                 <td>
                                     <span class="badge bg-info"
-                                          th:text="${(alquiler.fechafin.toEpochDay() - alquiler.fechainicio.toEpochDay() + 1) + ' días'}"></span>
+                                          th:text="${(alquiler.endDate.toEpochDay() - alquiler.startDate.toEpochDay() + 1) + ' días'}"></span>
                                     </span>
                                 </td>
 
                                 <!-- Socio -->
                                 <td>
-                                    <span class="small" th:text="${alquiler.usuario_dni}">12345678A</span>
+                                    <span class="small" th:text="${alquiler.userNationalId}">12345678A</span>
                                 </td>
 
                                 <!-- Embarcación -->
                                 <td>
-                                    <span class="badge badge-dark" th:text="${alquiler.matricula_embarcacion}">ABC123</span>
+                                    <span class="badge badge-dark" th:text="${alquiler.boatRegistration}">ABC123</span>
                                 </td>
 
                                 <!-- Plazas -->
                                 <td>
                                     <span class="badge badge-warning"
-                                          th:text="${alquiler.acompanantes.size() + 1} + '/' + ${alquiler.plazas}">
+                                          th:text="${alquiler.acompanantes.size() + 1} + '/' + ${alquiler.seats}">
                                         4/3
                                     </span>
                                 </td>
@@ -114,7 +114,7 @@
                                             <span class="text-muted small">Sin acompañantes</span>
                                         </div>
                                         <div th:each="acomp : ${alquiler.acompanantes}">
-                                            <span class="badge badge-light small mb-1" th:text="${acomp.dni}">87654321B</span>
+                                            <span class="badge badge-light small mb-1" th:text="${acomp.nationalId}">87654321B</span>
                                         </div>
                                     </div>
                                 </td>
@@ -127,8 +127,8 @@
                                            title="Ver detalles">
                                             👁️
                                         </a>
-                                        <a th:if="${alquiler.plazas > 1}"
-                                           th:href="@{/api/acompanantes/{alquilerId}/{plazas}(alquilerId=${alquiler.id}, plazas=${alquiler.plazas})}"
+                                        <a th:if="${alquiler.seats > 1}"
+                                           th:href="@{/api/acompanantes/{alquilerId}/{seats}(alquilerId=${alquiler.id}, plazas=${alquiler.seats})}"
                                            class="btn"
                                            title="Gestionar acompañantes">
                                             👥

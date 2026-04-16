@@ -75,23 +75,23 @@ public class AddPatronController {
                             SessionStatus sessionStatus,
                             RedirectAttributes redirectAttributes) {
 
-        if(patronRepository.isRegistered(newPatron.getDni())) {
+        if(patronRepository.isRegistered(newPatron.getNationalId())) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: El patron ya existe.");
         }else {
-            System.out.println("[PatronController] Informacion recivida: Nombre=" + newPatron.getNombre() +
-                    " Apellidos=" + newPatron.getApellidos() +
-                    " DNI=" + newPatron.getDni() +
-                    " fechaNacimiento=" + newPatron .getFechaNacimiento() +
-                    " fecha_expedicion_titulo=" + newPatron.getFechaExpedicionTitulo());
+            System.out.println("[PatronController] Informacion recivida: Nombre=" + newPatron.getName() +
+                    " Apellidos=" + newPatron.getSurname() +
+                    " DNI=" + newPatron.getNationalId() +
+                    " fechaNacimiento=" + newPatron .getBirthDate() +
+                    " fecha_expedicion_titulo=" + newPatron.getTitleIssueDate());
 
-            if(newPatron.getFechaNacimiento().isAfter(LocalDate.now())) {
+            if(newPatron.getBirthDate().isAfter(LocalDate.now())) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Error: Fecha de nacimiento inválida.");
                 sessionStatus.setComplete();
                 return "redirect:/api/patrones/addPatron";
             }
 
-            if(newPatron.getFechaExpedicionTitulo().isAfter(LocalDate.now()) ||
-                newPatron.getFechaExpedicionTitulo().isBefore(newPatron.getFechaNacimiento())) {
+            if(newPatron.getTitleIssueDate().isAfter(LocalDate.now()) ||
+                newPatron.getTitleIssueDate().isBefore(newPatron.getBirthDate())) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Error: Fecha de expedición del título inválida.");
                 sessionStatus.setComplete();
                 return "redirect:/api/patrones/addPatron";

@@ -102,13 +102,13 @@ public class ClientePatron {
 
         // 4. Actualizar datos (Apellido)
         Patron cambios = new Patron();
-        cambios.setApellidos("Elcano Magallanes");
+        cambios.setSurname("Elcano Magallanes");
 
         System.out.println("==== REQUEST 4: PATCH update patron (valid) ====");
         try {
             // A) Ejecutar la modificación
             Patron devuelto = rest.patchForObject(baseURL + "/api/patrones/12345678Z", cambios, Patron.class);
-            System.out.println("-> API devolvió: " + devuelto.getNombre() + " " + devuelto.getApellidos());
+            System.out.println("-> API devolvió: " + devuelto.getName() + " " + devuelto.getSurname());
 
             // B) Verificación: Consultar a BD cómo quedó realmente
             ResponseEntity<Patron> enBD = rest.getForEntity(baseURL + "/api/patrones/12345678Z", Patron.class);

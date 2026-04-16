@@ -76,29 +76,29 @@ public class PatronRestController {
 
         try {
             // Verificamos que no queden campos nulos (Campos obligatorios NOT NULL)
-            if (nuevoPatron.getDni() == null || nuevoPatron.getDni().trim().isEmpty() ||
-                    nuevoPatron.getNombre() == null || nuevoPatron.getNombre().trim().isEmpty() ||
-                    nuevoPatron.getApellidos() == null || nuevoPatron.getApellidos().trim().isEmpty() ||
-                    nuevoPatron.getFechaNacimiento() == null ||
-                    nuevoPatron.getFechaExpedicionTitulo() == null) {
+            if (nuevoPatron.getNationalId() == null || nuevoPatron.getNationalId().trim().isEmpty() ||
+                    nuevoPatron.getName() == null || nuevoPatron.getName().trim().isEmpty() ||
+                    nuevoPatron.getSurname() == null || nuevoPatron.getSurname().trim().isEmpty() ||
+                    nuevoPatron.getBirthDate() == null ||
+                    nuevoPatron.getTitleIssueDate() == null) {
 
                 // 400 Bad Request: El cliente envió datos incompletos
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
 
             // Validar si el DNI ya está registrado
-            if (patronRepository.isRegistered(nuevoPatron.getDni())) {
+            if (patronRepository.isRegistered(nuevoPatron.getNationalId())) {
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT);
             }
 
             // Validar lógica de fechas: No puede haber nacido en el futuro
-            if (nuevoPatron.getFechaNacimiento().isAfter(java.time.LocalDate.now())) {
+            if (nuevoPatron.getBirthDate().isAfter(java.time.LocalDate.now())) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
             // Validar lógica de fechas: Título no puede ser futuro ni anterior al nacimiento
-            if (nuevoPatron.getFechaExpedicionTitulo().isAfter(java.time.LocalDate.now()) ||
-                    nuevoPatron.getFechaExpedicionTitulo().isBefore(nuevoPatron.getFechaNacimiento())) {
+            if (nuevoPatron.getTitleIssueDate().isAfter(java.time.LocalDate.now()) ||
+                    nuevoPatron.getTitleIssueDate().isBefore(nuevoPatron.getBirthDate())) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
@@ -130,26 +130,26 @@ public class PatronRestController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
-        if(newPatron.getDni() != null) {
+        if(newPatron.getNationalId() != null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
         // Actualización parcial de campos
-        if (newPatron.getNombre() != null) patronActual.setNombre(newPatron.getNombre());
-        if (newPatron.getApellidos() != null) patronActual.setApellidos(newPatron.getApellidos());
-        if (newPatron.getFechaNacimiento() != null) patronActual.setFechaNacimiento(newPatron.getFechaNacimiento());
-        if (newPatron.getFechaExpedicionTitulo() != null) patronActual.setFechaExpedicionTitulo(newPatron.getFechaExpedicionTitulo());
+        if (newPatron.getName() != null) patronActual.setName(newPatron.getName());
+        if (newPatron.getSurname() != null) patronActual.setSurname(newPatron.getSurname());
+        if (newPatron.getBirthDate() != null) patronActual.setBirthDate(newPatron.getBirthDate());
+        if (newPatron.getTitleIssueDate() != null) patronActual.setTitleIssueDate(newPatron.getTitleIssueDate());
 
         // Validaciones de negocio tras la actualización
-        if (patronActual.getFechaNacimiento().isAfter(LocalDate.now())) {
+        if (patronActual.getBirthDate().isAfter(LocalDate.now())) {
             return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        if (patronActual.getFechaExpedicionTitulo().isAfter(LocalDate.now())) {
+        if (patronActual.getTitleIssueDate().isAfter(LocalDate.now())) {
             return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        if (patronActual.getFechaExpedicionTitulo().isBefore(patronActual.getFechaNacimiento())) {
+        if (patronActual.getTitleIssueDate().isBefore(patronActual.getBirthDate())) {
             return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
@@ -221,7 +221,7 @@ public class PatronRestController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
-        String patronEmbarcacionActual = embarcacionActual.getIdPatron();
+        String patronEmbarcacionActual = embarcacionActual.getSkipperId();
 
         // Seguridad: Si el barco está vacío O el patrón no coincide, damos error para evitar borrados accidentales
         if(patronEmbarcacionActual == null || !patronEmbarcacionActual.equals(dniPatronLimpio)) {

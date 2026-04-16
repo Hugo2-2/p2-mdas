@@ -13,14 +13,14 @@ import java.time.Period;
  * @version 1.0
  */
 public class Socio {
-    private String nombre;
-    private String apellidos;
-    private String dni;
-    private LocalDate fechaNacimiento;
-    private String direccion;
-    private LocalDate fechaInscripcion;
-    private Boolean esTitular;
-    private Boolean tieneLicenciaPatron;
+    private String name;
+    private String surname;
+    private String nationalId;
+    private LocalDate birthDate;
+    private String address;
+    private LocalDate registrationDate;
+    private Boolean isTitular;
+    private Boolean hasSkipperLicense;
 
     /**
      * Constructor por defecto.
@@ -31,143 +31,143 @@ public class Socio {
     /**
      * Constructor completo para crear un socio con todos sus datos.
      *
-     * @param tieneLicenciaPatron Indica si el socio tiene licencia de patrón.
-     * @param esTitular Indica si el socio es titular de la inscripción.
-     * @param fechaInscripcion Fecha de inscripción en el club.
-     * @param direccion Dirección del socio.
-     * @param fechaNacimiento Fecha de nacimiento del socio.
-     * @param dni DNI del socio.
-     * @param apellidos Apellidos del socio.
-     * @param nombre Nombre del socio.
+     * @param hasSkipperLicense Indica si el socio tiene licencia de patrón.
+     * @param isTitular Indica si el socio es titular de la inscripción.
+     * @param registrationDate Fecha de inscripción en el club.
+     * @param address Dirección del socio.
+     * @param birthDate Fecha de nacimiento del socio.
+     * @param nationalId DNI del socio.
+     * @param surname Apellidos del socio.
+     * @param name Nombre del socio.
      */
-    public Socio(Boolean tieneLicenciaPatron, Boolean esTitular, LocalDate fechaInscripcion, String direccion, LocalDate fechaNacimiento, String dni, String apellidos, String nombre) {
-        this.tieneLicenciaPatron = tieneLicenciaPatron;
-        this.esTitular = esTitular;
-        this.fechaInscripcion = fechaInscripcion;
-        this.direccion = direccion;
-        this.fechaNacimiento = fechaNacimiento;
-        this.dni = dni;
-        this.apellidos = apellidos;
-        this.nombre = nombre;
+    public Socio(Boolean hasSkipperLicense, Boolean isTitular, LocalDate registrationDate, String address, LocalDate birthDate, String nationalId, String surname, String name) {
+        this.hasSkipperLicense = hasSkipperLicense;
+        this.isTitular = isTitular;
+        this.registrationDate = registrationDate;
+        this.address = address;
+        this.birthDate = birthDate;
+        this.nationalId = nationalId;
+        this.surname = surname;
+        this.name = name;
     }
 
     /**
      * Constructor para crear un socio estableciendo la fecha de inscripción como la fecha actual.
      *
-     * @param tieneLicenciaPatron Indica si el socio tiene licencia de patrón.
-     * @param esTitular Indica si el socio es titular de la inscripción.
-     * @param direccion Dirección del socio.
-     * @param fechaNacimiento Fecha de nacimiento del socio.
-     * @param dni DNI del socio.
-     * @param apellidos Apellidos del socio.
-     * @param nombre Nombre del socio.
+     * @param hasSkipperLicense Indica si el socio tiene licencia de patrón.
+     * @param isTitular Indica si el socio es titular de la inscripción.
+     * @param address Dirección del socio.
+     * @param birthDate Fecha de nacimiento del socio.
+     * @param nationalId DNI del socio.
+     * @param surname Apellidos del socio.
+     * @param name Nombre del socio.
      */
-    public Socio(Boolean tieneLicenciaPatron, Boolean esTitular, String direccion, LocalDate fechaNacimiento, String dni, String apellidos, String nombre) {
-        this.tieneLicenciaPatron = tieneLicenciaPatron;
-        this.esTitular = esTitular;
-        this.fechaInscripcion = LocalDate.now();
-        this.direccion = direccion;
-        this.fechaNacimiento = fechaNacimiento;
-        this.dni = dni;
-        this.apellidos = apellidos;
-        this.nombre = nombre;
+    public Socio(Boolean hasSkipperLicense, Boolean isTitular, String address, LocalDate birthDate, String nationalId, String surname, String name) {
+        this.hasSkipperLicense = hasSkipperLicense;
+        this.isTitular = isTitular;
+        this.registrationDate = LocalDate.now();
+        this.address = address;
+        this.birthDate = birthDate;
+        this.nationalId = nationalId;
+        this.surname = surname;
+        this.name = name;
     }
 
-    public Socio(String nombre, String apellidos, String dni, LocalDate fechaNacimiento, String direccion, LocalDate fechaInscripcion, Boolean esTitular, Boolean tieneLicenciaPatron) {
-        this.nombre = nombre;
-        this.apellidos = apellidos;
-        this.dni = dni;
-        this.fechaNacimiento = fechaNacimiento;
-        this.direccion = direccion;
-        this.fechaInscripcion = fechaInscripcion;
-        this.esTitular = tieneLicenciaPatron;
-        this.tieneLicenciaPatron = tieneLicenciaPatron;
+    public Socio(String name, String surname, String nationalId, LocalDate birthDate, String address, LocalDate registrationDate, Boolean isTitular, Boolean hasSkipperLicense) {
+        this.name = name;
+        this.surname = surname;
+        this.nationalId = nationalId;
+        this.birthDate = birthDate;
+        this.address = address;
+        this.registrationDate = registrationDate;
+        this.isTitular = hasSkipperLicense;
+        this.hasSkipperLicense = hasSkipperLicense;
     }
 
-    public Socio(String nombre, String apellidos, String dni, LocalDate fechaNacimiento, String direccion, LocalDate fechaInscripcion, Boolean tieneLicenciaPatron) {
-        this.nombre = nombre;
-        this.apellidos = apellidos;
-        this.dni = dni;
-        this.fechaNacimiento = fechaNacimiento;
-        this.direccion = direccion;
-        this.fechaInscripcion = fechaInscripcion;
-        this.tieneLicenciaPatron = tieneLicenciaPatron;
-        this.esTitular = false;
+    public Socio(String name, String surname, String nationalId, LocalDate birthDate, String address, LocalDate registrationDate, Boolean hasSkipperLicense) {
+        this.name = name;
+        this.surname = surname;
+        this.nationalId = nationalId;
+        this.birthDate = birthDate;
+        this.address = address;
+        this.registrationDate = registrationDate;
+        this.hasSkipperLicense = hasSkipperLicense;
+        this.isTitular = false;
     }
 
-    public Socio(String nombre, String apellidos, String dni, LocalDate fechaNacimiento, String direccion, Boolean tieneLicenciaPatron) {
-        this.nombre = nombre;
-        this.apellidos = apellidos;
-        this.dni = dni;
-        this.fechaNacimiento = fechaNacimiento;
-        this.direccion = direccion;
-        this.tieneLicenciaPatron = tieneLicenciaPatron;
+    public Socio(String name, String surname, String nationalId, LocalDate birthDate, String address, Boolean hasSkipperLicense) {
+        this.name = name;
+        this.surname = surname;
+        this.nationalId = nationalId;
+        this.birthDate = birthDate;
+        this.address = address;
+        this.hasSkipperLicense = hasSkipperLicense;
     }
 
     // Getters y Setters
 
-    public String getNombre() {
-        return nombre;
+    public String getName() {
+        return name;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getApellidos() {
-        return apellidos;
+    public String getSurname() {
+        return surname;
     }
 
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
-    public String getDni() {
-        return dni;
+    public String getNationalId() {
+        return nationalId;
     }
 
-    public void setDni(String dni) {
-        this.dni = dni;
+    public void setNationalId(String nationalId) {
+        this.nationalId = nationalId;
     }
 
-    public LocalDate getFechaNacimiento() {
-        return fechaNacimiento;
+    public LocalDate getBirthDate() {
+        return birthDate;
     }
 
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
-    public String getDireccion() {
-        return direccion;
+    public String getAddress() {
+        return address;
     }
 
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public LocalDate getFechaInscripcion() {
-        return fechaInscripcion;
+    public LocalDate getRegistrationDate() {
+        return registrationDate;
     }
 
-    public void setFechaInscripcion(LocalDate fechaInscripcion) {
-        this.fechaInscripcion = fechaInscripcion;
+    public void setRegistrationDate(LocalDate registrationDate) {
+        this.registrationDate = registrationDate;
     }
 
-    public Boolean getEsTitular() {
-        return esTitular;
+    public Boolean getIsTitular() {
+        return isTitular;
     }
 
-    public void setEsTitular(Boolean esTitular) {
-        this.esTitular = esTitular;
+    public void setIsTitular(Boolean isTitular) {
+        this.isTitular = isTitular;
     }
 
-    public Boolean getTieneLicenciaPatron() {
-        return tieneLicenciaPatron;
+    public Boolean getHasSkipperLicense() {
+        return hasSkipperLicense;
     }
 
-    public void setTieneLicenciaPatron(Boolean tieneLicenciaPatron) {
-        this.tieneLicenciaPatron = tieneLicenciaPatron;
+    public void setHasSkipperLicense(Boolean hasSkipperLicense) {
+        this.hasSkipperLicense = hasSkipperLicense;
     }
 
     /**
@@ -179,21 +179,21 @@ public class Socio {
      */
     public boolean esMayorEdad() {
         LocalDate hoy = LocalDate.now();
-        int edad = Period.between(fechaNacimiento, hoy).getYears();
+        int edad = Period.between(birthDate, hoy).getYears();
         return edad >= 18;
     }
 
     @Override
     public String toString() {
         return "Socio{" +
-                "nombre='" + nombre + '\'' +
-                ", apellidos='" + apellidos + '\'' +
-                ", dni='" + dni + '\'' +
-                ", fechaNacimiento=" + fechaNacimiento +
-                ", direccion='" + direccion + '\'' +
-                ", fechaInscripcion=" + fechaInscripcion +
-                ", esTitular=" + esTitular +
-                ", tieneLicenciaPatron=" + tieneLicenciaPatron +
+                "nombre='" + name + '\'' +
+                ", apellidos='" + surname + '\'' +
+                ", dni='" + nationalId + '\'' +
+                ", fechaNacimiento=" + birthDate +
+                ", direccion='" + address + '\'' +
+                ", fechaInscripcion=" + registrationDate +
+                ", esTitular=" + isTitular +
+                ", tieneLicenciaPatron=" + hasSkipperLicense +
                 '}';
     }
 }

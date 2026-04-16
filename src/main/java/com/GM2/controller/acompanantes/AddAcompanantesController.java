@@ -62,7 +62,7 @@ public class AddAcompanantesController {
         Alquiler alquiler = alquilerRepository.findAlquilerById(alquilerId);
         String socioCreadorDNI = "";
         if (alquiler != null) {
-            socioCreadorDNI = alquiler.getUsuario_dni();
+            socioCreadorDNI = alquiler.getUserNationalId();
         }      
         
         int contadorExitos = 0;
@@ -95,8 +95,8 @@ public class AddAcompanantesController {
             
             // Insertar acompañante
             Acompanante a = new Acompanante();
-            a.setDni(dniLimpio);
-            a.setId_alquiler(alquilerId);
+            a.setNationalId(dniLimpio);
+            a.setRentalId(alquilerId);
             acompanantesAInsertar.add(a);
         }
 

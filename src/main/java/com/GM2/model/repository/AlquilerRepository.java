@@ -148,12 +148,12 @@ public class AlquilerRepository extends AbstractRepository{
 
                 int result = jdbcTemplate.update(query,
                    
-                   Date.valueOf(alquiler.getFechainicio()),
-                   Date.valueOf(alquiler.getFechafin()),
-                   alquiler.getPrecio(),
-                   alquiler.getPlazas(),
-                   alquiler.getUsuario_dni(),
-                   alquiler.getMatricula_embarcacion()
+                   Date.valueOf(alquiler.getStartDate()),
+                   Date.valueOf(alquiler.getEndDate()),
+                   alquiler.getPrice(),
+                   alquiler.getSeats(),
+                   alquiler.getUserNationalId(),
+                   alquiler.getBoatRegistration()
                    
                 );
 
@@ -188,12 +188,12 @@ public class AlquilerRepository extends AbstractRepository{
             String query = sqlQueries.getProperty("update-updateAlquiler");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
-                        Date.valueOf(alquiler.getFechainicio()),
-                        Date.valueOf(alquiler.getFechafin()),
-                        alquiler.getPrecio(),
-                        alquiler.getPlazas(),
-                        alquiler.getUsuario_dni(),
-                        alquiler.getMatricula_embarcacion(),
+                        Date.valueOf(alquiler.getStartDate()),
+                        Date.valueOf(alquiler.getEndDate()),
+                        alquiler.getPrice(),
+                        alquiler.getSeats(),
+                        alquiler.getUserNationalId(),
+                        alquiler.getBoatRegistration(),
                         alquiler.getId()
                 );
 

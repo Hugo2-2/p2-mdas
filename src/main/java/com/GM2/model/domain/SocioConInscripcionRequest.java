@@ -13,13 +13,13 @@ import java.time.LocalDate;
  * @version 1.0
  */
 public class SocioConInscripcionRequest {
-    private String dni;
-    private String nombre;
-    private String apellidos;
-    private LocalDate fechaNacimiento;
-    private String direccion;
-    private Boolean patron;
-    private String dniTitular;
+    private String nationalId;
+    private String name;
+    private String surname;
+    private LocalDate birthDate;
+    private String address;
+    private Boolean isSkipper;
+    private String titularNationalId;
 
     /**
      * Constructor por defecto.
@@ -29,24 +29,24 @@ public class SocioConInscripcionRequest {
     /**
      * Constructor con todos los parámetros.
      *
-     * @param dni DNI del nuevo socio.
-     * @param nombre Nombre del nuevo socio.
-     * @param apellidos Apellidos del nuevo socio.
-     * @param fechaNacimiento Fecha de nacimiento del nuevo socio.
-     * @param direccion Dirección del nuevo socio.
-     * @param patron Indica si el socio tiene licencia de patrón.
-     * @param dniTitular DNI del titular de la inscripción existente.
+     * @param nationalId DNI del nuevo socio.
+     * @param name Nombre del nuevo socio.
+     * @param surname Apellidos del nuevo socio.
+     * @param birthDate Fecha de nacimiento del nuevo socio.
+     * @param address Dirección del nuevo socio.
+     * @param isSkipper Indica si el socio tiene licencia de patrón.
+     * @param titularNationalId DNI del titular de la inscripción existente.
      */
-    public SocioConInscripcionRequest(String dni, String nombre, String apellidos, 
-                                      LocalDate fechaNacimiento, String direccion, 
-                                      Boolean patron, String dniTitular) {
-        this.dni = dni;
-        this.nombre = nombre;
-        this.apellidos = apellidos;
-        this.fechaNacimiento = fechaNacimiento;
-        this.direccion = direccion;
-        this.patron = patron;
-        this.dniTitular = dniTitular;
+    public SocioConInscripcionRequest(String nationalId, String name, String surname, 
+                                      LocalDate birthDate, String address, 
+                                      Boolean isSkipper, String titularNationalId) {
+        this.nationalId = nationalId;
+        this.name = name;
+        this.surname = surname;
+        this.birthDate = birthDate;
+        this.address = address;
+        this.isSkipper = isSkipper;
+        this.titularNationalId = titularNationalId;
     }
 
     // Getters y Setters
@@ -55,111 +55,111 @@ public class SocioConInscripcionRequest {
      * Obtiene el DNI del nuevo socio.
      * @return DNI del socio.
      */
-    public String getDni() { 
-        return dni; 
+    public String getNationalId() { 
+        return nationalId; 
     }
 
     /**
      * Establece el DNI del nuevo socio.
-     * @param dni DNI del socio.
+     * @param nationalId DNI del socio.
      */
-    public void setDni(String dni) { 
-        this.dni = dni; 
+    public void setNationalId(String nationalId) { 
+        this.nationalId = nationalId; 
     }
 
     /**
      * Obtiene el nombre del nuevo socio.
      * @return Nombre del socio.
      */
-    public String getNombre() { 
-        return nombre; 
+    public String getName() { 
+        return name; 
     }
 
     /**
      * Establece el nombre del nuevo socio.
-     * @param nombre Nombre del socio.
+     * @param name Nombre del socio.
      */
-    public void setNombre(String nombre) { 
-        this.nombre = nombre; 
+    public void setName(String name) { 
+        this.name = name; 
     }
 
     /**
      * Obtiene los apellidos del nuevo socio.
      * @return Apellidos del socio.
      */
-    public String getApellidos() { 
-        return apellidos; 
+    public String getSurname() { 
+        return surname; 
     }
 
     /**
      * Establece los apellidos del nuevo socio.
-     * @param apellidos Apellidos del socio.
+     * @param surname Apellidos del socio.
      */
-    public void setApellidos(String apellidos) { 
-        this.apellidos = apellidos; 
+    public void setSurname(String surname) { 
+        this.surname = surname; 
     }
 
     /**
      * Obtiene la fecha de nacimiento del nuevo socio.
      * @return Fecha de nacimiento del socio.
      */
-    public LocalDate getFechaNacimiento() { 
-        return fechaNacimiento; 
+    public LocalDate getBirthDate() { 
+        return birthDate; 
     }
 
     /**
      * Establece la fecha de nacimiento del nuevo socio.
-     * @param fechaNacimiento Fecha de nacimiento del socio.
+     * @param birthDate Fecha de nacimiento del socio.
      */
-    public void setFechaNacimiento(LocalDate fechaNacimiento) { 
-        this.fechaNacimiento = fechaNacimiento; 
+    public void setBirthDate(LocalDate birthDate) { 
+        this.birthDate = birthDate; 
     }
 
     /**
      * Obtiene la dirección del nuevo socio.
      * @return Dirección del socio.
      */
-    public String getDireccion() { 
-        return direccion; 
+    public String getAddress() { 
+        return address; 
     }
 
     /**
      * Establece la dirección del nuevo socio.
-     * @param direccion Dirección del socio.
+     * @param address Dirección del socio.
      */
-    public void setDireccion(String direccion) { 
-        this.direccion = direccion; 
+    public void setAddress(String address) { 
+        this.address = address; 
     }
 
     /**
      * Obtiene si el socio tiene licencia de patrón.
      * @return true si tiene licencia, false en caso contrario.
      */
-    public Boolean getPatron() { 
-        return patron; 
+    public Boolean getIsSkipper() { 
+        return isSkipper; 
     }
 
     /**
      * Establece si el socio tiene licencia de patrón.
-     * @param patron true si tiene licencia, false en caso contrario.
+     * @param isSkipper true si tiene licencia, false en caso contrario.
      */
-    public void setPatron(Boolean patron) { 
-        this.patron = patron; 
+    public void setIsSkipper(Boolean isSkipper) { 
+        this.isSkipper = isSkipper; 
     }
 
     /**
      * Obtiene el DNI del titular de la inscripción existente.
      * @return DNI del titular.
      */
-    public String getDniTitular() { 
-        return dniTitular; 
+    public String getTitularNationalId() { 
+        return titularNationalId; 
     }
 
     /**
      * Establece el DNI del titular de la inscripción existente.
-     * @param dniTitular DNI del titular.
+     * @param titularNationalId DNI del titular.
      */
-    public void setDniTitular(String dniTitular) { 
-        this.dniTitular = dniTitular; 
+    public void setTitularNationalId(String titularNationalId) { 
+        this.titularNationalId = titularNationalId; 
     }
 }

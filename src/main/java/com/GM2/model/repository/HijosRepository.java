@@ -162,11 +162,11 @@ public class HijosRepository extends AbstractRepository {
             String query = sqlQueries.getProperty("insert-addHijo");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
-                        hijo.getDni(),
-                        hijo.getNombre(),
-                        hijo.getApellidos(),
-                        hijo.getFechaNacimiento(),
-                        hijo.getId_inscripcion() == 0 ? null : hijo.getId_inscripcion()
+                        hijo.getNationalId(),
+                        hijo.getName(),
+                        hijo.getSurname(),
+                        hijo.getBirthDate(),
+                        hijo.getRegistrationId() == 0 ? null : hijo.getRegistrationId()
                 );
 
                 if (result > 0)
@@ -198,8 +198,8 @@ public class HijosRepository extends AbstractRepository {
                 String query = sqlQueries.getProperty("insert-addHijo");
                 if(query != null){
                     int result = jdbcTemplate.update(query,
-                            hijo.getDni(),
-                            hijo.getId_inscripcion()
+                            hijo.getNationalId(),
+                            hijo.getRegistrationId()
                     );
 
                     if (result <= 0)
@@ -226,17 +226,17 @@ public class HijosRepository extends AbstractRepository {
 
         if( hijo == null ) return false;
 
-        if( findHijoByDni(hijo.getDni()) == null ) return false;
+        if( findHijoByDni(hijo.getNationalId()) == null ) return false;
 
         try {
             String query = sqlQueries.getProperty("update-hijo");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
-                        hijo.getNombre(),
-                        hijo.getApellidos(),
-                        hijo.getFechaNacimiento(),
-                        hijo.getId_inscripcion() == 0 ? null : hijo.getId_inscripcion(),
-                        hijo.getDni()
+                        hijo.getName(),
+                        hijo.getSurname(),
+                        hijo.getBirthDate(),
+                        hijo.getRegistrationId() == 0 ? null : hijo.getRegistrationId(),
+                        hijo.getNationalId()
                 );
 
                 if (result > 0)

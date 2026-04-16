@@ -30,12 +30,12 @@
 
         <div class="card-body">
             <div class="form-group mb-4">
-                <label for="matricula" class="form-label">1. Seleccione la Embarcación:</label>
-                <select id="matricula" name="matricula" class="form-control" required>
+                <label for="registration" class="form-label">1. Seleccione la Embarcación:</label>
+                <select id="registration" name="registration" class="form-control" required>
                     <option value="">-- Elija una embarcación --</option>
                     <option th:each="embarcacion : ${todasLasEmbarcaciones}"
-                            th:value="${embarcacion.matricula}"
-                            th:text="${embarcacion.nombre} + ' (' + ${embarcacion.matricula} + ')'">
+                            th:value="${embarcacion.registration}"
+                            th:text="${embarcacion.name} + ' (' + ${embarcacion.registration} + ')'">
                     </option>
                 </select>
             </div>
@@ -44,9 +44,9 @@
                 <label for="dniPatronNuevo" class="form-label">2. Seleccione el Patrón (sólo libres):</label>
                 <select id="dniPatronNuevo" name="dniPatronNuevo" class="form-control" required>
                     <option value="">-- Elija un patrón --</option>
-                    <option th:each="patron : ${patronesLibres}"
-                            th:value="${patron.dni}"
-                            th:text="${patron.nombre} + ' ' + ${patron.apellidos} + ' (' + ${patron.dni} + ')'">
+                    <option th:each="isSkipper : ${patronesLibres}"
+                            th:value="${isSkipper.nationalId}"
+                            th:text="${isSkipper.name} + ' ' + ${isSkipper.surname} + ' (' + ${isSkipper.nationalId} + ')'">
                     </option>
                 </select>
             </div>

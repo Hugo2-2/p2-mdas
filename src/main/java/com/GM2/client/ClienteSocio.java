@@ -106,12 +106,12 @@ public class ClienteSocio {
 
         // Crear socio sin inscripción (adulto)
         Socio nuevoSocio = new Socio();
-        nuevoSocio.setNombre("Luis");
-        nuevoSocio.setApellidos("Jimenez Marquez");
-        nuevoSocio.setDni("55555555A");
-        nuevoSocio.setFechaNacimiento(LocalDate.of(1998, 4, 22));
-        nuevoSocio.setDireccion("Atalaya del Arcipreste");
-        nuevoSocio.setTieneLicenciaPatron(true);
+        nuevoSocio.setName("Luis");
+        nuevoSocio.setSurname("Jimenez Marquez");
+        nuevoSocio.setNationalId("55555555A");
+        nuevoSocio.setBirthDate(LocalDate.of(1998, 4, 22));
+        nuevoSocio.setAddress("Atalaya del Arcipreste");
+        nuevoSocio.setHasSkipperLicense(true);
         
         System.out.println("==== REQUEST 4: POST crear socio sin inscripción (adulto) ====");
         try {
@@ -121,7 +121,7 @@ public class ClienteSocio {
                 Socio.class
             );
             System.out.println("Status code: " + response.getStatusCode());
-            socioCreadoDni = response.getBody().getDni();
+            socioCreadoDni = response.getBody().getNationalId();
             System.out.println(response.getBody());
             
         } catch (HttpClientErrorException e) { 
@@ -130,11 +130,11 @@ public class ClienteSocio {
 
         // Crear socio menor (hijo)
         Socio socioMenor = new Socio();
-        socioMenor.setNombre("Luis");
-        socioMenor.setApellidos("Jimenez Marquez");
-        socioMenor.setDni("55555555A");
-        socioMenor.setFechaNacimiento(LocalDate.of(2008, 4, 22));
-        socioMenor.setDireccion("Atalaya del Arcipreste");
+        socioMenor.setName("Luis");
+        socioMenor.setSurname("Jimenez Marquez");
+        socioMenor.setNationalId("55555555A");
+        socioMenor.setBirthDate(LocalDate.of(2008, 4, 22));
+        socioMenor.setAddress("Atalaya del Arcipreste");
         
         System.out.println();
         System.out.println("==== REQUEST 5: POST crear socio menor (hijo) - sin inscripción ====");
@@ -152,8 +152,8 @@ public class ClienteSocio {
 
         // Crear socio inválido (sin datos obligatorios)
         Socio socioInvalido = new Socio();
-        socioInvalido.setDni("");
-        socioInvalido.setNombre("");
+        socioInvalido.setNationalId("");
+        socioInvalido.setName("");
         
         System.out.println();
         System.out.println("==== REQUEST 6: POST crear socio inválido (sin datos) ====");

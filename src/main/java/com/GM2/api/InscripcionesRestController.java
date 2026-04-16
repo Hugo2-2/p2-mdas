@@ -73,7 +73,7 @@ public class InscripcionesRestController {
 
             // Filtrar las inscripciones individuales (cuota == 300)
             List<Inscripcion> inscripcionesIndividuales = todasInscripciones.stream()
-                .filter(inscripcion -> inscripcion.getCuotaAnual() == 300)
+                .filter(inscripcion -> inscripcion.getAnnualFee() == 300)
                 .collect(Collectors.toList());
 
             if(inscripcionesIndividuales.isEmpty()) {
@@ -107,7 +107,7 @@ public class InscripcionesRestController {
 
             // Filtrar las inscripciones familiares (cuota > 300)
             List<Inscripcion> inscripcionesFamiliares = todasInscripciones.stream()
-                .filter(inscripcion -> inscripcion.getCuotaAnual() > 300)
+                .filter(inscripcion -> inscripcion.getAnnualFee() > 300)
                 .collect(Collectors.toList());
 
             if(inscripcionesFamiliares.isEmpty()) {
@@ -157,23 +157,23 @@ public class InscripcionesRestController {
     public ResponseEntity<Inscripcion> createInscripcion(@RequestBody Inscripcion inscripcionBody) {
         try {
             // Crear la inscripción
-            Inscripcion inscripcion = new Inscripcion(inscripcionBody.getSocioTitularId(), inscripcionBody.getSegundoAudlto(), inscripcionBody.getHijos());
+            Inscripcion inscripcion = new Inscripcion(inscripcionBody.getTitularMemberId(), inscripcionBody.getSecondAdult(), inscripcionBody.getChildren());
             
             // Validaciones básicas
             
-            if(inscripcion == null || inscripcion.getSocioTitularId() == null || 
-               inscripcion.getSocioTitularId().isEmpty()) {
+            if(inscripcion == null || inscripcion.getTitularMemberId() == null || 
+               inscripcion.getTitularMemberId().isEmpty()) {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
 
             // Verificar que el socio titular existe
-            Socio titular = socioRepository.findSocioByDNI(inscripcion.getSocioTitularId());
+            Socio titular = socioRepository.findSocioByDNI(inscripcion.getTitularMemberId());
             if(titular == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // Socio no encontrado
             }
 
             // Verificar que no existe ya una inscripción para este titular
-            Inscripcion existente = inscripcionRepository.findInscripcionByDNITitular(inscripcion.getSocioTitularId());
+            Inscripcion existente = inscripcionRepository.findInscripcionByDNITitular(inscripcion.getTitularMemberId());
             if(existente != null) {
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT); // Ya tiene inscripción
             }
@@ -183,9 +183,9 @@ public class InscripcionesRestController {
 
             
             if(resultado) {
-                titular.setEsTitular(true);
+                titular.setIsTitular(true);
                 socioRepository.updateSocio(titular);
-                return new ResponseEntity<>(inscripcionRepository.findInscripcionByDNITitular(inscripcion.getSocioTitularId()), HttpStatus.CREATED);
+                return new ResponseEntity<>(inscripcionRepository.findInscripcionByDNITitular(inscripcion.getTitularMemberId()), HttpStatus.CREATED);
             } else {
                 // Falló la creación (puede que ya exista una inscripción para ese titular)
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT);
@@ -228,7 +228,7 @@ public class InscripcionesRestController {
 
             Inscripcion inscripcion = inscripcionRepository.findInscripcionById(idInscripcion);
 
-            if(inscripcion == null || inscripcion.getSocioTitularId() == null) {
+            if(inscripcion == null || inscripcion.getTitularMemberId() == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
@@ -237,17 +237,17 @@ public class InscripcionesRestController {
 
             // Validar si estamos añadiendo un hijo o un segundo adulto
             Socio socio = socioRepository.findSocioByDNI(dniNuevoMiembro);
-            if(socio != null && !socio.getEsTitular()) {
-                inscripcion.setSegundoAudlto(dniNuevoMiembro);
-                inscripcion.setCuotaAnual(inscripcion.getCuotaAnual() + 250);
+            if(socio != null && !socio.getIsTitular()) {
+                inscripcion.setSecondAdult(dniNuevoMiembro);
+                inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 250);
             }
             
             Hijos hijo = hijosRepository.findHijoByDni(dniNuevoMiembro);
             if(hijo != null) {
 
-                hijo.setId_inscripcion(idInscripcion);
+                hijo.setRegistrationId(idInscripcion);
                 resHijos = hijosRepository.updateHijo(hijo);
-                inscripcion.setCuotaAnual(inscripcion.getCuotaAnual() + 100);
+                inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 100);
                 
             }
 
@@ -284,7 +284,7 @@ public class InscripcionesRestController {
 
             Inscripcion inscripcion = inscripcionRepository.findInscripcionById(idInscripcion);
 
-            if(inscripcion == null || inscripcion.getSocioTitularId() == null) {
+            if(inscripcion == null || inscripcion.getTitularMemberId() == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
@@ -295,15 +295,15 @@ public class InscripcionesRestController {
             Socio socio = socioRepository.findSocioByDNI(dniMiembro);
 
             if(socio != null) {
-                inscripcion.setSegundoAudlto(null);
-                inscripcion.setCuotaAnual(inscripcion.getCuotaAnual() - 250);
+                inscripcion.setSecondAdult(null);
+                inscripcion.setAnnualFee(inscripcion.getAnnualFee() - 250);
 
             }
 
             Hijos hijo = hijosRepository.findHijoByDni(dniMiembro);
             if(hijo != null) {
-                hijo.setId_inscripcion(0);
-                inscripcion.setCuotaAnual(inscripcion.getCuotaAnual() - 100);
+                hijo.setRegistrationId(0);
+                inscripcion.setAnnualFee(inscripcion.getAnnualFee() - 100);
                 resHijo = hijosRepository.updateHijo(hijo) == true;
             }
 

@@ -29,7 +29,7 @@
         <div class="card-body">
             <p class="mb-0">
                 Estás añadiendo hijos a la inscripción del titular:
-                <b th:text="${dniTitular}"></b>
+                <b th:text="${titularNationalId}"></b>
             </p>
         </div>
     </div>
@@ -40,7 +40,7 @@
         </div>
 
         <div class="card-body">
-            <input type="hidden" name="dniTitular" th:value="${dniTitular}" />
+            <input type="hidden" name="titularNationalId" th:value="${titularNationalId}" />
 
             <div th:each="i : ${#numbers.sequence(1, numeroHijos)}">
                 <div class="card acompanante-card mb-4">
@@ -52,12 +52,12 @@
                     </div>
                     <div class="card-body">
                         <div class="form-group">
-                            <label th:for="${'hijo_dni' + i}" class="form-label">
+                            <label th:for="${'hijo_nationalId' + i}" class="form-label">
                                 <strong>DNI del Hijo *</strong>
                             </label>
                             <input type="text"
-                                   th:id="${'hijo_dni' + i}"
-                                   name="hijo_dni"
+                                   th:id="${'hijo_nationalId' + i}"
+                                   name="hijo_nationalId"
                                    class="form-control"
                                    placeholder="Ej: 12345678A"
                                    required
@@ -71,12 +71,12 @@
                         </div>
 
                         <div class="form-group">
-                            <label th:for="${'nombre' + i}">
+                            <label th:for="${'name' + i}">
                                 <strong>Nombre</strong>
                             </label>
                             <input type="text"
-                                   th:id="${'nombre' + i}"
-                                   name="nombre"
+                                   th:id="${'name' + i}"
+                                   name="name"
                                    class="form-control"
                                    placeholder="Ej: Amador"
                                    minlength="2"
@@ -88,12 +88,12 @@
                         </div>
 
                         <div class="form-group">
-                            <label th:for="${'apellidos' + i}">
+                            <label th:for="${'surname' + i}">
                                 <strong>Apellidos</strong>
                             </label>
                             <input type="text"
-                                   th:id="${'apellidos' + i}"
-                                   name="apellidos"
+                                   th:id="${'surname' + i}"
+                                   name="surname"
                                    class="form-control"
                                    placeholder="Ej: Rivas"
                                    minlength="3"
@@ -105,12 +105,12 @@
                         </div>
 
                         <div class="form-group">
-                            <label th:for="${'fechaNacimiento' + i}">
+                            <label th:for="${'birthDate' + i}">
                                 <strong>Fecha de nacimiento</strong>
                             </label>
                             <input type="date"
-                                   th:id="${'fechaNacimiento' + i}"
-                                   name="fechaNacimiento"
+                                   th:id="${'birthDate' + i}"
+                                   name="birthDate"
                                    class="form-control"
                                    required
                             />

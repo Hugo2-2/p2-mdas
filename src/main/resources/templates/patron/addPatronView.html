@@ -36,15 +36,15 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="nombre" class="form-label">Nombre:</label>
-                        <input type="text" id="nombre" th:field="*{nombre}" class="form-control" required>
+                        <label for="name" class="form-label">Nombre:</label>
+                        <input type="text" id="name" th:field="*{name}" class="form-control" required>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="apellidos" class="form-label">Apellidos:</label>
-                        <input type="text" id="apellidos" th:field="*{apellidos}" class="form-control" required>
+                        <label for="surname" class="form-label">Apellidos:</label>
+                        <input type="text" id="surname" th:field="*{surname}" class="form-control" required>
                     </div>
                 </div>
             </div>
@@ -52,16 +52,16 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="dni" class="form-label">DNI:</label>
-                        <input type="text" id="dni" th:field="*{dni}" class="form-control" minlength="9" maxlength="9" required>
+                        <label for="nationalId" class="form-label">DNI:</label>
+                        <input type="text" id="nationalId" th:field="*{nationalId}" class="form-control" minlength="9" maxlength="9" required>
                         <div class="form-text">Formato: 8 dígitos y 1 letra (ej: 12345678A)</div>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento:</label>
-                        <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}" class="form-control" required>
+                        <label for="birthDate" class="form-label">Fecha de Nacimiento:</label>
+                        <input type="date" id="birthDate" th:field="*{birthDate}" class="form-control" required>
                     </div>
                 </div>
             </div>
@@ -69,8 +69,8 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="fechaExpedicionTitulo" class="form-label">Fecha de Expedición del Título:</label>
-                        <input type="date" id="fechaExpedicionTitulo" th:field="*{fechaExpedicionTitulo}" class="form-control" required>
+                        <label for="titleIssueDate" class="form-label">Fecha de Expedición del Título:</label>
+                        <input type="date" id="titleIssueDate" th:field="*{titleIssueDate}" class="form-control" required>
                     </div>
                 </div>
             </div>

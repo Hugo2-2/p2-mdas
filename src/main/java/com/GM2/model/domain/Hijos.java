@@ -12,34 +12,34 @@ import java.time.LocalDate;
  * @version 1.0
  */
 public class Hijos {
-    private String dni;
-    private String nombre;
-    private String apellidos;
-    private LocalDate fechaNacimiento;
-    private int id_inscripcion;
+    private String nationalId;
+    private String name;
+    private String surname;
+    private LocalDate birthDate;
+    private int registrationId;
 
     /**
      * Constructor completo para crear un registro de hijo con todos sus datos.
      *
-     * @param dni DNI del hijo.
-     * @param nombre Nombre del hijo.
-     * @param apellidos Apellidos del hijo.
-     * @param fechaNacimiento Fecha de nacimiento del hijo.
-     * @param id_inscripcion ID de la inscripción a la que pertenece el hijo.
+     * @param nationalId DNI del hijo.
+     * @param name Nombre del hijo.
+     * @param surname Apellidos del hijo.
+     * @param birthDate Fecha de nacimiento del hijo.
+     * @param registrationId ID de la inscripción a la que pertenece el hijo.
      */
-    public Hijos(String dni, String nombre, String apellidos, LocalDate fechaNacimiento, int id_inscripcion) {
-        this.dni = dni;
-        this.nombre = nombre;
-        this.apellidos = apellidos;
-        this.fechaNacimiento = fechaNacimiento;
-        this.id_inscripcion = id_inscripcion;
+    public Hijos(String nationalId, String name, String surname, LocalDate birthDate, int registrationId) {
+        this.nationalId = nationalId;
+        this.name = name;
+        this.surname = surname;
+        this.birthDate = birthDate;
+        this.registrationId = registrationId;
     }
 
-    public Hijos(String dni, String nombre, String apellidos, LocalDate fechaNacimiento) {
-        this.dni = dni;
-        this.nombre = nombre;
-        this.apellidos = apellidos;
-        this.fechaNacimiento = fechaNacimiento;
+    public Hijos(String nationalId, String name, String surname, LocalDate birthDate) {
+        this.nationalId = nationalId;
+        this.name = name;
+        this.surname = surname;
+        this.birthDate = birthDate;
     }
 
     /**
@@ -52,54 +52,54 @@ public class Hijos {
 
     // Getters y Setters
 
-    public String getDni() {
-        return dni;
+    public String getNationalId() {
+        return nationalId;
     }
 
-    public void setDni(String dni) {
-        this.dni = dni;
+    public void setNationalId(String nationalId) {
+        this.nationalId = nationalId;
     }
 
-    public int getId_inscripcion() {
-        return id_inscripcion;
+    public int getRegistrationId() {
+        return registrationId;
     }
 
-    public void setId_inscripcion(int id_inscripcion) {
-        this.id_inscripcion = id_inscripcion;
+    public void setRegistrationId(int registrationId) {
+        this.registrationId = registrationId;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getName() {
+        return name;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getApellidos() {
-        return apellidos;
+    public String getSurname() {
+        return surname;
     }
 
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
-    public LocalDate getFechaNacimiento() {
-        return fechaNacimiento;
+    public LocalDate getBirthDate() {
+        return birthDate;
     }
 
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
     @Override
     public String toString() {
         return "Hijos{" +
-                "dni='" + dni + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", apellidos='" + apellidos + '\'' +
-                ", fechaNacimiento=" + fechaNacimiento +
-                ", id_inscripcion=" + id_inscripcion +
+                "dni='" + nationalId + '\'' +
+                ", nombre='" + name + '\'' +
+                ", apellidos='" + surname + '\'' +
+                ", fechaNacimiento=" + birthDate +
+                ", id_inscripcion=" + registrationId +
                 '}';
     }
 }

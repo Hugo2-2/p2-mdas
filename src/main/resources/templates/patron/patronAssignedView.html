@@ -29,7 +29,7 @@
                         <h2 class="titulo-principal">Confirmar Reemplazo</h2>
                         <div class="alert alert-warning">
                             <p class="mb-2">
-                                La embarcación <strong th:text="${matricula}"></strong> ya tiene al patrón
+                                La embarcación <strong th:text="${registration}"></strong> ya tiene al patrón
                                 <strong th:text="${dniPatronAntiguo}"></strong> asignado.
                             </p>
                             <p class="mb-0">
@@ -39,7 +39,7 @@
                     </div>
 
                     <form method="POST" th:action="@{/api/embarcaciones/confirmarReemplazoPatron}">
-                        <input type="hidden" name="matricula" th:value="${matricula}" />
+                        <input type="hidden" name="registration" th:value="${registration}" />
                         <input type="hidden" name="dniPatronNuevo" th:value="${dniPatronNuevo}" />
 
                         <div class="d-flex justify-content-center gap-2">

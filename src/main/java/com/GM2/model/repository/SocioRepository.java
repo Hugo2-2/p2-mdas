@@ -146,21 +146,21 @@ public class SocioRepository extends AbstractRepository {
 
         if( socio == null ) return "No se ha ingresado el socio";
 
-        if( socio.getFechaNacimiento().getYear() > 2007 && socio.getEsTitular() )
+        if( socio.getBirthDate().getYear() > 2007 && socio.getIsTitular() )
             return "Debes de ser mayor de edad para realizar esta inscripcion";
 
         try {
             String query = sqlQueries.getProperty("insert-addSocio");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
-                   socio.getNombre(),
-                   socio.getApellidos(),
-                   socio.getDni(),
-                   socio.getFechaNacimiento(),
-                   socio.getDireccion(),
-                   socio.getFechaInscripcion(),
-                   socio.getEsTitular(),
-                   socio.getTieneLicenciaPatron()
+                   socio.getName(),
+                   socio.getSurname(),
+                   socio.getNationalId(),
+                   socio.getBirthDate(),
+                   socio.getAddress(),
+                   socio.getRegistrationDate(),
+                   socio.getIsTitular(),
+                   socio.getHasSkipperLicense()
                 );
 
                 if (result > 0)
@@ -176,9 +176,9 @@ public class SocioRepository extends AbstractRepository {
         }
 
         // Creamos su inscripcion simple que posteriormente podrá se ampliada
-        if(socio.getEsTitular() && socio.getEsTitular() != null) {
+        if(socio.getIsTitular() && socio.getIsTitular() != null) {
 
-            Inscripcion inscripcion = new Inscripcion(socio.getDni());
+            Inscripcion inscripcion = new Inscripcion(socio.getNationalId());
 
             boolean resInscripcion = inscripcionRepository.addInscripcion(inscripcion);
 
@@ -210,12 +210,12 @@ public class SocioRepository extends AbstractRepository {
             return "No se ha ingresado el socio";
         }
 
-        if(socio.getDni() == null || socio.getDni().isEmpty()) {
+        if(socio.getNationalId() == null || socio.getNationalId().isEmpty()) {
             return "El DNI es obligatorio para actualizar el socio";
         }
 
         // Verificar que el socio existe
-        Socio socioExistente = findSocioByDNI(socio.getDni());
+        Socio socioExistente = findSocioByDNI(socio.getNationalId());
         if(socioExistente == null) {
             return "No se puede actualizar, el socio no existe";
         }
@@ -224,14 +224,14 @@ public class SocioRepository extends AbstractRepository {
             String query = sqlQueries.getProperty("update-socio");
             if(query != null) {
                 int result = jdbcTemplate.update(query,
-                    socio.getNombre(),
-                    socio.getApellidos(),
-                    socio.getFechaNacimiento(),
-                    socio.getDireccion(),
-                    socio.getFechaInscripcion(),
-                    socio.getEsTitular(),
-                    socio.getTieneLicenciaPatron(),
-                    socio.getDni()
+                    socio.getName(),
+                    socio.getSurname(),
+                    socio.getBirthDate(),
+                    socio.getAddress(),
+                    socio.getRegistrationDate(),
+                    socio.getIsTitular(),
+                    socio.getHasSkipperLicense(),
+                    socio.getNationalId()
                 );
 
                 if(result > 0) {

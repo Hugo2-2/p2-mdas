@@ -84,15 +84,15 @@
                                 
                                 <!-- Estado -->
                                 <td>
-                                    <span th:if="${alquiler.fechainicio.isEqual(T(java.time.LocalDate).now())}" 
+                                    <span th:if="${alquiler.startDate.isEqual(T(java.time.LocalDate).now())}" 
                                           class="badge bg-success">
                                         Comienza hoy
                                     </span>
-                                    <span th:if="${alquiler.fechainicio.isAfter(T(java.time.LocalDate).now())}" 
+                                    <span th:if="${alquiler.startDate.isAfter(T(java.time.LocalDate).now())}" 
                                           class="badge bg-info">
-                                        En <span th:text="${alquiler.fechainicio.toEpochDay() - T(java.time.LocalDate).now().toEpochDay()}"></span> días
+                                        En <span th:text="${alquiler.startDate.toEpochDay() - T(java.time.LocalDate).now().toEpochDay()}"></span> días
                                     </span>
-                                    <span th:if="${alquiler.fechainicio.isAfter(T(java.time.LocalDate).now()) and (alquiler.fechainicio.toEpochDay() - T(java.time.LocalDate).now().toEpochDay() <= 7)}" 
+                                    <span th:if="${alquiler.startDate.isAfter(T(java.time.LocalDate).now()) and (alquiler.startDate.toEpochDay() - T(java.time.LocalDate).now().toEpochDay() <= 7)}" 
                                           class="badge bg-warning">
                                         Próximo
                                     </span>
@@ -100,18 +100,18 @@
                                 
                                 <!-- Socio -->
                                 <td>
-                                    <span class="small" th:text="${alquiler.usuario_dni}">12345678A</span>
+                                    <span class="small" th:text="${alquiler.userNationalId}">12345678A</span>
                                 </td>
                                 
                                 <!-- Embarcación -->
                                 <td>
-                                    <span class="badge badge-dark" th:text="${alquiler.matricula_embarcacion}">ABC123</span>
+                                    <span class="badge badge-dark" th:text="${alquiler.boatRegistration}">ABC123</span>
                                 </td>
                                 
                                 <!-- Plazas -->
                                 <td>
                                     <span class="badge badge-warning" 
-                                          th:text="${alquiler.plazas} + '/' + ${alquiler.acompanantes.size() + 1}">
+                                          th:text="${alquiler.seats} + '/' + ${alquiler.acompanantes.size() + 1}">
                                         4/3
                                     </span>
                                 </td>
@@ -128,7 +128,7 @@
                                             <span class="text-muted small">Sin acompañantes</span>
                                         </div>
                                         <div th:each="acomp : ${alquiler.acompanantes}">
-                                            <span class="badge badge-light small mb-1" th:text="${acomp.dni}">87654321B</span>
+                                            <span class="badge badge-light small mb-1" th:text="${acomp.nationalId}">87654321B</span>
                                         </div>
                                     </div>
                                 </td>
@@ -141,8 +141,8 @@
                                            title="Ver detalles">
                                             👁️
                                         </a>
-                                        <a th:if="${alquiler.plazas > 1}"
-                                           th:href="@{/api/acompanantes/{alquilerId}/{plazas}(alquilerId=${alquiler.id}, plazas=${alquiler.plazas})}" 
+                                        <a th:if="${alquiler.seats > 1}"
+                                           th:href="@{/api/acompanantes/{alquilerId}/{seats}(alquilerId=${alquiler.id}, plazas=${alquiler.seats})}" 
                                            class="btn" 
                                            title="Gestionar acompañantes">
                                             👥

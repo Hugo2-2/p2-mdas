@@ -101,8 +101,8 @@ public class AlquilerRestController {
 
             if (todosAlquileres != null) {
                 for (Alquiler alquiler : todosAlquileres) {
-                    if (alquiler.getFechainicio().isAfter(fecha) || 
-                        alquiler.getFechainicio().isEqual(fecha)) {
+                    if (alquiler.getStartDate().isAfter(fecha) || 
+                        alquiler.getStartDate().isEqual(fecha)) {
                         alquileresFuturos.add(alquiler);
                     }
                 }
@@ -175,9 +175,9 @@ public class AlquilerRestController {
                 // Verificar conflictos con alquileres existentes
                 if (todosAlquileres != null) {
                     for (Alquiler alquiler : todosAlquileres) {
-                        if (alquiler.getMatricula_embarcacion().equals(embarcacion.getMatricula())) {
+                        if (alquiler.getBoatRegistration().equals(embarcacion.getRegistration())) {
                             // Verificar superposición de fechas
-                            if (!(fechaFin.isBefore(alquiler.getFechainicio()) || fechaInicio.isAfter(alquiler.getFechafin()))) {
+                            if (!(fechaFin.isBefore(alquiler.getStartDate()) || fechaInicio.isAfter(alquiler.getEndDate()))) {
                                 disponible = false;
                                 break;
                             }
@@ -189,9 +189,9 @@ public class AlquilerRestController {
                     // Verificar conflictos con reservas existentes
                     if (todosReservas != null) {
                         for (Reserva reserva : todosReservas) {
-                            if (reserva.getMatricula_embarcacion().equals(embarcacion.getMatricula())) {
+                            if (reserva.getBoatRegistration().equals(embarcacion.getRegistration())) {
                                 // Verificar superposición de fechas
-                                if (!(fechaFin.isBefore(reserva.getFecha()) || fechaInicio.isAfter(reserva.getFecha()))) {
+                                if (!(fechaFin.isBefore(reserva.getDate()) || fechaInicio.isAfter(reserva.getDate()))) {
                                     disponible = false;
                                     break;
                                 }
@@ -229,21 +229,21 @@ public class AlquilerRestController {
         try {
 
             //Verificar datos del alquiler no nulos
-            if (nuevoAlquiler.getFechainicio() == null || nuevoAlquiler.getFechafin() == null ||
-                nuevoAlquiler.getUsuario_dni() == null || nuevoAlquiler.getUsuario_dni().trim().isEmpty() ||
-                nuevoAlquiler.getMatricula_embarcacion() == null || nuevoAlquiler.getMatricula_embarcacion().trim().isEmpty()) {
+            if (nuevoAlquiler.getStartDate() == null || nuevoAlquiler.getEndDate() == null ||
+                nuevoAlquiler.getUserNationalId() == null || nuevoAlquiler.getUserNationalId().trim().isEmpty() ||
+                nuevoAlquiler.getBoatRegistration() == null || nuevoAlquiler.getBoatRegistration().trim().isEmpty()) {
                 
                     return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
              }
 
 
             // Validaciones básicas
-            if (nuevoAlquiler.getFechainicio().isAfter(nuevoAlquiler.getFechafin())) {
+            if (nuevoAlquiler.getStartDate().isAfter(nuevoAlquiler.getEndDate())) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
-            LocalDate inicio = nuevoAlquiler.getFechainicio();
-            LocalDate fin = nuevoAlquiler.getFechafin();
+            LocalDate inicio = nuevoAlquiler.getStartDate();
+            LocalDate fin = nuevoAlquiler.getEndDate();
             // Clean Code - Reglas de nombrado: variable con unidad (dias -> totalDays)
             long totalDays = ChronoUnit.DAYS.between(inicio, fin) + 1;
             
@@ -261,19 +261,19 @@ public class AlquilerRestController {
             }
 
 
-            Socio socioAlquiler = socioRepository.findSocioByDNI(nuevoAlquiler.getUsuario_dni());
+            Socio socioAlquiler = socioRepository.findSocioByDNI(nuevoAlquiler.getUserNationalId());
             // Verificar que el socio existe
             if ( socioAlquiler == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
             //Verificar que el socio tenga título de patrón
-            if (!socioAlquiler.getTieneLicenciaPatron() ){
+            if (!socioAlquiler.getHasSkipperLicense() ){
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
             // Verificar que la embarcación existe
-            Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(nuevoAlquiler.getMatricula_embarcacion());
+            Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(nuevoAlquiler.getBoatRegistration());
             if (embarcacion == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
@@ -283,18 +283,18 @@ public class AlquilerRestController {
             List<Reserva> reservas = reservaRepository.findAllReservas();
 
             for (Alquiler alquiler : alquileres) {
-                if (alquiler.getMatricula_embarcacion().equals(nuevoAlquiler.getMatricula_embarcacion())) {
+                if (alquiler.getBoatRegistration().equals(nuevoAlquiler.getBoatRegistration())) {
                     // Verificar superposición de fechas
-                    if (!(nuevoAlquiler.getFechafin().isBefore(alquiler.getFechainicio()) || nuevoAlquiler.getFechainicio().isAfter(alquiler.getFechafin()))) {
+                    if (!(nuevoAlquiler.getEndDate().isBefore(alquiler.getStartDate()) || nuevoAlquiler.getStartDate().isAfter(alquiler.getEndDate()))) {
                         return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
                     }
                 }
             }
 
             for (Reserva reserva : reservas) {
-                if (reserva.getMatricula_embarcacion().equals(nuevoAlquiler.getMatricula_embarcacion())) {
+                if (reserva.getBoatRegistration().equals(nuevoAlquiler.getBoatRegistration())) {
                     // Verificar superposición de fechas
-                    if (!(nuevoAlquiler.getFechafin().isBefore(reserva.getFecha()) || nuevoAlquiler.getFechainicio().isAfter(reserva.getFecha()))) {
+                    if (!(nuevoAlquiler.getEndDate().isBefore(reserva.getDate()) || nuevoAlquiler.getStartDate().isAfter(reserva.getDate()))) {
                         return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
                     }
                 }
@@ -304,8 +304,8 @@ public class AlquilerRestController {
 
             // Clean Code - Reglas de nombrado: variable con unidad (precio -> priceInEuros )
             double priceInEuros = 20.0 * totalDays;
-            nuevoAlquiler.setPrecio(priceInEuros);
-            nuevoAlquiler.setPlazas(1);
+            nuevoAlquiler.setPrice(priceInEuros);
+            nuevoAlquiler.setSeats(1);
 
             // Crear el alquiler
             boolean exito = alquilerRepository.addAlquiler(nuevoAlquiler);
@@ -339,7 +339,7 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
-            if (alquiler.getFechainicio().isBefore(LocalDate.now())) {
+            if (alquiler.getStartDate().isBefore(LocalDate.now())) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
@@ -350,34 +350,34 @@ public class AlquilerRestController {
             }
 
             // Verificar que no es el socio titular
-            if (dniSocio.equals(alquiler.getUsuario_dni())) {
+            if (dniSocio.equals(alquiler.getUserNationalId())) {
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT);
             }
 
             // Verificar que el socio no está ya vinculado
             List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
             for (Acompanante acompanante : acompanantes) {
-                if (acompanante.getDni().equals(dniSocio)) {
+                if (acompanante.getNationalId().equals(dniSocio)) {
                     return new ResponseEntity<>(null, HttpStatus.CONFLICT);
                 }
             }
 
             // Obtener embarcación para verificar límite de plazas
-            Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(alquiler.getMatricula_embarcacion());
+            Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(alquiler.getBoatRegistration());
             if (embarcacion == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
             // Verificar que hay plazas disponibles en la embarcación
             int totalPersonas = acompanantes.size() + 1; // +1 por el titular
-            if (totalPersonas >= embarcacion.getPlazas()) {
+            if (totalPersonas >= embarcacion.getSeats()) {
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT);
             }
 
             // Añadir acompañante
             Acompanante acompanante = new Acompanante();
-            acompanante.setDni(dniSocio);
-            acompanante.setId_alquiler(id);
+            acompanante.setNationalId(dniSocio);
+            acompanante.setRentalId(id);
 
             boolean exito = acompanantesRepository.addAcompanante(acompanante);
             if (!exito) {
@@ -386,15 +386,15 @@ public class AlquilerRestController {
 
             // Actualizar número de plazas (1 titular + acompañantes)
             int nuevasPlazas = totalPersonas + 1; // Añadimos el nuevo acompañante
-            alquiler.setPlazas(nuevasPlazas);
+            alquiler.setSeats(nuevasPlazas);
             
             // Recalcular precio
 
             // Clean Code - Reglas de nombrado: variable con unidad (dias -> totalDays)
-            long totalDays = ChronoUnit.DAYS.between(alquiler.getFechainicio(), alquiler.getFechafin()) + 1;
+            long totalDays = ChronoUnit.DAYS.between(alquiler.getStartDate(), alquiler.getEndDate()) + 1;
             // Clean Code - Reglas de nombrado: variable con unidad (nuveoPrecio -> newPriceInEuros )
-            double newPriceInEuros = 20.0 * alquiler.getPlazas() * totalDays;
-            alquiler.setPrecio(newPriceInEuros);
+            double newPriceInEuros = 20.0 * alquiler.getSeats() * totalDays;
+            alquiler.setPrice(newPriceInEuros);
 
             boolean actualizado = alquilerRepository.updateAlquiler(alquiler);
             if (!actualizado) {
@@ -433,12 +433,12 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
-            if (alquiler.getFechainicio().isBefore(LocalDate.now())) {
+            if (alquiler.getStartDate().isBefore(LocalDate.now())) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
             // Verificar que no se intenta eliminar al titular
-            if (dniSocio.equals(alquiler.getUsuario_dni())) {
+            if (dniSocio.equals(alquiler.getUserNationalId())) {
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT);
             }
 
@@ -446,7 +446,7 @@ public class AlquilerRestController {
             // Verificar que el socio está vinculado como acompañante
             List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
             for (Acompanante acompanante : acompanantes) {
-                if (acompanante.getDni().equals(dniSocio)) {
+                if (acompanante.getNationalId().equals(dniSocio)) {
                     encontrado = true;
                     break;
                 }
@@ -465,13 +465,13 @@ public class AlquilerRestController {
             // Obtener lista actualizada de acompañantes
             acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
             // Actualizar plazas (1 titular + acompañantes restantes)
-            alquiler.setPlazas(acompanantes.size() + 1);
+            alquiler.setSeats(acompanantes.size() + 1);
 
             // Recalcular precio
             // Clean Code - Reglas de nombrado: variable con unidad (dias -> totalDays)
-            long totalDays = ChronoUnit.DAYS.between(alquiler.getFechainicio(), alquiler.getFechafin()) + 1;
-            double nuevoPrecio = 20.0 * alquiler.getPlazas() * totalDays;
-            alquiler.setPrecio(nuevoPrecio);
+            long totalDays = ChronoUnit.DAYS.between(alquiler.getStartDate(), alquiler.getEndDate()) + 1;
+            double nuevoPrecio = 20.0 * alquiler.getSeats() * totalDays;
+            alquiler.setPrice(nuevoPrecio);
 
             boolean actualizado = alquilerRepository.updateAlquiler(alquiler);
             if (!actualizado) {
@@ -508,7 +508,7 @@ public class AlquilerRestController {
             }
 
             // Verificar que es futuro
-            if (alquiler.getFechainicio().isBefore(LocalDate.now())) {
+            if (alquiler.getStartDate().isBefore(LocalDate.now())) {
                 return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
             }
 

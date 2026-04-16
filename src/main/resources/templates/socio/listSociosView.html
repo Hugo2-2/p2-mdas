@@ -46,22 +46,22 @@
                     </thead>
                     <tbody>
                     <tr th:each="socio : ${socios}">
-                        <td th:text="${socio.dni}">12345678A</td>
-                        <td th:text="${socio.nombre}">Nombre Ejemplo</td>
-                        <td th:text="${socio.apellidos}">Apellidos Ejemplo</td>
+                        <td th:text="${socio.nationalId}">12345678A</td>
+                        <td th:text="${socio.name}">Nombre Ejemplo</td>
+                        <td th:text="${socio.surname}">Apellidos Ejemplo</td>
 
                         <td th:text="${#temporals.format(socio.fechaInscripcion, 'dd/MM/yyyy')}">01/01/2025</td>
 
                         <td>
-                            <span th:if="${socio.esTitular}" class="badge badge-primary">Sí</span>
-                            <span th:unless="${socio.esTitular}" class="badge bg-secondary">No</span>
+                            <span th:if="${socio.isTitular}" class="badge badge-primary">Sí</span>
+                            <span th:unless="${socio.isTitular}" class="badge bg-secondary">No</span>
                         </td>
                         <td>
-                            <span th:if="${socio.tieneLicenciaPatron}" class="badge badge-success">Sí</span>
-                            <span th:unless="${socio.tieneLicenciaPatron}" class="badge bg-secondary">No</span>
+                            <span th:if="${socio.hasSkipperLicense}" class="badge badge-success">Sí</span>
+                            <span th:unless="${socio.hasSkipperLicense}" class="badge bg-secondary">No</span>
                         </td>
 
-                        <td th:text="${socio.direccion}">Calle Falsa 123</td>
+                        <td th:text="${socio.address}">Calle Falsa 123</td>
                     </tr>
                     </tbody>
                 </table>

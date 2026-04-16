@@ -12,12 +12,12 @@ public class Reserva {
     // --- Atributos de la Reserva (corresponden a las columnas de la tabla de BD) ---
 
     private int id;
-    private LocalDate fecha;
-    private int plazas;
-    private double precio;
-    private String usuario_id;
-    private String matricula_embarcacion;
-    private String descripcion;
+    private LocalDate date;
+    private int seats;
+    private double price;
+    private String userId;
+    private String boatRegistration;
+    private String description;
 
     /**
      * Constructor vacío (necesario para frameworks como Spring y serialización JSON).
@@ -28,14 +28,14 @@ public class Reserva {
     /**
      * Constructor con todos los argumentos.
      */
-    public Reserva(int id, LocalDate fecha, int plazas, double precio, String usuario_id, String matricula_embarcacion, String descripcion) {
+    public Reserva(int id, LocalDate date, int seats, double price, String userId, String boatRegistration, String description) {
         this.id = id;
-        this.fecha = fecha;
-        this.plazas = plazas;
-        this.precio = precio;
-        this.usuario_id = usuario_id;
-        this.matricula_embarcacion = matricula_embarcacion;
-        this.descripcion = descripcion;
+        this.date = date;
+        this.seats = seats;
+        this.price = price;
+        this.userId = userId;
+        this.boatRegistration = boatRegistration;
+        this.description = description;
     }
 
     // --- Métodos Getters y Setters ---
@@ -48,51 +48,51 @@ public class Reserva {
         this.id = id;
     }
 
-    public LocalDate getFecha() {
-        return fecha;
+    public LocalDate getDate() {
+        return date;
     }
 
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
-    public int getPlazas() {
-        return plazas;
+    public int getSeats() {
+        return seats;
     }
 
-    public void setPlazas(int plazas) {
-        this.plazas = plazas;
+    public void setSeats(int seats) {
+        this.seats = seats;
     }
 
-    public double getPrecio() {
-        return precio;
+    public double getPrice() {
+        return price;
     }
 
-    public void setPrecio(double precio) {
-        this.precio = precio;
+    public void setPrice(double price) {
+        this.price = price;
     }
 
-    public String getUsuario_id() {
-        return usuario_id;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUsuario_id(String usuario_id) {
-        this.usuario_id = usuario_id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getMatricula_embarcacion() {
-        return matricula_embarcacion;
+    public String getBoatRegistration() {
+        return boatRegistration;
     }
 
-    public void setMatricula_embarcacion(String matricula_embarcacion) {
-        this.matricula_embarcacion = matricula_embarcacion;
+    public void setBoatRegistration(String boatRegistration) {
+        this.boatRegistration = boatRegistration;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

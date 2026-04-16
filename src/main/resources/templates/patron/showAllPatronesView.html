@@ -41,13 +41,13 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="patron : ${listaPatrones}">
+                        <tr th:each="isSkipper : ${listaPatrones}">
                             <td>
-                                <strong th:text="${patron.nombre}"></strong>
+                                <strong th:text="${isSkipper.name}"></strong>
                             </td>
-                            <td th:text="${patron.apellidos}"></td>
+                            <td th:text="${isSkipper.surname}"></td>
                             <td>
-                                <span class="badge badge-primary" th:text="${patron.dni}"></span>
+                                <span class="badge badge-primary" th:text="${isSkipper.nationalId}"></span>
                             </td>
                             <!-- Usamos #temporals para formatear las fechas LocalDate -->
                             <td th:text="${#temporals.format(patron.fechaNacimiento, 'dd-MM-yyyy')}"></td>

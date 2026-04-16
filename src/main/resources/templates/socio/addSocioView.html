@@ -47,14 +47,14 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="nombre" class="form-label">Nombre</label>
-                        <input type="text" id="nombre" th:field="*{nombre}" class="form-control" required />
+                        <label for="name" class="form-label">Nombre</label>
+                        <input type="text" id="name" th:field="*{name}" class="form-control" required />
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="apellidos" class="form-label">Apellidos</label>
-                        <input type="text" id="apellidos" th:field="*{apellidos}" class="form-control" required />
+                        <label for="surname" class="form-label">Apellidos</label>
+                        <input type="text" id="surname" th:field="*{surname}" class="form-control" required />
                     </div>
                 </div>
             </div>
@@ -62,15 +62,15 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="dni" class="form-label">DNI</label>
-                        <input type="text" id="dni" th:field="*{dni}" class="form-control" minlength="9" maxlength="9" required />
+                        <label for="nationalId" class="form-label">DNI</label>
+                        <input type="text" id="nationalId" th:field="*{nationalId}" class="form-control" minlength="9" maxlength="9" required />
                         <div class="form-text">Formato: 8 dígitos y 1 letra (ej: 12345678A)</div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
-                        <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}" class="form-control" required />
+                        <label for="birthDate" class="form-label">Fecha de nacimiento</label>
+                        <input type="date" id="birthDate" th:field="*{birthDate}" class="form-control" required />
                     </div>
                 </div>
             </div>
@@ -78,15 +78,15 @@
             <div class="row mb-3">
                 <div class="col-12">
                     <div class="form-group">
-                        <label for="direccion" class="form-label">Dirección</label>
-                        <input type="text" id="direccion" th:field="*{direccion}" class="form-control" required />
+                        <label for="address" class="form-label">Dirección</label>
+                        <input type="text" id="address" th:field="*{address}" class="form-control" required />
                     </div>
                 </div>
             </div>
 
             <div class="mb-3">
-                <input type="checkbox" id="esTitular" th:field="*{esTitular}" class="checkbox" />
-                <label for="esTitular" class="form-label">Crear inscripcion (Seras el titular de la inscripción)</label>
+                <input type="checkbox" id="isTitular" th:field="*{isTitular}" class="checkbox" />
+                <label for="isTitular" class="form-label">Crear inscripcion (Seras el titular de la inscripción)</label>
 
                 <div class="opcion-familiar mt-2" style="padding-left: 20px;">
                     <input type="checkbox" id="ampliarInscripcion" name="ampliarInscripcion" value="true" class="checkbox" />
@@ -96,8 +96,8 @@
 
             <div class="form-group mb-3">
                 <div class="checkbox-group">
-                    <input type="checkbox" id="tieneLicenciaPatron" th:field="*{tieneLicenciaPatron}" class="me-2" />
-                    <label for="tieneLicenciaPatron" class="form-label">Licencia de patrón</label>
+                    <input type="checkbox" id="hasSkipperLicense" th:field="*{hasSkipperLicense}" class="me-2" />
+                    <label for="hasSkipperLicense" class="form-label">Licencia de patrón</label>
                 </div>
             </div>
 

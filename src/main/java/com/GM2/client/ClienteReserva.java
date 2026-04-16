@@ -117,11 +117,11 @@ public class ClienteReserva {
         System.out.println("\n********** [RESERVAS] PRUEBAS POST **********");
 
         Reserva nuevaReserva = new Reserva();
-        nuevaReserva.setFecha(LocalDate.of(2026, 3, 22));
-        nuevaReserva.setPlazas(4);
-        nuevaReserva.setUsuario_id("11111111A");
-        nuevaReserva.setMatricula_embarcacion("XXX111");
-        nuevaReserva.setDescripcion("Viaje por el Atlántico");
+        nuevaReserva.setDate(LocalDate.of(2026, 3, 22));
+        nuevaReserva.setSeats(4);
+        nuevaReserva.setUserId("11111111A");
+        nuevaReserva.setBoatRegistration("XXX111");
+        nuevaReserva.setDescription("Viaje por el Atlántico");
 
         System.out.println("==== REQUEST 4: POST reserva (valid) ====");
         try {
@@ -141,10 +141,10 @@ public class ClienteReserva {
         }
 
         Reserva reservaInvalida = new Reserva();
-        reservaInvalida.setFecha(LocalDate.of(2026, 3, 23));
-        reservaInvalida.setPlazas(50);
-        reservaInvalida.setUsuario_id("11111111A");
-        reservaInvalida.setMatricula_embarcacion("XXX111");
+        reservaInvalida.setDate(LocalDate.of(2026, 3, 23));
+        reservaInvalida.setSeats(50);
+        reservaInvalida.setUserId("11111111A");
+        reservaInvalida.setBoatRegistration("XXX111");
 
         System.out.println();
         System.out.println("==== REQUEST 5: POST reserva (invalid - plazas) ====");
@@ -155,10 +155,10 @@ public class ClienteReserva {
         }
 
         Reserva reservaSocioNoExiste = new Reserva();
-        reservaSocioNoExiste.setFecha(LocalDate.of(2026, 3, 24));
-        reservaSocioNoExiste.setPlazas(2);
-        reservaSocioNoExiste.setUsuario_id("99999999Z");
-        reservaSocioNoExiste.setMatricula_embarcacion("XXX111");
+        reservaSocioNoExiste.setDate(LocalDate.of(2026, 3, 24));
+        reservaSocioNoExiste.setSeats(2);
+        reservaSocioNoExiste.setUserId("99999999Z");
+        reservaSocioNoExiste.setBoatRegistration("XXX111");
 
         System.out.println();
         System.out.println("==== REQUEST 6: POST reserva (invalid - socio no existe) ====");
@@ -182,7 +182,7 @@ public class ClienteReserva {
 
         System.out.println("==== REQUEST 7: PATCH modificar fecha ====");
         Reserva patchFecha = new Reserva();
-        patchFecha.setFecha(LocalDate.of(2026, 4, 1));
+        patchFecha.setDate(LocalDate.of(2026, 4, 1));
 
         try {
             Reserva actualizada = rest.patchForObject(
@@ -199,8 +199,8 @@ public class ClienteReserva {
         System.out.println();
         System.out.println("==== REQUEST 8: PATCH modificar descripción y plazas ====");
         Reserva patchDetalles = new Reserva();
-        patchDetalles.setDescripcion("Viaje por el Mediterráneo");
-        patchDetalles.setPlazas(2);
+        patchDetalles.setDescription("Viaje por el Mediterráneo");
+        patchDetalles.setSeats(2);
 
         try {
             Reserva actualizada = rest.patchForObject(
@@ -258,12 +258,12 @@ public class ClienteReserva {
         if (r == null) return;
         System.out.println("Reserva {");
         System.out.println("  ID: " + r.getId());
-        System.out.println("  Fecha: " + r.getFecha());
-        System.out.println("  Plazas: " + r.getPlazas());
-        System.out.println("  Precio: " + r.getPrecio() + "€");
-        System.out.println("  DNI Socio: " + r.getUsuario_id());
-        System.out.println("  Matrícula: " + r.getMatricula_embarcacion());
-        System.out.println("  Descripción: " + (r.getDescripcion() != null ? r.getDescripcion() : "N/A"));
+        System.out.println("  Fecha: " + r.getDate());
+        System.out.println("  Plazas: " + r.getSeats());
+        System.out.println("  Precio: " + r.getPrice() + "€");
+        System.out.println("  DNI Socio: " + r.getUserId());
+        System.out.println("  Matrícula: " + r.getBoatRegistration());
+        System.out.println("  Descripción: " + (r.getDescription() != null ? r.getDescription() : "N/A"));
         System.out.println("}");
     }
 }

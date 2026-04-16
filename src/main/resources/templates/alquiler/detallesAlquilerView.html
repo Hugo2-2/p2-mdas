@@ -30,19 +30,19 @@
                             </div>
                             <div class="col-md-6 text-end">
                                 <!-- Estado del alquiler -->
-                                <span th:if="${alquiler.fechainicio.isAfter(T(java.time.LocalDate).now())}" 
+                                <span th:if="${alquiler.startDate.isAfter(T(java.time.LocalDate).now())}" 
                                       class="badge bg-warning estado-badge">
                                     ⏳ Programado
                                 </span>
-                                <span th:if="${alquiler.fechainicio.isEqual(T(java.time.LocalDate).now())}" 
+                                <span th:if="${alquiler.startDate.isEqual(T(java.time.LocalDate).now())}" 
                                       class="badge bg-success estado-badge">
                                     ✅ Comienza hoy
                                 </span>
-                                <span th:if="${alquiler.fechafin.isBefore(T(java.time.LocalDate).now())}" 
+                                <span th:if="${alquiler.endDate.isBefore(T(java.time.LocalDate).now())}" 
                                       class="badge bg-secondary estado-badge">
                                     ⌛ Finalizado
                                 </span>
-                                <span th:if="${alquiler.fechainicio.isBefore(T(java.time.LocalDate).now()) and alquiler.fechafin.isAfter(T(java.time.LocalDate).now())}" 
+                                <span th:if="${alquiler.startDate.isBefore(T(java.time.LocalDate).now()) and alquiler.endDate.isAfter(T(java.time.LocalDate).now())}" 
                                       class="badge bg-primary estado-badge">
                                     🚀 En curso
                                 </span>
@@ -84,7 +84,7 @@
                             <div class="form-group">
                                 <strong>Duración:</strong><br>
                                 <span class="badge badge-primary" 
-                                      th:text="${(alquiler.fechafin.toEpochDay() - alquiler.fechainicio.toEpochDay() + 1) + ' días'}">
+                                      th:text="${(alquiler.endDate.toEpochDay() - alquiler.startDate.toEpochDay() + 1) + ' días'}">
                                 </span>
                             </div>
                         </div>
@@ -99,7 +99,7 @@
                     <div class="card-body">
                         <div class="form-group">
                             <strong>DNI del Socio:</strong><br>
-                            <code th:text="${alquiler.usuario_dni}"></code>
+                            <code th:text="${alquiler.userNationalId}"></code>
                         </div>
                     </div>
                 </div>
@@ -112,7 +112,7 @@
                     <div class="card-body">
                         <div class="form-group">
                             <strong>Matrícula:</strong><br>
-                            <span class="badge badge-dark" th:text="${alquiler.matricula_embarcacion}"></span>
+                            <span class="badge badge-dark" th:text="${alquiler.boatRegistration}"></span>
                         </div>
                     </div>
                 </div>
@@ -132,15 +132,15 @@
                                 <small class="text-muted">Precio Total</small>
                             </div>
                             <div class="col-6">
-                                <h3 th:text="${alquiler.plazas}"></h3>
+                                <h3 th:text="${alquiler.seats}"></h3>
                                 <small class="text-muted">Plazas Totales</small>
                             </div>
                         </div>
                         <div class="mt-3">
                             <small class="text-muted">
                                 <strong>Cálculo:</strong> 
-                                20€ × <span th:text="${alquiler.plazas}"></span> plazas × 
-                                <span th:text="${(alquiler.fechafin.toEpochDay() - alquiler.fechainicio.toEpochDay() + 1)}"></span> días
+                                20€ × <span th:text="${alquiler.seats}"></span> plazas × 
+                                <span th:text="${(alquiler.endDate.toEpochDay() - alquiler.startDate.toEpochDay() + 1)}"></span> días
                             </small>
                         </div>
                     </div>
@@ -152,34 +152,34 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <span>👥 Acompañantes</span>
                             <span class="badge badge-light"
-                                th:if="${alquiler.plazas > 1}"
-                                th:text="|${alquiler.acompanantes.size()} de ${alquiler.plazas - 1} plazas|">
+                                th:if="${alquiler.seats > 1}"
+                                th:text="|${alquiler.acompanantes.size()} de ${alquiler.seats - 1} plazas|">
                             </span>
                         </div>
                     </div>
                     <div class="card-body">
                         <div th:if="${alquiler.acompanantes.empty}">
                             <p class="text-muted text-center mb-0">
-                                <i th:if="${alquiler.plazas == 1}">No se permiten acompañantes (solo 1 plaza)</i>
-                                <i th:if="${alquiler.plazas > 1}">No hay acompañantes registrados</i>
+                                <i th:if="${alquiler.seats == 1}">No se permiten acompañantes (solo 1 plaza)</i>
+                                <i th:if="${alquiler.seats > 1}">No hay acompañantes registrados</i>
                             </p>
                         </div>
                         <div th:each="acomp : ${alquiler.acompanantes}" class="acompanante-item">
                             <strong>DNI:</strong> 
-                            <code th:text="${acomp.dni}"></code>
+                            <code th:text="${acomp.nationalId}"></code>
                         </div>
                         
                         <!-- Botón para gestionar acompañantes (solo si el alquiler es futuro y tiene más de 1 plaza) -->
-                        <div th:if="${(alquiler.fechainicio.isAfter(T(java.time.LocalDate).now()) or alquiler.fechainicio.isEqual(T(java.time.LocalDate).now())) and alquiler.plazas > 1}" 
+                        <div th:if="${(alquiler.startDate.isAfter(T(java.time.LocalDate).now()) or alquiler.startDate.isEqual(T(java.time.LocalDate).now())) and alquiler.seats > 1}" 
                             class="mt-3">
-                            <a th:href="@{/api/acompanantes/{alquilerId}/{plazas}(alquilerId=${alquiler.id}, plazas=${alquiler.plazas})}" 
+                            <a th:href="@{/api/acompanantes/{alquilerId}/{seats}(alquilerId=${alquiler.id}, plazas=${alquiler.seats})}" 
                             class="btn w-100">
                                 🛠️ Gestionar Acompañantes
                             </a>
                         </div>
                         
                         <!-- Mensaje cuando no se permiten acompañantes -->
-                        <div th:if="${(alquiler.fechainicio.isAfter(T(java.time.LocalDate).now()) or alquiler.fechainicio.isEqual(T(java.time.LocalDate).now())) and alquiler.plazas == 1}" 
+                        <div th:if="${(alquiler.startDate.isAfter(T(java.time.LocalDate).now()) or alquiler.startDate.isEqual(T(java.time.LocalDate).now())) and alquiler.seats == 1}" 
                             class="mt-3">
                             <p class="text-muted text-center">
                                 <small>ℹ️ Este alquiler es para 1 persona (no se permiten acompañantes)</small>
@@ -221,7 +221,7 @@
                         <div class="row text-center">
                             <div class="col-md-3">
                                 <div class="border rounded p-3">
-                                    <h4 th:text="${alquiler.plazas}">0</h4>
+                                    <h4 th:text="${alquiler.seats}">0</h4>
                                     <small class="text-muted">Plazas Totales</small>
                                 </div>
                             </div>
@@ -233,7 +233,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="border rounded p-3">
-                                    <h4 th:text="${(alquiler.fechafin.toEpochDay() - alquiler.fechainicio.toEpochDay() + 1)}">0</h4>
+                                    <h4 th:text="${(alquiler.endDate.toEpochDay() - alquiler.startDate.toEpochDay() + 1)}">0</h4>
                                     <small class="text-muted">Días de Duración</small>
                                 </div>
                             </div>

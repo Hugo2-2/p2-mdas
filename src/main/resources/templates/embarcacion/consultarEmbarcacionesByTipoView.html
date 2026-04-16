@@ -26,8 +26,8 @@
         <div class="card-body">
             <form method="GET" th:action="@{/api/embarcaciones/consultarEmbarcacionesPorTipo}">
                 <div class="form-group">
-                    <label for="tipo" class="form-label">Tipo:</label>
-                    <select id="tipo" name="tipo" class="form-control" required>
+                    <label for="type" class="form-label">Tipo:</label>
+                    <select id="type" name="type" class="form-control" required>
                         <option value="">-- Selecciona un tipo --</option>
                         <option value="VELERO">Velero</option>
                         <option value="YATE">Yate</option>
@@ -70,19 +70,19 @@
                             <tbody>
                             <tr th:each="embarcacion : ${listaEmbarcaciones}">
                                 <td>
-                                    <strong th:text="${embarcacion.nombre}">Nombre Barco</strong>
+                                    <strong th:text="${embarcacion.name}">Nombre Barco</strong>
                                 </td>
                                 <td>
-                                    <span class="badge badge-primary" th:text="${embarcacion.matricula}">Matrícula</span>
+                                    <span class="badge badge-primary" th:text="${embarcacion.registration}">Matrícula</span>
                                 </td>
                                 <td>
-                                    <span class="badge badge-warning" th:text="${embarcacion.plazas}"></span>
+                                    <span class="badge badge-warning" th:text="${embarcacion.seats}"></span>
                                 </td>
                                 <td>
-                                    <span th:if="${embarcacion.idPatron != null}" class="badge badge-success">Sí</span>
-                                    <span th:unless="${embarcacion.idPatron != null}" class="badge badge-secondary">No</span>
+                                    <span th:if="${embarcacion.skipperId != null}" class="badge badge-success">Sí</span>
+                                    <span th:unless="${embarcacion.skipperId != null}" class="badge badge-secondary">No</span>
                                 </td>
-                                <td th:text="${embarcacion.dimensiones}"></td>
+                                <td th:text="${embarcacion.dimensions}"></td>
                             </tr>
                             </tbody>
                         </table>

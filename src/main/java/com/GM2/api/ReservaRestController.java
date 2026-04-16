@@ -86,7 +86,7 @@ public class ReservaRestController {
             if (todasReservas != null) {
                 for (Reserva reserva : todasReservas) {
                     // Filtramos: Solo añadimos si la fecha de la reserva es POSTERIOR a la solicitada.
-                    if (reserva.getFecha().isAfter(fecha)) {
+                    if (reserva.getDate().isAfter(fecha)) {
                         reservasFuturas.add(reserva);
                     }
                 }
@@ -138,20 +138,20 @@ public class ReservaRestController {
     public ResponseEntity<Reserva> createReserva(@RequestBody Reserva nuevaReserva) {
         try {
             // 1. VALIDACIÓN: ¿Existe la embarcación?
-            Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(nuevaReserva.getMatricula_embarcacion());
+            Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(nuevaReserva.getBoatRegistration());
             if (embarcacion == null) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
             // 2. VALIDACIÓN: Capacidad.
             // Plazas solicitadas + 1 (Patrón) no puede superar las plazas del barco.
-            if ((nuevaReserva.getPlazas() + 1) > embarcacion.getPlazas()) {
+            if ((nuevaReserva.getSeats() + 1) > embarcacion.getSeats()) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
             // 3. VALIDACIÓN: Disponibilidad.
             // Usamos el método auxiliar para ver si choca con alquileres o reservas existentes.
-            if (isEmbarcacionOcupada(nuevaReserva.getMatricula_embarcacion(), nuevaReserva.getFecha())) {
+            if (isEmbarcacionOcupada(nuevaReserva.getBoatRegistration(), nuevaReserva.getDate())) {
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT); // 409 Conflict
             }
 
@@ -160,8 +160,8 @@ public class ReservaRestController {
             // Ignoramos cualquier precio que venga en el JSON para evitar fraudes.
 
             // Clean Code - Reglas de nombrado: variable con unidad (precioCalculado -> calculatedPriceInEuros )
-            double calculatedPriceInEuros = 40.0 * nuevaReserva.getPlazas();
-            nuevaReserva.setPrecio(calculatedPriceInEuros);
+            double calculatedPriceInEuros = 40.0 * nuevaReserva.getSeats();
+            nuevaReserva.setPrice(calculatedPriceInEuros);
 
             // 5. PERSISTENCIA: Guardar en BBDD.
             boolean exito = reservaRepository.addReserva(nuevaReserva);
@@ -193,7 +193,7 @@ public class ReservaRestController {
             Reserva reservaExistente = reservaRepository.findReservaById(id);
             if (reservaExistente == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-            LocalDate nuevaFecha = datosNuevos.getFecha();
+            LocalDate nuevaFecha = datosNuevos.getDate();
             if (nuevaFecha == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
             // VALIDACIÓN: No se puede mover una reserva al pasado.
@@ -203,12 +203,12 @@ public class ReservaRestController {
 
             // VALIDACIÓN: Disponibilidad en la nueva fecha.
             // Reutilizamos el método auxiliar. Si devuelve true, es que está ocupada.
-            if (isEmbarcacionOcupada(reservaExistente.getMatricula_embarcacion(), nuevaFecha)) {
+            if (isEmbarcacionOcupada(reservaExistente.getBoatRegistration(), nuevaFecha)) {
                 return new ResponseEntity<>(HttpStatus.CONFLICT); // El barco ya está cogido ese día.
             }
 
             // Aplicamos el cambio y guardamos.
-            reservaExistente.setFecha(nuevaFecha);
+            reservaExistente.setDate(nuevaFecha);
             boolean exito = reservaRepository.updateReserva(reservaExistente);
 
             if (exito) return new ResponseEntity<>(reservaExistente, HttpStatus.OK);
@@ -234,26 +234,26 @@ public class ReservaRestController {
             if (reservaExistente == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
             // Si viene descripción, la actualizamos.
-            if (datosNuevos.getDescripcion() != null) {
-                reservaExistente.setDescripcion(datosNuevos.getDescripcion());
+            if (datosNuevos.getDescription() != null) {
+                reservaExistente.setDescription(datosNuevos.getDescription());
             }
 
             // Si vienen plazas, validamos capacidad antes de actualizar.
-            if (datosNuevos.getPlazas() > 0) {
-                Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(reservaExistente.getMatricula_embarcacion());
+            if (datosNuevos.getSeats() > 0) {
+                Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(reservaExistente.getBoatRegistration());
 
                 // REGLA DE NEGOCIO: Plazas + 1 <= Capacidad total.
-                if (embarcacion != null && (datosNuevos.getPlazas() + 1) > embarcacion.getPlazas()) {
+                if (embarcacion != null && (datosNuevos.getSeats() + 1) > embarcacion.getSeats()) {
                     return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY); // Error 422
                 }
 
                 // 1. Actualizamos las plazas
-                reservaExistente.setPlazas(datosNuevos.getPlazas());
+                reservaExistente.setSeats(datosNuevos.getSeats());
 
                 // 2. AÑADE ESTO AQUÍ (Esto es lo que te falta):
                 // Clean Code - Reglas de nombrado: variable con unidad (precioCalculado -> calculatedPriceInEuros )
-                double calculatedPriceInEuros = 40.0 * datosNuevos.getPlazas();
-                reservaExistente.setPrecio(calculatedPriceInEuros);
+                double calculatedPriceInEuros = 40.0 * datosNuevos.getSeats();
+                reservaExistente.setPrice(calculatedPriceInEuros);
             }
 
             boolean exito = reservaRepository.updateReserva(reservaExistente);
@@ -280,7 +280,7 @@ public class ReservaRestController {
             if (reserva == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
             // VALIDACIÓN: No permitir cancelar reservas que ya han pasado.
-            if (reserva.getFecha().isBefore(LocalDate.now())) {
+            if (reserva.getDate().isBefore(LocalDate.now())) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
@@ -311,10 +311,10 @@ public class ReservaRestController {
         List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
         if (alquileres != null) {
             for (Alquiler alquiler : alquileres) {
-                if (alquiler.getMatricula_embarcacion().equals(matricula)) {
+                if (alquiler.getBoatRegistration().equals(matricula)) {
                     // Lógica: Si la fecha solicitada NO es antes del inicio Y NO es después del fin,
                     // significa que está DENTRO del periodo de alquiler.
-                    if (!fecha.isBefore(alquiler.getFechainicio()) && !fecha.isAfter(alquiler.getFechafin())) {
+                    if (!fecha.isBefore(alquiler.getStartDate()) && !fecha.isAfter(alquiler.getEndDate())) {
                         return true; // Conflicto encontrado
                     }
                 }
@@ -326,7 +326,7 @@ public class ReservaRestController {
         if (reservas != null) {
             for (Reserva r : reservas) {
                 // Si es el mismo barco y el mismo día -> Conflicto.
-                if (r.getMatricula_embarcacion().equals(matricula) && r.getFecha().equals(fecha)) {
+                if (r.getBoatRegistration().equals(matricula) && r.getDate().equals(fecha)) {
                     return true;
                 }
             }

@@ -70,19 +70,19 @@ public class AddSocioController {
                            RedirectAttributes redirectAttributes,
                            SessionStatus sessionStatus) {
 
-        socio.setFechaInscripcion(LocalDate.now());
+        socio.setRegistrationDate(LocalDate.now());
 
         //Mensajes para depurar en terminal
-        System.out.println("[SocioController] Informacion recivida: nombre=" + socio.getNombre() +
-                " apellidos=" + socio.getApellidos() +
-                " dni=" + socio.getDni() +
-                " fechaNacimiento=" + socio.getFechaNacimiento() +
-                " direccion=" + socio.getDireccion() +
-                " fechaInscripcion=" + socio.getFechaInscripcion() +
-                " esTitular=" + socio.getEsTitular() +
-                " tieneLicenciaPatron=" + socio.getTieneLicenciaPatron());
+        System.out.println("[SocioController] Informacion recivida: nombre=" + socio.getName() +
+                " apellidos=" + socio.getSurname() +
+                " dni=" + socio.getNationalId() +
+                " fechaNacimiento=" + socio.getBirthDate() +
+                " direccion=" + socio.getAddress() +
+                " fechaInscripcion=" + socio.getRegistrationDate() +
+                " esTitular=" + socio.getIsTitular() +
+                " tieneLicenciaPatron=" + socio.getHasSkipperLicense());
 
-        if(socioRepository.findSocioByDNI(socio.getDni()) != null) {
+        if(socioRepository.findSocioByDNI(socio.getNationalId()) != null) {
             redirectAttributes.addFlashAttribute("mensajeError", "Error: El socio ya existe");
             sessionStatus.setComplete();
             return "redirect:/api/socios/addSocio";
@@ -103,9 +103,9 @@ public class AddSocioController {
         //Confirmamos que la checkbox de la vista está marcada
         boolean quiereAmpliar = (ampliarInscripcion != null && ampliarInscripcion.equals("true"));
 
-        if(socio.getEsTitular() && quiereAmpliar) {
+        if(socio.getIsTitular() && quiereAmpliar) {
             // Pasamos el DNI del socio recién creado a la siguiente página
-            redirectAttributes.addFlashAttribute("dniTitular", socio.getDni());
+            redirectAttributes.addFlashAttribute("dniTitular", socio.getNationalId());
 
             // Redirigimos al nuevo formulario de inscripción familiar pasando el id de la inscripción como parámetro en el enlace
             sessionStatus.setComplete();

@@ -11,11 +11,11 @@ import java.time.LocalDate;
  */
 public class Patron {
 
-    private String nombre;
-    private String apellidos;
-    private String dni;
-    private LocalDate fechaNacimiento;
-    private LocalDate fechaExpedicionTitulo;
+    private String name;
+    private String surname;
+    private String nationalId;
+    private LocalDate birthDate;
+    private LocalDate titleIssueDate;
 
     /**
      * Constructor vacío.
@@ -28,68 +28,68 @@ public class Patron {
      * Constructor completo.
      * Permite crear un patrón con toda su información básica.
      *
-     * @param nombre Nombre del patrón
-     * @param apellidos Apellidos del patrón
-     * @param dni DNI del patrón (identificador único)
-     * @param fechaNacimiento Fecha de nacimiento
-     * @param fechaExpedicionTitulo Fecha de expedición del título de patrón
+     * @param name Nombre del patrón
+     * @param surname Apellidos del patrón
+     * @param nationalId DNI del patrón (identificador único)
+     * @param birthDate Fecha de nacimiento
+     * @param titleIssueDate Fecha de expedición del título de patrón
      */
-    public Patron(String nombre, String apellidos, String dni, LocalDate fechaNacimiento, LocalDate fechaExpedicionTitulo) {
-        this.nombre = nombre;
-        this.apellidos = apellidos;
-        this.dni = dni;
-        this.fechaNacimiento = fechaNacimiento;
-        this.fechaExpedicionTitulo = fechaExpedicionTitulo;
+    public Patron(String name, String surname, String nationalId, LocalDate birthDate, LocalDate titleIssueDate) {
+        this.name = name;
+        this.surname = surname;
+        this.nationalId = nationalId;
+        this.birthDate = birthDate;
+        this.titleIssueDate = titleIssueDate;
     }
 
     /** Getter del nombre */
-    public String getNombre() {
-        return nombre;
+    public String getName() {
+        return name;
     }
 
     /** Setter del nombre */
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /** Getter de los apellidos */
-    public String getApellidos() {
-        return apellidos;
+    public String getSurname() {
+        return surname;
     }
 
     /** Setter de los apellidos */
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
     /** Getter del DNI */
-    public String getDni() {
-        return dni;
+    public String getNationalId() {
+        return nationalId;
     }
 
     /** Setter del DNI */
-    public void setDni(String dni) {
-        this.dni = dni;
+    public void setNationalId(String nationalId) {
+        this.nationalId = nationalId;
     }
 
     /** Getter de la fecha de nacimiento */
-    public LocalDate getFechaNacimiento() {
-        return fechaNacimiento;
+    public LocalDate getBirthDate() {
+        return birthDate;
     }
 
     /** Setter de la fecha de nacimiento */
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
     /** Getter de la fecha de expedición del título */
-    public LocalDate getFechaExpedicionTitulo() {
-        return fechaExpedicionTitulo;
+    public LocalDate getTitleIssueDate() {
+        return titleIssueDate;
     }
 
     /** Setter de la fecha de expedición del título */
-    public void setFechaExpedicionTitulo(LocalDate fechaExpedicionTitulo) {
-        this.fechaExpedicionTitulo = fechaExpedicionTitulo;
+    public void setTitleIssueDate(LocalDate titleIssueDate) {
+        this.titleIssueDate = titleIssueDate;
     }
 
     /**
@@ -102,11 +102,11 @@ public class Patron {
     @Override
     public String toString() {
         return "Patron {" +
-                "dni='" + dni + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", apellidos='" + apellidos + '\'' +
-                ", fechaNacimiento=" + fechaNacimiento +
-                ", fechaExpedicionTitulo=" + fechaExpedicionTitulo +
+                "dni='" + nationalId + '\'' +
+                ", nombre='" + name + '\'' +
+                ", apellidos='" + surname + '\'' +
+                ", fechaNacimiento=" + birthDate +
+                ", fechaExpedicionTitulo=" + titleIssueDate +
                 '}';
     }
 }

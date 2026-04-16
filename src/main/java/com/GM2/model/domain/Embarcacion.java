@@ -11,12 +11,12 @@ import java.time.LocalDate;
  * @version 1.0
  */
 public class Embarcacion {
-    private String matricula;
-    private String nombre;
-    private String tipo;
-    private int plazas;
-    private String dimensiones;
-    private String idPatron;
+    private String registration;
+    private String name;
+    private String type;
+    private int seats;
+    private String dimensions;
+    private String skipperId;
 
     /**
      * Constructor por defecto.
@@ -28,38 +28,38 @@ public class Embarcacion {
     /**
      * Constructor completo para crear una embarcación con todos sus datos.
      *
-     * @param idPatron DNI del patrón asignado.
-     * @param dimensiones Dimensiones de la embarcación (en m2).
-     * @param plazas Número total de plazas.
-     * @param tipo Tipo de embarcación.
-     * @param nombre Nombre de la embarcación.
-     * @param matricula Matrícula única de la embarcación.
+     * @param skipperId DNI del patrón asignado.
+     * @param dimensions Dimensiones de la embarcación (en m2).
+     * @param seats Número total de plazas.
+     * @param type Tipo de embarcación.
+     * @param name Nombre de la embarcación.
+     * @param registration Matrícula única de la embarcación.
      */
-    public Embarcacion(String idPatron, String dimensiones, int plazas, String tipo, String nombre, String matricula) {
-        this.idPatron = idPatron;
-        this.dimensiones = dimensiones;
-        this.plazas = plazas;
-        this.tipo = tipo;
-        this.nombre = nombre;
-        this.matricula = matricula;
+    public Embarcacion(String skipperId, String dimensions, int seats, String type, String name, String registration) {
+        this.skipperId = skipperId;
+        this.dimensions = dimensions;
+        this.seats = seats;
+        this.type = type;
+        this.name = name;
+        this.registration = registration;
     }
 
     /**
      * Constructor para crear una embarcación sin un patrón asignado inicialmente.
      *
-     * @param dimensiones Dimensiones de la embarcación (en m2).
-     * @param plazas Número total de plazas.
-     * @param tipo Tipo de embarcación.
-     * @param nombre Nombre de la embarcación.
-     * @param matricula Matrícula única de la embarcación.
+     * @param dimensions Dimensiones de la embarcación (en m2).
+     * @param seats Número total de plazas.
+     * @param type Tipo de embarcación.
+     * @param name Nombre de la embarcación.
+     * @param registration Matrícula única de la embarcación.
      */
-    public Embarcacion(String dimensiones, int plazas, String tipo, String nombre, String matricula) {
-        this.idPatron = ""; // Asigna un string vacío como valor por defecto
-        this.dimensiones = dimensiones;
-        this.plazas = plazas;
-        this.tipo = tipo;
-        this.nombre = nombre;
-        this.matricula = matricula;
+    public Embarcacion(String dimensions, int seats, String type, String name, String registration) {
+        this.skipperId = ""; // Asigna un string vacío como valor por defecto
+        this.dimensions = dimensions;
+        this.seats = seats;
+        this.type = type;
+        this.name = name;
+        this.registration = registration;
     }
 
     // --- Getters y Setters ---
@@ -67,85 +67,85 @@ public class Embarcacion {
     /**
      * @return El DNI del patrón asignado.
      */
-    public String getIdPatron() {
-        return idPatron;
+    public String getSkipperId() {
+        return skipperId;
     }
 
     /**
-     * @param idPatron El DNI del patrón a asignar.
+     * @param skipperId El DNI del patrón a asignar.
      */
-    public void setIdPatron(String idPatron) {
-        this.idPatron = idPatron;
+    public void setSkipperId(String skipperId) {
+        this.skipperId = skipperId;
     }
 
     /**
      * @return Las dimensiones de la embarcación (como String).
      */
-    public String getDimensiones() {
-        return dimensiones;
+    public String getDimensions() {
+        return dimensions;
     }
 
     /**
-     * @param dimensiones Las dimensiones de la embarcación.
+     * @param dimensions Las dimensiones de la embarcación.
      */
-    public void setDimensiones(String dimensiones) {
-        this.dimensiones = dimensiones;
+    public void setDimensions(String dimensions) {
+        this.dimensions = dimensions;
     }
 
     /**
      * @return El número de plazas.
      */
-    public int getPlazas() {
-        return plazas;
+    public int getSeats() {
+        return seats;
     }
 
     /**
-     * @param plazas El número de plazas.
+     * @param seats El número de plazas.
      */
-    public void setPlazas(int plazas) {
-        this.plazas = plazas;
+    public void setSeats(int seats) {
+        this.seats = seats;
     }
 
     /**
      * @return El tipo de embarcación (como String).
      */
-    public String getTipo() {
-        return tipo;
+    public String getType() {
+        return type;
     }
 
     /**
-     * @param tipo El tipo de embarcación.
+     * @param type El tipo de embarcación.
      */
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+    public void setType(String type) {
+        this.type = type;
     }
 
     /**
      * @return El nombre de la embarcación.
      */
-    public String getNombre() {
-        return nombre;
+    public String getName() {
+        return name;
     }
 
     /**
-     * @param nombre El nombre de la embarcación.
+     * @param name El nombre de la embarcación.
      */
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
      * @return La matrícula de la embarcación.
      */
-    public String getMatricula() {
-        return matricula;
+    public String getRegistration() {
+        return registration;
     }
 
     /**
-     * @param matricula La matrícula de la embarcación.
+     * @param registration La matrícula de la embarcación.
      */
-    public void setMatricula(String matricula) {
-        this.matricula = matricula;
+    public void setRegistration(String registration) {
+        this.registration = registration;
     }
 
     /**
@@ -159,12 +159,12 @@ public class Embarcacion {
     @Override
     public String toString() {
         return "Embarcacion {" +
-                "matricula='" + matricula + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", tipo='" + tipo + '\'' +
-                ", plazas=" + plazas +
-                ", dimensiones='" + dimensiones + '\'' +
-                ", idPatron='" + (idPatron != null ? idPatron : "Ninguno") + '\'' +
+                "matricula='" + registration + '\'' +
+                ", nombre='" + name + '\'' +
+                ", tipo='" + type + '\'' +
+                ", plazas=" + seats +
+                ", dimensiones='" + dimensions + '\'' +
+                ", idPatron='" + (skipperId != null ? skipperId : "Ninguno") + '\'' +
                 '}';
     }
 }

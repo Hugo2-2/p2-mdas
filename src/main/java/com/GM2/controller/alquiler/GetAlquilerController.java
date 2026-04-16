@@ -90,7 +90,7 @@ public class GetAlquilerController {
 
         for (Alquiler a : alquileres) {
 
-            if (!a.getFechainicio().isBefore(hoy)){ 
+            if (!a.getStartDate().isBefore(hoy)){ 
                 futuros.add(a);
             }
 

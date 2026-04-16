@@ -144,12 +144,12 @@ public class ReservaRepository extends AbstractRepository{
                 int result = jdbcTemplate.update(connection -> {
                     PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                     // Asignamos los datos (respetando el orden de los ? en tu SQL)
-                    ps.setDate(1, Date.valueOf(reserva.getFecha()));
-                    ps.setInt(2, reserva.getPlazas());
-                    ps.setDouble(3, reserva.getPrecio());
-                    ps.setString(4, reserva.getUsuario_id());
-                    ps.setString(5, reserva.getMatricula_embarcacion());
-                    ps.setString(6, reserva.getDescripcion());
+                    ps.setDate(1, Date.valueOf(reserva.getDate()));
+                    ps.setInt(2, reserva.getSeats());
+                    ps.setDouble(3, reserva.getPrice());
+                    ps.setString(4, reserva.getUserId());
+                    ps.setString(5, reserva.getBoatRegistration());
+                    ps.setString(6, reserva.getDescription());
                     return ps;
                 }, keyHolder);
 
@@ -184,10 +184,10 @@ public class ReservaRepository extends AbstractRepository{
                 // Ejecutamos el update.
                 // IMPORTANTE: El orden de estos parámetros debe coincidir con los "?" de tu SQL
                 int result = jdbcTemplate.update(query,
-                        reserva.getFecha(),                  // 1. Nueva fecha
-                        reserva.getPlazas(),                 // 2. Nuevas plazas
-                        reserva.getPrecio(),                 // 3. Nuevo precio (si cambiaron plazas)
-                        reserva.getDescripcion(),            // 4. Nueva descripción
+                        reserva.getDate(),                  // 1. Nueva fecha
+                        reserva.getSeats(),                 // 2. Nuevas plazas
+                        reserva.getPrice(),                 // 3. Nuevo precio (si cambiaron plazas)
+                        reserva.getDescription(),            // 4. Nueva descripción
                         // El ID va al final porque está en la cláusula WHERE
                         reserva.getId()
                 );

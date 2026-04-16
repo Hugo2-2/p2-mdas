@@ -43,22 +43,22 @@
                         <tbody>
                         <tr th:each="embarcacion : ${listaEmbarcaciones}">
                             <td>
-                                <strong th:text="${embarcacion.nombre}">Nombre Barco</strong>
+                                <strong th:text="${embarcacion.name}">Nombre Barco</strong>
                             </td>
                             <td>
-                                <span class="badge badge-primary" th:text="${embarcacion.matricula}">Matrícula</span>
+                                <span class="badge badge-primary" th:text="${embarcacion.registration}">Matrícula</span>
                             </td>
                             <td>
-                                <span th:text="${embarcacion.tipo}">VELERO</span>
+                                <span th:text="${embarcacion.type}">VELERO</span>
                             </td>
                             <td>
-                                <span class="badge" th:text="${embarcacion.plazas}"></span>
+                                <span class="badge" th:text="${embarcacion.seats}"></span>
                             </td>
                             <td>
-                                <span th:if="${embarcacion.idPatron != null and !embarcacion.idPatron.isEmpty()}" class="badge badge-success">Sí</span>
-                                <span th:unless="${embarcacion.idPatron != null and !embarcacion.idPatron.isEmpty()}" class="badge bg-secondary">No</span>
+                                <span th:if="${embarcacion.skipperId != null and !embarcacion.skipperId.isEmpty()}" class="badge badge-success">Sí</span>
+                                <span th:unless="${embarcacion.skipperId != null and !embarcacion.skipperId.isEmpty()}" class="badge bg-secondary">No</span>
                             </td>
-                            <td th:text="${embarcacion.dimensiones}"></td>
+                            <td th:text="${embarcacion.dimensions}"></td>
                         </tr>
                         </tbody>
                     </table>

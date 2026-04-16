@@ -158,7 +158,7 @@ public class AcompananteRepository extends AbstractRepository {
     public boolean addAcompanante(Acompanante acompanante) {
         try {
             String query = sqlQueries.getProperty("insert-addAcompanante");
-            int rowsAffected = jdbcTemplate.update(query, acompanante.getDni(), acompanante.getId_alquiler());
+            int rowsAffected = jdbcTemplate.update(query, acompanante.getNationalId(), acompanante.getRentalId());
             return rowsAffected > 0;
         } catch (DataAccessException exception) {
             System.err.println("Unable to add acompanante");
