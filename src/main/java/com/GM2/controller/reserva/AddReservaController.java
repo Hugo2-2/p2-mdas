@@ -32,6 +32,10 @@ public class AddReservaController {
     SocioRepository socioRepository;
     AlquilerRepository alquilerRepository;
 
+    // Clean Code - Regla 7: Extracción de valores numéricos constantes a constantes descriptivas para evitar números mágicos y mejorar la legibilidad.
+    private static final int PLAZAS_OCUPADAS_POR_PATRON = 1;
+    private static final double PRECIO_POR_PLAZA_RESERVA = 40.0;
+
     // Constructor que recibe todos los repositorios (Inyección por constructor)
     public AddReservaController(
             ReservaRepository reservaRepository,
@@ -114,8 +118,9 @@ public class AddReservaController {
                 status.setComplete();
                 return modelAndView;
 
-            } else if (embarcacion.getSeats() < reserva.getSeats() + 1) {
-                // Se suma 1 a las plazas reservadas para contar al patrón
+            // Clean Code - Regla 7: Extracción del valor numérico '1' a la constante 'PLAZAS_OCUPADAS_POR_PATRON' para evitar números mágicos y mejorar la legibilidad.
+            } else if (embarcacion.getSeats() < reserva.getSeats() + PLAZAS_OCUPADAS_POR_PATRON) {
+                // Se suman las plazas del patrón a las plazas reservadas
                 resultado = "Capacidad insuficiente (recuerda sumar 1 para el patrón).";
                 modelAndView.addObject("mensajeError", resultado);
                 status.setComplete();
@@ -162,8 +167,9 @@ public class AddReservaController {
                 } else {
                     // --- GUARDAR RESERVA ---
                     // 4. Procesar y Guardar
-                    // Calcula y establece el precio de la reserva (Plazas * 40.0)
-                    reserva.setPrice(reserva.getSeats() * 40.0);
+                    // Calcula y establece el precio de la reserva
+                    // Clean Code - Regla 7: Extracción del valor numérico '40.0' a la constante 'PRECIO_POR_PLAZA_RESERVA' para evitar números mágicos y mejorar la legibilidad.
+                    reserva.setPrice(reserva.getSeats() * PRECIO_POR_PLAZA_RESERVA);
                     // Llama al repositorio para insertar la reserva en la base de datos
                     boolean insertado = reservaRepository.addReserva(reserva);
                     resultado = insertado ? "EXITO" : "Error al guardar la reserva.";
