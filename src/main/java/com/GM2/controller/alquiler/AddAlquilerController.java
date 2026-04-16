@@ -36,6 +36,19 @@ public class AddAlquilerController {
     SocioRepository socioRepository;
     EmbarcacionRepository embarcacionRepository;
 
+    // Constantes para estaciones y limites de alquiler
+    // Clean Code - Regla 7: Extracción de valores numéricos constantes a constantes descriptivas (evitar números mágicos).
+    private static final int MES_INICIO_TEMPORADA_BAJA_OCT = 10;
+    private static final int MES_FIN_TEMPORADA_BAJA_ABR = 4;
+    private static final int MAX_DIAS_ALQUILER_TEMPORADA_BAJA = 3;
+    
+    private static final int MES_INICIO_TEMPORADA_ALTA_MAY = 5;
+    private static final int MES_FIN_TEMPORADA_ALTA_SEP = 9;
+    private static final int SEMANA_TEMPORADA_ALTA = 7;
+    private static final int QUINCENA_TEMPORADA_ALTA = 14;
+    
+    private static final double PRECIO_BASE_POR_PLAZA_Y_DIA = 20.0;
+
 
 
     /**
@@ -119,16 +132,19 @@ public class AddAlquilerController {
         }
 
         int mesInicio = inicio.getMonthValue();
-        if (mesInicio >= 10 || mesInicio <= 4) {
-            if (totalDays > 3){
+        // Clean Code - Regla 7: Extracción del valor numérico constante '10' y '4' a variables descriptivas para meses para evitar números mágicos.
+        if (mesInicio >= MES_INICIO_TEMPORADA_BAJA_OCT || mesInicio <= MES_FIN_TEMPORADA_BAJA_ABR) {
+            // Clean Code - Regla 7: Extracción del valor numérico constante '3' a la variable 'MAX_DIAS_ALQUILER_TEMPORADA_BAJA' para evitar números mágicos.
+            if (totalDays > MAX_DIAS_ALQUILER_TEMPORADA_BAJA){
                 resultado = "Solo se permiten hasta 3 días entre octubre y abril.";
                 modelAndView.setViewName("alquiler/addAlquilerView");
                 modelAndView.addObject("mensajeError", resultado);
                 status.setComplete();
                 return modelAndView;
             }
-        } else if (mesInicio >= 5 && mesInicio <= 9) {
-            if (totalDays != 7 && totalDays != 14){ 
+        } else if (mesInicio >= MES_INICIO_TEMPORADA_ALTA_MAY && mesInicio <= MES_FIN_TEMPORADA_ALTA_SEP) {
+            // Clean Code - Regla 7: Extracción del valor numérico constante '7' y '14' a variables descriptivas para evitar números mágicos.
+            if (totalDays != SEMANA_TEMPORADA_ALTA && totalDays != QUINCENA_TEMPORADA_ALTA){ 
                 resultado = "Solo se permiten alquileres de 7 o 14 días entre mayo y septiembre.";
                 modelAndView.setViewName("alquiler/addAlquilerView");
                 modelAndView.addObject("mensajeError", resultado);
@@ -219,7 +235,8 @@ public class AddAlquilerController {
 
 
         // Clean Code - Reglas de nombrado: variable con unidad (precio -> priceInEuros )
-        double priceInEuros = 20.0 * alquiler.getSeats() * totalDays;
+        // Clean Code - Regla 7: Extracción del valor numérico constante '20.0' a la variable 'PRECIO_BASE_POR_PLAZA_Y_DIA' para evitar números mágicos.
+        double priceInEuros = PRECIO_BASE_POR_PLAZA_Y_DIA * alquiler.getSeats() * totalDays;
         alquiler.setPrice(priceInEuros);
 
         boolean insertado = alquilerRepository.addAlquiler(alquiler);
