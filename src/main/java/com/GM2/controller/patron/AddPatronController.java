@@ -51,7 +51,8 @@ public class AddPatronController {
     public ModelAndView getAddPatronView() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("patron/addPatronView");
-        modelAndView.addObject("newPatron", new Patron());
+        // Clean Code - Regla 10: Renombrado del atributo inyectado a 'patron' (se omite 'new' para evitar prefijos redundantes).
+        modelAndView.addObject("patron", new Patron());
         return modelAndView;
     }
 
@@ -70,34 +71,35 @@ public class AddPatronController {
      * @param redirectAttributes Atributos flash utilizados para enviar mensajes entre redirecciones.
      * @return Una redirección a la misma página del formulario tras procesar los datos.
      */
+    // Clean Code - Regla 10: Renombrado de 'newPatron' a 'patron' para evitar prefijos/codificaciones de estado en el nombre.
     @PostMapping("/addPatron")
-    public String addPatron(@ModelAttribute Patron newPatron,
+    public String addPatron(@ModelAttribute Patron patron,
                             SessionStatus sessionStatus,
                             RedirectAttributes redirectAttributes) {
 
-        if(patronRepository.isRegistered(newPatron.getNationalId())) {
+        if(patronRepository.isRegistered(patron.getNationalId())) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: El patron ya existe.");
         }else {
-            System.out.println("[PatronController] Informacion recivida: Nombre=" + newPatron.getName() +
-                    " Apellidos=" + newPatron.getSurname() +
-                    " DNI=" + newPatron.getNationalId() +
-                    " fechaNacimiento=" + newPatron .getBirthDate() +
-                    " fecha_expedicion_titulo=" + newPatron.getTitleIssueDate());
+            System.out.println("[PatronController] Informacion recivida: Nombre=" + patron.getName() +
+                    " Apellidos=" + patron.getSurname() +
+                    " DNI=" + patron.getNationalId() +
+                    " fechaNacimiento=" + patron .getBirthDate() +
+                    " fecha_expedicion_titulo=" + patron.getTitleIssueDate());
 
-            if(newPatron.getBirthDate().isAfter(LocalDate.now())) {
+            if(patron.getBirthDate().isAfter(LocalDate.now())) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Error: Fecha de nacimiento inválida.");
                 sessionStatus.setComplete();
                 return "redirect:/api/patrones/addPatron";
             }
 
-            if(newPatron.getTitleIssueDate().isAfter(LocalDate.now()) ||
-                newPatron.getTitleIssueDate().isBefore(newPatron.getBirthDate())) {
+            if(patron.getTitleIssueDate().isAfter(LocalDate.now()) ||
+                patron.getTitleIssueDate().isBefore(patron.getBirthDate())) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Error: Fecha de expedición del título inválida.");
                 sessionStatus.setComplete();
                 return "redirect:/api/patrones/addPatron";
             }
 
-            boolean success = patronRepository.addPatron(newPatron);
+            boolean success = patronRepository.addPatron(patron);
 
             if(success){
                 redirectAttributes.addFlashAttribute("successMessage", "Patron guardado exitosamente.");
