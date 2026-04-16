@@ -27,6 +27,7 @@ import java.util.List; // Para manejar colecciones
 public class AddReservaController {
 
     // Inyección de dependencias de los repositorios
+    // Clean Code - Regla 8: Nombres largos y descriptivos ('reservaRepository', etc.) para variables de clase de ámbito global.
     ReservaRepository reservaRepository;
     EmbarcacionRepository embarcacionRepository;
     SocioRepository socioRepository;
@@ -137,6 +138,7 @@ public class AddReservaController {
                 List<Reserva> reservas = reservaRepository.findAllReservas();
 
                 // 3.1. Verificar conflictos con Alquileres
+                // Clean Code - Regla 8: Uso de variable de un carácter ('a') apropiado por ser el índice de un bucle de muy corto alcance.
                 for (Alquiler a : alquileres) {
                     // Conflicto si la matrícula es la misma Y la fecha de reserva cae dentro del rango de alquiler
                     if (a.getBoatRegistration().equals(embarcacion.getRegistration())
