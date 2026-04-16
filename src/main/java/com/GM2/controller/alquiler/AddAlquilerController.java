@@ -166,12 +166,14 @@ public class AddAlquilerController {
         if (reservas == null) reservas = new ArrayList<>();
 
 
-        for (Embarcacion e : embarcaciones) {
+        // Clean Code - Regla 6: Renombrado de variable 'e' a 'embarcacionEvaluada' para evitar variables de una única letra.
+        for (Embarcacion embarcacionEvaluada : embarcaciones) {
             boolean ocupada = false;
 
-            for (Alquiler a : alquileres) {
-                if (a.getBoatRegistration().equals(e.getRegistration())) {
-                    if (!(inicio.isAfter(a.getEndDate()) || fin.isBefore(a.getStartDate()))) {
+            // Clean Code - Regla 6: Renombrado de variable 'a' a 'alquilerExistente' para evitar variables de una única letra.
+            for (Alquiler alquilerExistente : alquileres) {
+                if (alquilerExistente.getBoatRegistration().equals(embarcacionEvaluada.getRegistration())) {
+                    if (!(inicio.isAfter(alquilerExistente.getEndDate()) || fin.isBefore(alquilerExistente.getStartDate()))) {
                         ocupada = true;
                         break;
                     }
@@ -179,11 +181,12 @@ public class AddAlquilerController {
             }
 
             if (!ocupada) {
-                for (Reserva r : reservas) {
-                    if (r.getBoatRegistration().equals(e.getRegistration())) {
+                // Clean Code - Regla 6: Renombrado de variable 'r' a 'reservaExistente' para evitar variables de una única letra.
+                for (Reserva reservaExistente : reservas) {
+                    if (reservaExistente.getBoatRegistration().equals(embarcacionEvaluada.getRegistration())) {
                         // Una reserva ocupa la embarcación por UN DÍA específico
                         // Verificar si alguna fecha del rango de alquiler coincide con la fecha de reserva
-                        LocalDate fechaReserva = r.getDate();
+                        LocalDate fechaReserva = reservaExistente.getDate();
                         if (!fechaReserva.isBefore(inicio) && !fechaReserva.isAfter(fin)) {
                             ocupada = true;
                             break;
@@ -193,13 +196,14 @@ public class AddAlquilerController {
             }
             
             if (!ocupada) {
-                availableBoats.add(e);
+                availableBoats.add(embarcacionEvaluada);
             }
         }
         
         boolean disponible = false;
-        for (Embarcacion e : availableBoats) {
-            if (e.getRegistration().equals(alquiler.getBoatRegistration())) {
+        // Clean Code - Regla 6: Renombrado de variable 'e' a 'embarcacionDisponible' para evitar variables de una única letra.
+        for (Embarcacion embarcacionDisponible : availableBoats) {
+            if (embarcacionDisponible.getRegistration().equals(alquiler.getBoatRegistration())) {
                 disponible = true;
                 break;
             }
