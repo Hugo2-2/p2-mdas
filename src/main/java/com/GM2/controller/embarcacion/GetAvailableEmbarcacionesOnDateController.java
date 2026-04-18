@@ -28,7 +28,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/api/embarcaciones")
-public class GetAvailibleEmbarcacionesOnDateController {
+public class GetAvailableEmbarcacionesOnDateController {
     AlquilerRepository alquilerRepository;
     AcompananteRepository acompanantesRepository;
     ReservaRepository reservaRepository;
@@ -46,7 +46,7 @@ public class GetAvailibleEmbarcacionesOnDateController {
      * @param socioRepository Repositorio para el acceso a datos de Socios.
      * @param embarcacionRepository Repositorio para el acceso a datos de Embarcaciones.
      */
-    public GetAvailibleEmbarcacionesOnDateController(AlquilerRepository alquilerRepository, AcompananteRepository acompanantesRepository, ReservaRepository reservaRepository, SocioRepository socioRepository, EmbarcacionRepository embarcacionRepository) {
+    public GetAvailableEmbarcacionesOnDateController(AlquilerRepository alquilerRepository, AcompananteRepository acompanantesRepository, ReservaRepository reservaRepository, SocioRepository socioRepository, EmbarcacionRepository embarcacionRepository) {
         this.alquilerRepository = alquilerRepository;
         this.acompanantesRepository = acompanantesRepository;
         this.reservaRepository = reservaRepository;

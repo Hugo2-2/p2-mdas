@@ -145,36 +145,36 @@ public class SociosRestController {
     /**
      * 4. Crear socio asociandolo a una inscripción familiar ya existente (POST)
      * 
-     * @param requestBody Objeto que contiene los datos del socio y el DNI del titular
+     * @param socioConInscripcion Objeto que contiene los datos del socio y el DNI del titular
      * @return ResponseEntity con el socio creado y estado 201 (Created) si se ha podido crear correctamente
      * y en caso de error: 400 (Bad Request), 404 (Not Found) o 500 (Internal Server Error)
      */
     @PostMapping(value = "/socioConInscripcion", consumes = "application/json")
-    public ResponseEntity<Socio> createSocioConInscripcion(@RequestBody SocioConInscripcionRequest requestBody) {
+    public ResponseEntity<Socio> createSocioConInscripcion(@RequestBody SocioConInscripcionRequest socioConInscripcion) {
         
         // Validaciones de los campos del socio
-        if(requestBody.getNationalId() == null || requestBody.getNationalId().isEmpty() || 
-           requestBody.getName() == null || requestBody.getName().isEmpty() || 
-           requestBody.getSurname() == null || requestBody.getSurname().isEmpty() || 
-           requestBody.getAddress() == null || requestBody.getAddress().isEmpty() ||
-           requestBody.getBirthDate() == null) {
+        if(socioConInscripcion.getNationalId() == null || socioConInscripcion.getNationalId().isEmpty() || 
+           socioConInscripcion.getName() == null || socioConInscripcion.getName().isEmpty() || 
+           socioConInscripcion.getSurname() == null || socioConInscripcion.getSurname().isEmpty() || 
+           socioConInscripcion.getAddress() == null || socioConInscripcion.getAddress().isEmpty() ||
+           socioConInscripcion.getBirthDate() == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
         // Validación del DNI del titular
-        if(requestBody.getTitularNationalId() == null || requestBody.getTitularNationalId().isEmpty()) {
+        if(socioConInscripcion.getTitularNationalId() == null || socioConInscripcion.getTitularNationalId().isEmpty()) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
         try {
             // Verificar que la inscripción existe
-            Inscripcion inscripcion = inscripcionRepository.findInscripcionByDNITitular(requestBody.getTitularNationalId());
+            Inscripcion inscripcion = inscripcionRepository.findInscripcionByDNITitular(socioConInscripcion.getTitularNationalId());
             
             if(inscripcion == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
-            Socio socio = new Socio(requestBody.getName(), requestBody.getSurname(), requestBody.getNationalId(), requestBody.getBirthDate(), requestBody.getAddress(), LocalDate.now(), requestBody.getIsSkipper());
+            Socio socio = new Socio(socioConInscripcion.getName(), socioConInscripcion.getSurname(), socioConInscripcion.getNationalId(), socioConInscripcion.getBirthDate(), socioConInscripcion.getAddress(), LocalDate.now(), socioConInscripcion.getIsSkipper());
 
 
             if(socio.getBirthDate().getYear() > 2007) {

@@ -184,7 +184,7 @@ public class PatronRepository extends AbstractRepository {
      * @param patron Objeto con los datos ya modificados.
      * @return true si se actualizó correctamente.
      */
-    public boolean updatePatronInfo(Patron patron) {
+    public boolean updatePatron(Patron patron) {
         try {
             String query = sqlQueries.getProperty("update-updatePatronInfo");
             if (query != null) {

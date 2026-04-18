@@ -89,7 +89,7 @@ public class AddReservaController {
 
         // 1. Validar el Socio
         // Busca al socio en la base de datos usando el DNI (usuario_id) de la reserva
-        Socio socio = socioRepository.findSocioByDNI(reserva.getUserId());
+        Socio socio = socioRepository.findSocioByDNI(reserva.getUserNationalId());
 
         // --- VALIDACIONES ---
         if (socio == null) {
@@ -98,7 +98,7 @@ public class AddReservaController {
             status.setComplete();
             return modelAndView;
 
-        } else if (!socio.esMayorEdad()) {
+        } else if (!socio.isOfLegalAge()) {
             resultado = "El socio debe ser mayor de edad para realizar una reserva.";
             modelAndView.addObject("mensajeError", resultado);
             status.setComplete();

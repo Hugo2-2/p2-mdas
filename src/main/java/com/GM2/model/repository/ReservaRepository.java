@@ -147,7 +147,7 @@ public class ReservaRepository extends AbstractRepository{
                     ps.setDate(1, Date.valueOf(reserva.getDate()));
                     ps.setInt(2, reserva.getSeats());
                     ps.setDouble(3, reserva.getPrice());
-                    ps.setString(4, reserva.getUserId());
+                    ps.setString(4, reserva.getUserNationalId());
                     ps.setString(5, reserva.getBoatRegistration());
                     ps.setString(6, reserva.getDescription());
                     return ps;

@@ -255,7 +255,7 @@ public class InscripcionRepository extends AbstractRepository{
      * @param dniSegundoAdulto DNI del segundo adulto a añadir.
      * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
      */
-    public String updateInscripcioSinHijos(String dniTitular, String dniSegundoAdulto){
+    public String updateInscripcionSinHijos(String dniTitular, String dniSegundoAdulto){
 
         if(socioRepository.findSocioByDNI(dniTitular) == null && socioRepository.findSocioByDNI(dniSegundoAdulto) == null) {
             return "El titular y el segundo adulto no están registrados como socios";
@@ -294,7 +294,7 @@ public class InscripcionRepository extends AbstractRepository{
      * @param fechaNacimientoHijos Lista de fechas de nacimiento de los hijos.
      * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
      */
-    public String updateInscripcioConHijos(String dniTitular, List<String> dnisHijos, List<String> nombreHijos, List<String> apellidosHijos, List<LocalDate> fechaNacimientoHijos){
+    public String updateInscripcionConHijos(String dniTitular, List<String> dnisHijos, List<String> nombreHijos, List<String> apellidosHijos, List<LocalDate> fechaNacimientoHijos){
         Inscripcion inscripcion = findInscripcionByDNITitular(dniTitular);
 
         if (inscripcion == null) {

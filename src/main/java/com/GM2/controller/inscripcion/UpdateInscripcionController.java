@@ -88,7 +88,7 @@ public class UpdateInscripcionController {
             redirectAttributes.addFlashAttribute("numeroHijos", numeroHijos);
 
             //Guardamos el segundo adulto
-            String resultado = inscripcionRepository.updateInscripcioSinHijos(dniTitular, dniSegundoAdulto);
+            String resultado = inscripcionRepository.updateInscripcionSinHijos(dniTitular, dniSegundoAdulto);
             if (resultado.equals("EXITO")) {
                 redirectAttributes.addFlashAttribute("mensajeExito", "Inscripción (sin hijos) guardada.");
             } else {
@@ -100,7 +100,7 @@ public class UpdateInscripcionController {
 
         } else {
 
-            String resultado = inscripcionRepository.updateInscripcioSinHijos(dniTitular, dniSegundoAdulto);
+            String resultado = inscripcionRepository.updateInscripcionSinHijos(dniTitular, dniSegundoAdulto);
 
             if (resultado.equals("EXITO")) {
                 redirectAttributes.addFlashAttribute("mensajeExito", "Inscripción (sin hijos) guardada.");

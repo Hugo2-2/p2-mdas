@@ -153,7 +153,7 @@ public class PatronRestController {
             return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        boolean exito = patronRepository.updatePatronInfo(patronActual);
+        boolean exito = patronRepository.updatePatron(patronActual);
 
         if (exito) {
             return new ResponseEntity<>(patronActual, HttpStatus.OK);

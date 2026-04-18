@@ -119,7 +119,7 @@ public class ClienteReserva {
         Reserva nuevaReserva = new Reserva();
         nuevaReserva.setDate(LocalDate.of(2026, 3, 22));
         nuevaReserva.setSeats(4);
-        nuevaReserva.setUserId("11111111A");
+        nuevaReserva.setUserNationalId("11111111A");
         nuevaReserva.setBoatRegistration("XXX111");
         nuevaReserva.setDescription("Viaje por el Atlántico");
 
@@ -143,7 +143,7 @@ public class ClienteReserva {
         Reserva reservaInvalida = new Reserva();
         reservaInvalida.setDate(LocalDate.of(2026, 3, 23));
         reservaInvalida.setSeats(50);
-        reservaInvalida.setUserId("11111111A");
+        reservaInvalida.setUserNationalId("11111111A");
         reservaInvalida.setBoatRegistration("XXX111");
 
         System.out.println();
@@ -157,7 +157,7 @@ public class ClienteReserva {
         Reserva reservaSocioNoExiste = new Reserva();
         reservaSocioNoExiste.setDate(LocalDate.of(2026, 3, 24));
         reservaSocioNoExiste.setSeats(2);
-        reservaSocioNoExiste.setUserId("99999999Z");
+        reservaSocioNoExiste.setUserNationalId("99999999Z");
         reservaSocioNoExiste.setBoatRegistration("XXX111");
 
         System.out.println();
@@ -261,7 +261,7 @@ public class ClienteReserva {
         System.out.println("  Fecha: " + r.getDate());
         System.out.println("  Plazas: " + r.getSeats());
         System.out.println("  Precio: " + r.getPrice() + "€");
-        System.out.println("  DNI Socio: " + r.getUserId());
+        System.out.println("  DNI Socio: " + r.getUserNationalId());
         System.out.println("  Matrícula: " + r.getBoatRegistration());
         System.out.println("  Descripción: " + (r.getDescription() != null ? r.getDescription() : "N/A"));
         System.out.println("}");

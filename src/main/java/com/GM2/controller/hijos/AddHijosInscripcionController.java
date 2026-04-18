@@ -104,7 +104,7 @@ public class AddHijosInscripcionController {
             @RequestParam("fechaNacimiento") List<LocalDate> fechaNacimientoHijos,
             RedirectAttributes redirectAttributes) {
 
-        String resultado = inscripcionRepository.updateInscripcioConHijos(dniTitular, dnisHijos, nombreHijos, apellidosHijos, fechaNacimientoHijos);
+        String resultado = inscripcionRepository.updateInscripcionConHijos(dniTitular, dnisHijos, nombreHijos, apellidosHijos, fechaNacimientoHijos);
 
         if (resultado.equals("EXITO")) {
             redirectAttributes.addFlashAttribute("mensajeExito", "Inscripción (con hijos) guardada.");

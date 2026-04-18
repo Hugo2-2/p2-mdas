@@ -177,10 +177,10 @@ public class Socio {
      *
      * @return true si el socio es mayor de edad (18 años o más), false en caso contrario.
      */
-    public boolean esMayorEdad() {
-        LocalDate hoy = LocalDate.now();
-        int edad = Period.between(birthDate, hoy).getYears();
-        return edad >= 18;
+    public boolean isOfLegalAge() {
+        LocalDate today = LocalDate.now();
+        int age = Period.between(birthDate, today).getYears();
+        return age >= 18;
     }
 
     @Override

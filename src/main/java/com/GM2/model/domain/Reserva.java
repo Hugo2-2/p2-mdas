@@ -15,7 +15,7 @@ public class Reserva {
     private LocalDate date;
     private int seats;
     private double price;
-    private String userId;
+    private String userNationalId;
     private String boatRegistration;
     private String description;
 
@@ -28,12 +28,12 @@ public class Reserva {
     /**
      * Constructor con todos los argumentos.
      */
-    public Reserva(int id, LocalDate date, int seats, double price, String userId, String boatRegistration, String description) {
+    public Reserva(int id, LocalDate date, int seats, double price, String userNationalId, String boatRegistration, String description) {
         this.id = id;
         this.date = date;
         this.seats = seats;
         this.price = price;
-        this.userId = userId;
+        this.userNationalId = userNationalId;
         this.boatRegistration = boatRegistration;
         this.description = description;
     }
@@ -72,12 +72,12 @@ public class Reserva {
         this.price = price;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUserNationalId() {
+        return userNationalId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserNationalId(String userNationalId) {
+        this.userNationalId = userNationalId;
     }
 
     public String getBoatRegistration() {
