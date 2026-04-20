@@ -172,7 +172,7 @@ public class AlquilerRestController {
             for (Embarcacion embarcacion : todasEmbarcaciones) {
                 boolean disponible = true;
 
-                // Verificar conflictos con alquileres existentes
+                // Clean Code - Reglas de comentarios: Comentario que explica intención del código
                 if (todosAlquileres != null) {
                     for (Alquiler alquiler : todosAlquileres) {
                         if (alquiler.getBoatRegistration().equals(embarcacion.getRegistration())) {

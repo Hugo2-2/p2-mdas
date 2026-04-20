@@ -247,9 +247,9 @@ public class ReservaRestController {
             if (datosNuevos.getSeats() > 0) {
                 Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(reservaExistente.getBoatRegistration());
 
-                // REGLA DE NEGOCIO: Plazas + 1 <= Capacidad total.
+                // Clean Code - Reglas de comentarios: Comentario que explica intención del código
                 if (embarcacion != null && (datosNuevos.getSeats() + 1) > embarcacion.getSeats()) {
-                    return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY); // Error 422
+                    return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
                 }
 
                 // 1. Actualizamos las plazas
