@@ -255,7 +255,7 @@ public class ReservaRestController {
                 // 1. Actualizamos las plazas
                 reservaExistente.setSeats(datosNuevos.getSeats());
 
-                // 2. AÑADE ESTO AQUÍ (Esto es lo que te falta):
+                // Clean Code - Reglas de comentarios: Comentario que solo tiene sentido para el programador que lo escribió
                 // Clean Code - Reglas de nombrado: variable con unidad (precioCalculado -> calculatedPriceInEuros )
                 double calculatedPriceInEuros = 40.0 * datosNuevos.getSeats();
                 reservaExistente.setPrice(calculatedPriceInEuros);
