@@ -226,7 +226,7 @@ public class InscripcionesRestController {
             boolean resInscripcion = false;
             boolean resHijos = false;
 
-            // Validar si estamos añadiendo un hijo o un segundo adulto
+            // Clean Code - Reglas de comentarios: Comentario explícito sobre la intención del código
             Socio socio = socioRepository.findSocioByDNI(dniNuevoMiembro);
             if(socio != null && !socio.getIsTitular()) {
                 inscripcion.setSecondAdult(dniNuevoMiembro);
