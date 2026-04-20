@@ -20,7 +20,9 @@ import java.util.List;
  * @author gm2equipo1
  * @version 1.0
  */
-@RestController // Indica que es un componente de controlador REST (devuelve JSON, no HTML).
+
+//Clean Code - Reglas de comentarios: Comentario redundate sobre @RestController
+@RestController 
 @RequestMapping(path = "api/reservas", produces = "application/json") // Define la URL base común para todos los métodos.
 public class ReservaRestController {
 
