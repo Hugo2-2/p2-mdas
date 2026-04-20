@@ -197,16 +197,7 @@ public class InscripcionesRestController {
         }
     }
 
-    /*
-
-    * 5. Actualizar una inscripción individual para convertirla en una familiar (PUT)
-
-    Esta API no será necesaria en nuestro proyecto, ya que de la forma que tenemos diseñado el sistema
-    de inscripciones, una inscripción individual nunca se convierte en familiar. Todas las inscripciones
-    son iguales, la diferencia está en que las individuales tienen solo un socio (el titular) y las familiares
-    tienen varios socios (el titular y miembros familiares). Por lo tanto, no es necesario actualizar.
-
-    */
+    // Clean Code - Reglas de comentarios: Comentario desactualizado sobre Endpoints que no se implementan
 
     /**
      * 6. Vincular a un nuevo miembro en una inscripción familiar, asumiendo que el nuevo
