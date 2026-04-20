@@ -62,7 +62,7 @@ public class SociosRestController {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
-            /*A lo mejor hay que retornar tambien a los hijos*/
+            //Clean Code - Reglas de comentarios: Comentario TO-DO
 
             return new ResponseEntity<>(socios, HttpStatus.OK);
         } catch (Exception e) {
