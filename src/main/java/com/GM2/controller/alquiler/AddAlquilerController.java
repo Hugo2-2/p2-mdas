@@ -176,7 +176,7 @@ public class AddAlquilerController {
         List<Embarcacion> availableBoats = new ArrayList<>();
         List<Reserva> reservas = reservaRepository.findAllReservas();
 
-        // Comprobar null
+        // Clean Code - Reglas de comentarios: Comentario redundate sobre comparaciones nulas
         if (embarcaciones == null) embarcaciones = new ArrayList<>();
         if (alquileres == null) alquileres = new ArrayList<>();
         if (reservas == null) reservas = new ArrayList<>();
