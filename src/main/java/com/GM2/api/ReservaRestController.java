@@ -61,11 +61,11 @@ public class ReservaRestController {
     public ResponseEntity<List<Reserva>> getAllReservas() {
         try {
             List<Reserva> reservas = reservaRepository.findAllReservas();
-            // Si la lista está vacía, devolvemos 204 (No Content) según buenas prácticas REST.
+            //Clean Code - Reglas de comentarios: Comentario redundate sobre código de estado
             if (reservas == null || reservas.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            // Si hay datos, devolvemos la lista y 200 (OK).
+            //Clean Code - Reglas de comentarios: Comentario redundate sobre código de estado
             return new ResponseEntity<>(reservas, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -116,7 +116,7 @@ public class ReservaRestController {
     public ResponseEntity<Reserva> getReservaById(@PathVariable Integer id) {
         try {
             Reserva reserva = reservaRepository.findReservaById(id);
-            // Si no existe, devolvemos 404 Not Found.
+            //Clean Code - Reglas de comentarios: Comentario redundate sobre código de estado
             if (reserva == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
@@ -169,7 +169,8 @@ public class ReservaRestController {
             // 5. PERSISTENCIA: Guardar en BBDD.
             boolean exito = reservaRepository.addReserva(nuevaReserva);
 
-            if (exito) return new ResponseEntity<>(nuevaReserva, HttpStatus.CREATED); // 201 Created
+            //Clean Code - Reglas de comentarios: Comentario redundate sobre código de estado
+            if (exito) return new ResponseEntity<>(nuevaReserva, HttpStatus.CREATED);
             else return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 
         } catch (Exception e) {
@@ -289,7 +290,8 @@ public class ReservaRestController {
 
             boolean exito = reservaRepository.deleteReserva(id);
 
-            if (exito) return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content es estándar para delete exitoso.
+            //Clean Code - Reglas de comentarios: Comentario redundate sobre código de estado
+            if (exito) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             else return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
         } catch (Exception e) {
