@@ -159,7 +159,8 @@ public class ReservaRestController {
             }
 
             // 4. LOGICA DE NEGOCIO: Calcular precio.
-            // CAMBIO: Al igual que en AddReservaController, FORZAMOS el cálculo en el servidor.
+            // Clean Code - Reglas de comentarios: Comentario que solo tiene sentido para el programador que lo escribió (Comentario reemplazado) 
+            // Calculamos el precio en el servidor para preveer manipulación desde el cliente
             // Ignoramos cualquier precio que venga en el JSON para evitar fraudes.
 
             // Clean Code - Reglas de nombrado: variable con unidad (precioCalculado -> calculatedPriceInEuros )
