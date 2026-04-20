@@ -62,88 +62,62 @@ public class Embarcacion {
         this.registration = registration;
     }
 
-    // --- Getters y Setters ---
-
-    /**
-     * @return El DNI del patrón asignado.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getSkipperId() {
         return skipperId;
     }
 
-    /**
-     * @param skipperId El DNI del patrón a asignar.
-     */
+      //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setSkipperId(String skipperId) {
         this.skipperId = skipperId;
     }
 
-    /**
-     * @return Las dimensiones de la embarcación (como String).
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getDimensions() {
         return dimensions;
     }
 
-    /**
-     * @param dimensions Las dimensiones de la embarcación.
-     */
+     //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setDimensions(String dimensions) {
         this.dimensions = dimensions;
     }
 
-    /**
-     * @return El número de plazas.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public int getSeats() {
         return seats;
     }
 
-    /**
-     * @param seats El número de plazas.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setSeats(int seats) {
         this.seats = seats;
     }
 
-    /**
-     * @return El tipo de embarcación (como String).
-     */
+     //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getType() {
         return type;
     }
 
-    /**
-     * @param type El tipo de embarcación.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setType(String type) {
         this.type = type;
     }
 
-    /**
-     * @return El nombre de la embarcación.
-     */
+     //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name El nombre de la embarcación.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return La matrícula de la embarcación.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getRegistration() {
         return registration;
     }
 
-    /**
-     * @param registration La matrícula de la embarcación.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setRegistration(String registration) {
         this.registration = registration;
     }

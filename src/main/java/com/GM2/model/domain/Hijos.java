@@ -50,7 +50,6 @@ public class Hijos {
 
     }
 
-    // Getters y Setters
 
     public String getNationalId() {
         return nationalId;

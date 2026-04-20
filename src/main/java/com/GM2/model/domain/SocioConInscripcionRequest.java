@@ -49,116 +49,72 @@ public class SocioConInscripcionRequest {
         this.titularNationalId = titularNationalId;
     }
 
-    // Getters y Setters
-
-    /**
-     * Obtiene el DNI del nuevo socio.
-     * @return DNI del socio.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getNationalId() { 
         return nationalId; 
     }
 
-    /**
-     * Establece el DNI del nuevo socio.
-     * @param nationalId DNI del socio.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setNationalId(String nationalId) { 
         this.nationalId = nationalId; 
     }
 
-    /**
-     * Obtiene el nombre del nuevo socio.
-     * @return Nombre del socio.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getName() { 
         return name; 
     }
 
-    /**
-     * Establece el nombre del nuevo socio.
-     * @param name Nombre del socio.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setName(String name) { 
         this.name = name; 
     }
 
-    /**
-     * Obtiene los apellidos del nuevo socio.
-     * @return Apellidos del socio.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getSurname() { 
         return surname; 
     }
 
-    /**
-     * Establece los apellidos del nuevo socio.
-     * @param surname Apellidos del socio.
-     */
+     //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setSurname(String surname) { 
         this.surname = surname; 
     }
 
-    /**
-     * Obtiene la fecha de nacimiento del nuevo socio.
-     * @return Fecha de nacimiento del socio.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public LocalDate getBirthDate() { 
         return birthDate; 
     }
 
-    /**
-     * Establece la fecha de nacimiento del nuevo socio.
-     * @param birthDate Fecha de nacimiento del socio.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setBirthDate(LocalDate birthDate) { 
         this.birthDate = birthDate; 
     }
 
-    /**
-     * Obtiene la dirección del nuevo socio.
-     * @return Dirección del socio.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getAddress() { 
         return address; 
     }
 
-    /**
-     * Establece la dirección del nuevo socio.
-     * @param address Dirección del socio.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setAddress(String address) { 
         this.address = address; 
     }
 
-    /**
-     * Obtiene si el socio tiene licencia de patrón.
-     * @return true si tiene licencia, false en caso contrario.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public Boolean getIsSkipper() { 
         return isSkipper; 
     }
 
-    /**
-     * Establece si el socio tiene licencia de patrón.
-     * @param isSkipper true si tiene licencia, false en caso contrario.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setIsSkipper(Boolean isSkipper) { 
         this.isSkipper = isSkipper; 
     }
 
-    /**
-     * Obtiene el DNI del titular de la inscripción existente.
-     * @return DNI del titular.
-     */
+     //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getTitularNationalId() { 
         return titularNationalId; 
     }
 
-    /**
-     * Establece el DNI del titular de la inscripción existente.
-     * @param titularNationalId DNI del titular.
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setTitularNationalId(String titularNationalId) { 
         this.titularNationalId = titularNationalId; 
     }

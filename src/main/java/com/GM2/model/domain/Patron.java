@@ -42,52 +42,52 @@ public class Patron {
         this.titleIssueDate = titleIssueDate;
     }
 
-    /** Getter del nombre */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getName() {
         return name;
     }
 
-    /** Setter del nombre */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setName(String name) {
         this.name = name;
     }
 
-    /** Getter de los apellidos */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getSurname() {
         return surname;
     }
 
-    /** Setter de los apellidos */
+     //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setSurname(String surname) {
         this.surname = surname;
     }
 
-    /** Getter del DNI */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getNationalId() {
         return nationalId;
     }
 
-    /** Setter del DNI */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setNationalId(String nationalId) {
         this.nationalId = nationalId;
     }
 
-    /** Getter de la fecha de nacimiento */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public LocalDate getBirthDate() {
         return birthDate;
     }
 
-    /** Setter de la fecha de nacimiento */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 
-    /** Getter de la fecha de expedición del título */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public LocalDate getTitleIssueDate() {
         return titleIssueDate;
     }
 
-    /** Setter de la fecha de expedición del título */
+      //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setTitleIssueDate(LocalDate titleIssueDate) {
         this.titleIssueDate = titleIssueDate;
     }

@@ -38,7 +38,6 @@ public class Reserva {
         this.description = description;
     }
 
-    // --- Métodos Getters y Setters ---
 
     public int getId() {
         return id;

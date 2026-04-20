@@ -97,7 +97,6 @@ public class Inscripcion {
             this.children = children;
     }
 
-    // Getters y Setters
 
     public int getId() {
         return id;

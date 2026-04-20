@@ -104,7 +104,6 @@ public class Socio {
         this.hasSkipperLicense = hasSkipperLicense;
     }
 
-    // Getters y Setters
 
     public String getName() {
         return name;

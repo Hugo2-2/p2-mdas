@@ -32,56 +32,32 @@ public class Acompanante {
         this.rentalId = rentalId;
     }
 
-    /**
-     * Obtiene el ID del acompanante.
-     * 
-     * @return ID del acompanante
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public int getId() {
         return id;
     }
 
-    /**
-     * Establece el ID del acompanante.
-     * 
-     * @param id ID del acompanante
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setId(int id) {
         this.id = id;
     }
     
-    /**
-     * Obtiene el DNI del acompanante.
-     * 
-     * @return DNI del acompanante
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getNationalId() {
         return nationalId;
     }
 
-    /**
-     * Establece el DNI del acompanante.
-     * 
-     * @param nationalId DNI del acompanante
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setNationalId(String nationalId) {
         this.nationalId = nationalId;
     }
 
-    /**
-     * Obtiene el ID del alquiler al que pertenece.
-     * 
-     * @return ID del alquiler
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public int getRentalId() {
         return rentalId;
     }
 
-    /**
-     * Establece el ID del alquiler al que pertenece.
-     * 
-     * @param rentalId ID del alquiler
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setRentalId(int rentalId) {
         this.rentalId = rentalId;
     }

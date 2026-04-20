@@ -52,146 +52,82 @@ public class Alquiler {
         this.companions = companions;
     }
 
-    /**
-     * Obtiene el ID del alquiler.
-     * 
-     * @return ID del alquiler
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public int getId() {
         return id;
     }
     
-    /**
-     * Establece el ID del alquiler.
-     * 
-     * @param id ID del alquiler     
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setId(int id) {
         this.id = id;
     }
     
-    /**
-     * Obtiene la fecha de inicio del alquiler.
-     * 
-     * @return Fecha de inicio del alquiler         
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public LocalDate getStartDate() {
         return startDate;
     }
     
-    /**
-     * Establece la fecha de inicio del alquiler.
-     * 
-     * @param startDate Fecha de inicio del alquiler         
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
     
-    /**
-     * Obtiene la fecha de fin del alquiler.
-     * 
-     * @return Fecha de fin del alquiler         
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public LocalDate getEndDate() {
         return endDate;
     }
     
-    /**
-     * Establece la fecha de fin del alquiler.
-     * 
-     * @param endDate Fecha de fin del alquiler         
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
     
-    /**
-     * Obtiene el precio total del alquiler.
-     * 
-     * @return Precio total del alquiler         
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public double getPrice() {
         return price;
     }
     
-    /**
-     * Establece el precio total del alquiler.
-     * 
-     * @param price Precio total del alquiler         
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setPrice(double price) {
         this.price = price;
     }
     
-    /**
-     * Obtiene el número de plazas reservadas.
-     * 
-     * @return Número de plazas reservadas         
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public int getSeats() {
         return seats;
     }
     
-    /**
-     * Establece el número de plazas reservadas.
-     * 
-     * @param seats Número de plazas reservadas         
-     */
+     //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setSeats(int seats) {
         this.seats = seats;
     }
 
-    /**
-     * Obtiene el DNI del usuario que realiza el alquiler.
-     * 
-     * @return DNI del usuario         
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getUserNationalId() {
         return userNationalId;
     }
 
-    /**
-     * Establece el DNI del usuario que realiza el alquiler.
-     * 
-     * @param userNationalId DNI del usuario         
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setUserNationalId(String userNationalId) {
         this.userNationalId = userNationalId;
     }
 
-    /**
-     * Obtiene la lista de acompañantes del alquiler.
-     * 
-     * @return Lista de acompañantes del alquiler         
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public List<Acompanante> getCompanions() {
         return companions;
     }
 
-    /**
-     * Establece la lista de acompañantes del alquiler.
-     * 
-     * @param companions Lista de acompañantes del alquiler         
-     */
+     //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setCompanions(List<Acompanante> companions) {
         this.companions = companions;
     }
 
-    /**
-     * Obtiene la matrícula de la embarcación alquilada.
-     * 
-     * @return Matrícula de la embarcación alquilada         
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getBoatRegistration() {
         return boatRegistration;
     }
 
-    /**
-     * Establece la matrícula de la embarcación alquilada.
-     * 
-     * @param boatRegistration Matrícula de la embarcación alquilada         
-     */
+    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setBoatRegistration(String boatRegistration) {
         this.boatRegistration = boatRegistration;
     }
