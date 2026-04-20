@@ -1,21 +1,22 @@
+//Clean Code - Reglas de comentarios: Comentario redundate sobre importaciones
 package com.GM2.controller.reserva;
 
-import com.GM2.model.domain.Alquiler; // Clase de dominio para Alquiler
-import com.GM2.model.domain.Embarcacion; // Clase de dominio para Embarcacion
-import com.GM2.model.domain.Reserva; // Clase de dominio para Reserva
-import com.GM2.model.domain.Socio; // Clase de dominio para Socio
-import com.GM2.model.repository.AlquilerRepository; // Repositorio para acceder a datos de Alquiler
-import com.GM2.model.repository.EmbarcacionRepository; // Repositorio para acceder a datos de Embarcacion
-import com.GM2.model.repository.ReservaRepository; // Repositorio para acceder a datos de Reserva
-import com.GM2.model.repository.SocioRepository; // Repositorio para acceder a datos de Socio
+import com.GM2.model.domain.Alquiler; 
+import com.GM2.model.domain.Embarcacion; 
+import com.GM2.model.domain.Reserva;
+import com.GM2.model.domain.Socio; 
+import com.GM2.model.repository.AlquilerRepository; 
+import com.GM2.model.repository.EmbarcacionRepository;
+import com.GM2.model.repository.ReservaRepository; 
+import com.GM2.model.repository.SocioRepository; 
 
-import org.springframework.stereotype.Controller; // Marca la clase como un controlador de Spring MVC
-import org.springframework.web.bind.annotation.*; // Importa anotaciones web (GetMapping, PostMapping, RequestMapping, etc.)
-import org.springframework.web.bind.support.SessionStatus; // Para manejar el estado de la sesión
-import org.springframework.web.servlet.ModelAndView; // Para manejar la vista y el modelo
+import org.springframework.stereotype.Controller; 
+import org.springframework.web.bind.annotation.*; 
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.time.LocalDate; // Para trabajar con fechas
-import java.util.List; // Para manejar colecciones
+import java.time.LocalDate; 
+import java.util.List;
 
 /**
  * Controlador web (MVC) para la gestión de Reservas.
