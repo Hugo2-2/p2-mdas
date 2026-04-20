@@ -23,7 +23,8 @@ import java.util.List;
 
 //Clean Code - Reglas de comentarios: Comentario redundate sobre @RestController
 @RestController 
-@RequestMapping(path = "api/reservas", produces = "application/json") // Define la URL base común para todos los métodos.
+// Clean Code - Reglas de comentarios: Comentario redundate sobre @RequestMapping
+@RequestMapping(path = "api/reservas", produces = "application/json")
 public class ReservaRestController {
 
     // Repositorios necesarios para acceder a la BBDD.
