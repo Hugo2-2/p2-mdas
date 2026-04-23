@@ -18,7 +18,6 @@ public class Inscripcion {
     private String titularMemberId;
     private float annualFee;
     private LocalDate creationDate;
-    // Clean Code - Reglas de nombrado: cambiar nombre de variable por nombre pronunciable (segundoAudlto -> secondAdult)
     private String secondAdult;
     private List<Hijos> children;
 

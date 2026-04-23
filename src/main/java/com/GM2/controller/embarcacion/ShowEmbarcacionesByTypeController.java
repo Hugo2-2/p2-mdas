@@ -30,7 +30,6 @@ public class ShowEmbarcacionesByTypeController {
 
     private final EmbarcacionRepository embarcacionRepository;
     PatronRepository patronRepository;
-
     private ModelAndView modelAndView = new ModelAndView();
 
     /**

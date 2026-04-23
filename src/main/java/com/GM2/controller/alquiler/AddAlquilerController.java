@@ -41,15 +41,11 @@ public class AddAlquilerController {
     private static final int MES_INICIO_TEMPORADA_BAJA_OCT = 10;
     private static final int MES_FIN_TEMPORADA_BAJA_ABR = 4;
     private static final int MAX_DIAS_ALQUILER_TEMPORADA_BAJA = 3;
-    
     private static final int MES_INICIO_TEMPORADA_ALTA_MAY = 5;
     private static final int MES_FIN_TEMPORADA_ALTA_SEP = 9;
     private static final int SEMANA_TEMPORADA_ALTA = 7;
     private static final int QUINCENA_TEMPORADA_ALTA = 14;
-    
     private static final double PRECIO_BASE_POR_PLAZA_Y_DIA = 20.0;
-
-
 
     /**
      * Constructor para la inyección de dependencias.
