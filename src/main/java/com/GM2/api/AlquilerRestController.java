@@ -154,8 +154,8 @@ public class AlquilerRestController {
     public ResponseEntity<List<Embarcacion>> getEmbarcacionesDisponibles(
             @RequestParam LocalDate fechaInicio, 
             @RequestParam LocalDate fechaFin) {
+        // Clean Code - Regla 10: Se han eliminado los comentarios explicativos línea a línea, confiando en la expresividad del código y los buenos nombres.
         try {
-            // Validar fechas
             if (fechaInicio.isAfter(fechaFin)) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
@@ -225,6 +225,7 @@ public class AlquilerRestController {
      */
     @PostMapping(consumes = "application/json")
     public ResponseEntity<Alquiler> createAlquiler(@RequestBody Alquiler nuevoAlquiler) {
+        // Clean Code - Regla 10: Se han eliminado los comentarios explicativos línea a línea, confiando en la expresividad del código y los buenos nombres.
         try {
 
             // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'tieneCamposObligatoriosNulos'.
@@ -232,49 +233,40 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
 
-
-            // Validaciones básicas
             if (nuevoAlquiler.getStartDate().isAfter(nuevoAlquiler.getEndDate())) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
             LocalDate inicio = nuevoAlquiler.getStartDate();
             LocalDate fin = nuevoAlquiler.getEndDate();
-            // Clean Code - Reglas de nombrado: variable con unidad (dias -> totalDays)
             long totalDays = ChronoUnit.DAYS.between(inicio, fin) + 1;
-            
+
             int mesInicio = inicio.getMonthValue();
-            
+
             if (mesInicio >= 10 || mesInicio <= 4) {
                 if (totalDays > 3) {
                     return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
                 }
-            } 
-            else if (mesInicio >= 5 && mesInicio <= 9) {
+            } else if (mesInicio >= 5 && mesInicio <= 9) {
                 if (totalDays != 7 && totalDays != 14) {
                     return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
                 }
             }
 
-
             Socio socioAlquiler = socioRepository.findSocioByDNI(nuevoAlquiler.getUserNationalId());
-            // Verificar que el socio existe
-            if ( socioAlquiler == null) {
+            if (socioAlquiler == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
-            //Verificar que el socio tenga título de patrón
-            if (!socioAlquiler.getHasSkipperLicense() ){
+            if (!socioAlquiler.getHasSkipperLicense()) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
-            // Verificar que la embarcación existe
             Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(nuevoAlquiler.getBoatRegistration());
             if (embarcacion == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
-            // Verificar disponibilidad de la embarcación en las fechas solicitadas
             List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
             List<Reserva> reservas = reservaRepository.findAllReservas();
 
@@ -294,16 +286,12 @@ public class AlquilerRestController {
                         return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
                     }
                 }
-            }   
+            }
 
-            // Calcular precio inicial (20€ por día para el creador del alquiler)
-
-            // Clean Code - Reglas de nombrado: variable con unidad (precio -> priceInEuros )
             double priceInEuros = 20.0 * totalDays;
             nuevoAlquiler.setPrice(priceInEuros);
             nuevoAlquiler.setSeats(1);
 
-            // Crear el alquiler
             boolean exito = alquilerRepository.addAlquiler(nuevoAlquiler);
 
             if (exito) {
@@ -328,8 +316,8 @@ public class AlquilerRestController {
      */
     @PatchMapping("/{id}/acompanantes")
     public ResponseEntity<Alquiler> addAcompanante(@PathVariable Integer id, @RequestBody String dniSocio) {
+        // Clean Code - Regla 10: Se han eliminado los comentarios explicativos línea a línea, confiando en la expresividad del código y los buenos nombres.
         try {
-            // Verificar que el alquiler existe y es futuro
             Alquiler alquiler = alquilerRepository.findAlquilerById(id);
             if (alquiler == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -339,18 +327,15 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
-            // Verificar que el socio existe
             Socio socio = socioRepository.findSocioByDNI(dniSocio);
             if (socio == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
-            // Verificar que no es el socio titular
             if (dniSocio.equals(alquiler.getUserNationalId())) {
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT);
             }
 
-            // Verificar que el socio no está ya vinculado
             List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
             for (Acompanante acompanante : acompanantes) {
                 if (acompanante.getNationalId().equals(dniSocio)) {
@@ -358,19 +343,16 @@ public class AlquilerRestController {
                 }
             }
 
-            // Obtener embarcación para verificar límite de plazas
             Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(alquiler.getBoatRegistration());
             if (embarcacion == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
-            // Verificar que hay plazas disponibles en la embarcación
-            int totalPersonas = acompanantes.size() + 1; // +1 por el titular
+            int totalPersonas = acompanantes.size() + 1;
             if (totalPersonas >= embarcacion.getSeats()) {
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT);
             }
 
-            // Añadir acompañante
             Acompanante acompanante = new Acompanante();
             acompanante.setNationalId(dniSocio);
             acompanante.setRentalId(id);
@@ -380,21 +362,15 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            // Actualizar número de plazas (1 titular + acompañantes)
-            int nuevasPlazas = totalPersonas + 1; // Añadimos el nuevo acompañante
+            int nuevasPlazas = totalPersonas + 1;
             alquiler.setSeats(nuevasPlazas);
-            
-            // Recalcular precio
 
-            // Clean Code - Reglas de nombrado: variable con unidad (dias -> totalDays)
             long totalDays = ChronoUnit.DAYS.between(alquiler.getStartDate(), alquiler.getEndDate()) + 1;
-            // Clean Code - Reglas de nombrado: variable con unidad (nuveoPrecio -> newPriceInEuros )
             double newPriceInEuros = 20.0 * alquiler.getSeats() * totalDays;
             alquiler.setPrice(newPriceInEuros);
 
             boolean actualizado = alquilerRepository.updateAlquiler(alquiler);
             if (!actualizado) {
-                // Si falla la actualización, revertir la adición del acompañante
                 acompanantesRepository.deleteAcompanante(id, dniSocio);
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -422,8 +398,8 @@ public class AlquilerRestController {
     @PatchMapping("/{id}/acompanantes/{dniSocio}")
     public ResponseEntity<Alquiler> removeAcompanante(@PathVariable Integer id, 
                                                     @PathVariable String dniSocio) {
+        // Clean Code - Regla 10: Se han eliminado los comentarios explicativos línea a línea, confiando en la expresividad del código y los buenos nombres.
         try {
-            // Verificar que el alquiler existe y es futuro
             Alquiler alquiler = alquilerRepository.findAlquilerById(id);
             if (alquiler == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -433,13 +409,11 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
-            // Verificar que no se intenta eliminar al titular
             if (dniSocio.equals(alquiler.getUserNationalId())) {
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT);
             }
 
             boolean encontrado = false;
-            // Verificar que el socio está vinculado como acompañante
             List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
             for (Acompanante acompanante : acompanantes) {
                 if (acompanante.getNationalId().equals(dniSocio)) {
@@ -452,19 +426,14 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
-            // Eliminar acompañante
             boolean exito = acompanantesRepository.deleteAcompanante(id, dniSocio);
             if (!exito) {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            // Obtener lista actualizada de acompañantes
             acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
-            // Actualizar plazas (1 titular + acompañantes restantes)
             alquiler.setSeats(acompanantes.size() + 1);
 
-            // Recalcular precio
-            // Clean Code - Reglas de nombrado: variable con unidad (dias -> totalDays)
             long totalDays = ChronoUnit.DAYS.between(alquiler.getStartDate(), alquiler.getEndDate()) + 1;
             double nuevoPrecio = 20.0 * alquiler.getSeats() * totalDays;
             alquiler.setPrice(nuevoPrecio);
@@ -496,19 +465,17 @@ public class AlquilerRestController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> cancelAlquiler(@PathVariable Integer id) {
+        // Clean Code - Regla 10: Se han eliminado los comentarios explicativos línea a línea, confiando en la expresividad del código y los buenos nombres.
         try {
-            // Verificar que el alquiler existe
             Alquiler alquiler = alquilerRepository.findAlquilerById(id);
             if (alquiler == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
-            // Verificar que es futuro
             if (alquiler.getStartDate().isBefore(LocalDate.now())) {
                 return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
-            // Eliminar el alquiler
             boolean exito = alquilerRepository.deleteAlquiler(id);
             if (exito) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);

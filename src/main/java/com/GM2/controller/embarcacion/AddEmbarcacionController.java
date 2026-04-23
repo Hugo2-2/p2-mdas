@@ -73,6 +73,7 @@ public class AddEmbarcacionController {
      * @param redirectAttributes Interfaz para pasar mensajes (éxito/error) a la vista de redirección.
      * @return Un String que indica la URL a la que se debe redirigir.
      */
+    // Clean Code - Regla 10: Se han eliminado los comentarios explicativos línea a línea, confiando en la expresividad del código y los buenos nombres.
     @PostMapping("/addEmbarcacion")
     public String addEmbarcacion(@ModelAttribute Embarcacion newEmbarcacion,
                                  SessionStatus sessionStatus,
@@ -85,7 +86,6 @@ public class AddEmbarcacionController {
                 " id_patron=" + newEmbarcacion.getSkipperId() +
                 " plazas=" + newEmbarcacion.getSeats());
 
-        // 1. Comprobamos que la matrícula sea única, al igual con el nombre
         if (embarcacionRepository.findEmbarcacionByMatricula(newEmbarcacion.getRegistration()) != null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: Ya existe una embarcación con esa matrícula");
             sessionStatus.setComplete();
@@ -94,15 +94,11 @@ public class AddEmbarcacionController {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: Ya existe una embarcación con dicho nombre asociado");
             sessionStatus.setComplete();
             return "redirect:/api/embarcaciones/addEmbarcacion";
-        }
-        // 2. Comprobamos que al menos sea 2 plazas (1 para patron y otra para quien reserva)
-        else if (newEmbarcacion.getSeats() < 2) {
+        } else if (newEmbarcacion.getSeats() < 2) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: El número mínimo de plazas debe ser 2");
             sessionStatus.setComplete();
             return "redirect:/api/embarcaciones/addEmbarcacion";
-        }
-        // 3. Validación de dimensiones, se mete en un try catch, ya que hay que pasar de string a double las dimensiones
-        else try {
+        } else try {
                 double dimensiones = Double.parseDouble(newEmbarcacion.getDimensions());
                 if (dimensiones < 1) {
                     redirectAttributes.addFlashAttribute("errorMessage", "Error: La embarcación debe tener al menos 1m2");
@@ -110,7 +106,6 @@ public class AddEmbarcacionController {
                     return "redirect:/api/embarcaciones/addEmbarcacion";
                 }
 
-                // 4. Validación de Patrón
                 String patronDni = newEmbarcacion.getSkipperId();
                 // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'esDniValido'.
                 if (esDniValido(patronDni)) {
@@ -125,8 +120,7 @@ public class AddEmbarcacionController {
                     }
                 }
 
-                // 5. Insertamos los datos
-                boolean resultado = embarcacionRepository.addEmbarcacion(newEmbarcacion); // Llama al método "tonto"
+                boolean resultado = embarcacionRepository.addEmbarcacion(newEmbarcacion);
                 if (resultado) {
                     redirectAttributes.addFlashAttribute("successMessage", "La embarcacion se ha ingresado correctamente");
                 } else {

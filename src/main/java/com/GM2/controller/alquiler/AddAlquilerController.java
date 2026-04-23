@@ -95,22 +95,23 @@ public class AddAlquilerController {
      * @param status Controlador de estado de la sesión para limpiarla tras el envío.
      * @return ModelAndView con el mensaje de éxito o error
      */
+    // Clean Code - Regla 10: Se han eliminado los comentarios explicativos línea a línea, confiando en la expresividad del código y los buenos nombres.
     @PostMapping("/addAlquiler")
     public ModelAndView procesarFormularioAlquiler(@ModelAttribute Alquiler alquiler, SessionStatus status) {
-    
+
         ModelAndView modelAndView = new ModelAndView();
 
         String resultado;
         Socio socio = socioRepository.findSocioByDNI(alquiler.getUserNationalId());
 
-        if (socio == null){
+        if (socio == null) {
             resultado = "El socio no existe.";
             modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
             status.setComplete();
             return modelAndView;
         }
-        if (!socio.getHasSkipperLicense()){ 
+        if (!socio.getHasSkipperLicense()) {
             resultado = "El socio no tiene título de patrón.";
             modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
@@ -120,10 +121,9 @@ public class AddAlquilerController {
 
         LocalDate inicio = alquiler.getStartDate();
         LocalDate fin = alquiler.getEndDate();
-        // Clean Code - Reglas de nombrado: variable con unidad (dias -> totalDays)
         long totalDays = ChronoUnit.DAYS.between(inicio, fin) + 1;
 
-        if (inicio.isAfter(fin)){ 
+        if (inicio.isAfter(fin)) {
             resultado = "La fecha de inicio no puede ser posterior a la de fin.";
             modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
@@ -132,10 +132,8 @@ public class AddAlquilerController {
         }
 
         int mesInicio = inicio.getMonthValue();
-        // Clean Code - Regla 7: Extracción del valor numérico constante '10' y '4' a variables descriptivas para meses para evitar números mágicos.
         if (mesInicio >= MES_INICIO_TEMPORADA_BAJA_OCT || mesInicio <= MES_FIN_TEMPORADA_BAJA_ABR) {
-            // Clean Code - Regla 7: Extracción del valor numérico constante '3' a la variable 'MAX_DIAS_ALQUILER_TEMPORADA_BAJA' para evitar números mágicos.
-            if (totalDays > MAX_DIAS_ALQUILER_TEMPORADA_BAJA){
+            if (totalDays > MAX_DIAS_ALQUILER_TEMPORADA_BAJA) {
                 resultado = "Solo se permiten hasta 3 días entre octubre y abril.";
                 modelAndView.setViewName("alquiler/addAlquilerView");
                 modelAndView.addObject("mensajeError", resultado);
@@ -143,8 +141,7 @@ public class AddAlquilerController {
                 return modelAndView;
             }
         } else if (mesInicio >= MES_INICIO_TEMPORADA_ALTA_MAY && mesInicio <= MES_FIN_TEMPORADA_ALTA_SEP) {
-            // Clean Code - Regla 7: Extracción del valor numérico constante '7' y '14' a variables descriptivas para evitar números mágicos.
-            if (totalDays != SEMANA_TEMPORADA_ALTA && totalDays != QUINCENA_TEMPORADA_ALTA){ 
+            if (totalDays != SEMANA_TEMPORADA_ALTA && totalDays != QUINCENA_TEMPORADA_ALTA) {
                 resultado = "Solo se permiten alquileres de 7 o 14 días entre mayo y septiembre.";
                 modelAndView.setViewName("alquiler/addAlquilerView");
                 modelAndView.addObject("mensajeError", resultado);
@@ -154,14 +151,14 @@ public class AddAlquilerController {
         }
 
         Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(alquiler.getBoatRegistration());
-        if (embarcacion == null){
+        if (embarcacion == null) {
             resultado = "Embarcación no encontrada.";
             modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
             status.setComplete();
             return modelAndView;
         }
-        if (alquiler.getSeats() > embarcacion.getSeats()){
+        if (alquiler.getSeats() > embarcacion.getSeats()) {
             resultado = "No hay suficientes plazas.";
             modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
@@ -171,25 +168,18 @@ public class AddAlquilerController {
 
         List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcaciones();
         List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
-
-        // Clean Code - Reglas de nombrado: el nombre de una coleccion ayuda a entender su contenido (disponibles -> availableBoats)
         List<Embarcacion> availableBoats = new ArrayList<>();
         List<Reserva> reservas = reservaRepository.findAllReservas();
 
-        // Clean Code - Reglas de comentarios: Comentario redundate sobre comparaciones nulas
         if (embarcaciones == null) embarcaciones = new ArrayList<>();
         if (alquileres == null) alquileres = new ArrayList<>();
         if (reservas == null) reservas = new ArrayList<>();
 
-
-        // Clean Code - Regla 6: Renombrado de variable 'e' a 'embarcacionEvaluada' para evitar variables de una única letra.
         for (Embarcacion embarcacionEvaluada : embarcaciones) {
             boolean ocupada = false;
 
-            // Clean Code - Regla 6: Renombrado de variable 'a' a 'alquilerExistente' para evitar variables de una única letra.
             for (Alquiler alquilerExistente : alquileres) {
                 if (alquilerExistente.getBoatRegistration().equals(embarcacionEvaluada.getRegistration())) {
-                    // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'haySuperposicionConAlquiler'.
                     if (haySuperposicionConAlquiler(inicio, fin, alquilerExistente)) {
                         ocupada = true;
                         break;
@@ -198,10 +188,8 @@ public class AddAlquilerController {
             }
 
             if (!ocupada) {
-                // Clean Code - Regla 6: Renombrado de variable 'r' a 'reservaExistente' para evitar variables de una única letra.
                 for (Reserva reservaExistente : reservas) {
                     if (reservaExistente.getBoatRegistration().equals(embarcacionEvaluada.getRegistration())) {
-                        // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'fechaReservaEstaEnRangoAlquiler'.
                         if (fechaReservaEstaEnRangoAlquiler(reservaExistente.getDate(), inicio, fin)) {
                             ocupada = true;
                             break;
@@ -209,22 +197,21 @@ public class AddAlquilerController {
                     }
                 }
             }
-            
+
             if (!ocupada) {
                 availableBoats.add(embarcacionEvaluada);
             }
         }
-        
+
         boolean disponible = false;
-        // Clean Code - Regla 6: Renombrado de variable 'e' a 'embarcacionDisponible' para evitar variables de una única letra.
         for (Embarcacion embarcacionDisponible : availableBoats) {
             if (embarcacionDisponible.getRegistration().equals(alquiler.getBoatRegistration())) {
                 disponible = true;
                 break;
             }
         }
-        
-        if (!disponible){ 
+
+        if (!disponible) {
             resultado = "La embarcación no está disponible en esas fechas.";
             modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
@@ -232,33 +219,25 @@ public class AddAlquilerController {
             return modelAndView;
         }
 
-
-        // Clean Code - Reglas de nombrado: variable con unidad (precio -> priceInEuros )
-        // Clean Code - Regla 7: Extracción del valor numérico constante '20.0' a la variable 'PRECIO_BASE_POR_PLAZA_Y_DIA' para evitar números mágicos.
         double priceInEuros = PRECIO_BASE_POR_PLAZA_Y_DIA * alquiler.getSeats() * totalDays;
         alquiler.setPrice(priceInEuros);
 
         boolean insertado = alquilerRepository.addAlquiler(alquiler);
         if (insertado) {
-            resultado = "OK:" + alquiler.getId(); // devolvemos ID de alquiler para el siguiente paso
+            resultado = "OK:" + alquiler.getId();
         } else {
             resultado = "Error al registrar el alquiler.";
         }
 
-        if (resultado.startsWith("OK:") ){
-
-        
-            // Extraer el id del alquiler
+        if (resultado.startsWith("OK:")) {
             Integer alquilerId = Integer.parseInt(resultado.substring(3));
             int plazas = alquiler.getSeats();
-            if( plazas > 1){
+            if (plazas > 1) {
                 modelAndView.setViewName("redirect:/api/acompanantes/" + alquilerId + "/" + plazas);
-            }
-            else{
+            } else {
                 modelAndView.setViewName("alquiler/addAlquilerView");
             }
         } else {
-            // Fallo: volvemos al formulario y mostramos mensaje de error
             modelAndView.setViewName("alquiler/addAlquilerView");
             modelAndView.addObject("mensajeError", resultado);
         }
