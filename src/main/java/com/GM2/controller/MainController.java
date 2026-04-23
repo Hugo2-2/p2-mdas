@@ -13,21 +13,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class MainController {
 
-    /**
-     * Muestra la página principal del sistema desde la ruta "/".
-     * 
-     * @return "menu" para mostrar la página de menú.
-     */
+    // Clean Code - Regla 9: Se ha eliminado la cabecera de esta función por ser un método simple y autoexplicativo.
     @GetMapping("/")
     public String home() {
         return "menu";
     }
 
-    /**
-     * Muestra la página de menú del sistema desde la ruta "/menu".
-     * 
-     * @return "menu" para mostrar la página de menú.     
-     */
     @GetMapping("/menu")
     public String menu() {
         return "menu";

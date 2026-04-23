@@ -52,14 +52,7 @@ public class AddEmbarcacionController {
         this.patronRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
-    /**
-     * Devuelve la vista del formulario para registrar una nueva embarcación.
-     *
-     * La vista incluye un objeto vacío de Embarcacion para rellenar sus atributos
-     * desde el formulario HTML.
-     *
-     * @return un ModelAndView con el nombre de la vista y el objeto newEmbarcacion.
-     */
+    // Clean Code - Regla 9: Se ha eliminado la cabecera de esta función por ser un método simple y autoexplicativo.
     @GetMapping("/addEmbarcacion")
     public ModelAndView getAddEmbarcacionView() {
         ModelAndView modelAndView = new ModelAndView();
@@ -148,13 +141,6 @@ public class AddEmbarcacionController {
     }
 
     // Clean Code - Regla 7: Se han eliminado los marcadores de separación visuales (ej. --- Métodos privados ---) para evitar ruido innecesario en el código.
-    /**
-     * Verifica si un DNI es válido (no nulo y no vacío).
-     * Utilizado para comprobar si se ha proporcionado un patrón para la embarcación.
-     *
-     * @param dni El DNI a comprobar
-     * @return true si el DNI no es nulo y no está vacío
-     */
     private boolean esDniValido(String dni) {
         return dni != null && !dni.trim().isEmpty();
     }

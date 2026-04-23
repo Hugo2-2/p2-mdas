@@ -24,14 +24,7 @@ public class ShowAllPatronesController {
     PatronRepository patronRepository;
     private ModelAndView modelAndView = new ModelAndView();
 
-    /**
-     * Constructor para la inyección de dependencias del repositorio de patrones.
-     *
-     * Configura además la ruta del archivo de propiedades SQL utilizado por el repositorio
-     * para las consultas a la base de datos.
-     *
-     * @param patronRepository Repositorio para acceder a los datos de patrones.
-     */
+    // Clean Code - Regla 9: Se ha eliminado la cabecera de esta función por ser un método simple y autoexplicativo.
     public ShowAllPatronesController(PatronRepository patronRepository) {
         this.patronRepository = patronRepository;
         this.modelAndView.setViewName("patron/showAllPatronesView");
@@ -40,15 +33,6 @@ public class ShowAllPatronesController {
         this.patronRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
-    /**
-     * Muestra la vista con la lista de todos los patrones registrados.
-     *
-     * Obtiene todos los patrones mediante el repositorio. Si la lista está vacía,
-     * se pasa un valor nulo al modelo; de lo contrario, se pasa la lista completa.
-     *
-     * @return ModelAndView con la vista "showAllPatronesView" y los datos de los patrones.
-     */
-    // Clean Code - Regla 9: Renombrado de la función 'showAllEmbarcaciones' a 'getAll' para adecuar su longitud a su nivel de uso/alcance global (endpoint público).
     @GetMapping("/showAllPatrones")
     ModelAndView getAll() {
         List<Patron> patrones = patronRepository.findAllPatrones();
