@@ -176,8 +176,8 @@ public class AlquilerRestController {
                 if (todosAlquileres != null) {
                     for (Alquiler alquiler : todosAlquileres) {
                         if (alquiler.getBoatRegistration().equals(embarcacion.getRegistration())) {
-                            // Verificar superposición de fechas
-                            if (!(fechaFin.isBefore(alquiler.getStartDate()) || fechaInicio.isAfter(alquiler.getEndDate()))) {
+                            // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'haySuperposicionConAlquiler'.
+                            if (haySuperposicionConAlquiler(fechaInicio, fechaFin, alquiler)) {
                                 disponible = false;
                                 break;
                             }
@@ -185,13 +185,12 @@ public class AlquilerRestController {
                     }
                 }
 
-                if(disponible) {
-                    // Verificar conflictos con reservas existentes
+                if (disponible) {
                     if (todosReservas != null) {
                         for (Reserva reserva : todosReservas) {
                             if (reserva.getBoatRegistration().equals(embarcacion.getRegistration())) {
-                                // Verificar superposición de fechas
-                                if (!(fechaFin.isBefore(reserva.getDate()) || fechaInicio.isAfter(reserva.getDate()))) {
+                                // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'haySuperposicionConReserva'.
+                                if (haySuperposicionConReserva(fechaInicio, fechaFin, reserva)) {
                                     disponible = false;
                                     break;
                                 }
@@ -228,13 +227,10 @@ public class AlquilerRestController {
     public ResponseEntity<Alquiler> createAlquiler(@RequestBody Alquiler nuevoAlquiler) {
         try {
 
-            //Verificar datos del alquiler no nulos
-            if (nuevoAlquiler.getStartDate() == null || nuevoAlquiler.getEndDate() == null ||
-                nuevoAlquiler.getUserNationalId() == null || nuevoAlquiler.getUserNationalId().trim().isEmpty() ||
-                nuevoAlquiler.getBoatRegistration() == null || nuevoAlquiler.getBoatRegistration().trim().isEmpty()) {
-                
-                    return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-             }
+            // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'tieneCamposObligatoriosNulos'.
+            if (tieneCamposObligatoriosNulos(nuevoAlquiler)) {
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
 
 
             // Validaciones básicas
@@ -284,8 +280,8 @@ public class AlquilerRestController {
 
             for (Alquiler alquiler : alquileres) {
                 if (alquiler.getBoatRegistration().equals(nuevoAlquiler.getBoatRegistration())) {
-                    // Verificar superposición de fechas
-                    if (!(nuevoAlquiler.getEndDate().isBefore(alquiler.getStartDate()) || nuevoAlquiler.getStartDate().isAfter(alquiler.getEndDate()))) {
+                    // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'haySuperposicionConAlquiler'.
+                    if (haySuperposicionConAlquiler(nuevoAlquiler.getStartDate(), nuevoAlquiler.getEndDate(), alquiler)) {
                         return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
                     }
                 }
@@ -293,8 +289,8 @@ public class AlquilerRestController {
 
             for (Reserva reserva : reservas) {
                 if (reserva.getBoatRegistration().equals(nuevoAlquiler.getBoatRegistration())) {
-                    // Verificar superposición de fechas
-                    if (!(nuevoAlquiler.getEndDate().isBefore(reserva.getDate()) || nuevoAlquiler.getStartDate().isAfter(reserva.getDate()))) {
+                    // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'haySuperposicionConReserva'.
+                    if (haySuperposicionConReserva(nuevoAlquiler.getStartDate(), nuevoAlquiler.getEndDate(), reserva)) {
                         return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
                     }
                 }
@@ -523,6 +519,49 @@ public class AlquilerRestController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    // -----------------------------------------------------------------------
+    // Métodos privados extraídos - Clean Code Regla 6
+    // -----------------------------------------------------------------------
+
+    /**
+     * Verifica si los campos obligatorios de un alquiler son nulos o están vacíos.
+     *
+     * @param alquiler Alquiler a validar
+     * @return true si alguno de los campos obligatorios es nulo o está vacío
+     */
+    private boolean tieneCamposObligatoriosNulos(Alquiler alquiler) {
+        return alquiler.getStartDate() == null || alquiler.getEndDate() == null ||
+               alquiler.getUserNationalId() == null || alquiler.getUserNationalId().trim().isEmpty() ||
+               alquiler.getBoatRegistration() == null || alquiler.getBoatRegistration().trim().isEmpty();
+    }
+
+    /**
+     * Verifica si un rango de fechas [inicio, fin] se superpone con el período de un alquiler existente.
+     * La superposición ocurre cuando el nuevo rango no termina antes de que empiece el alquiler
+     * ni empieza después de que termine el alquiler.
+     *
+     * @param inicio            Fecha de inicio del nuevo período
+     * @param fin               Fecha de fin del nuevo período
+     * @param alquilerExistente Alquiler con el que se compara
+     * @return true si existe superposición de fechas
+     */
+    private boolean haySuperposicionConAlquiler(LocalDate inicio, LocalDate fin, Alquiler alquilerExistente) {
+        return !(fin.isBefore(alquilerExistente.getStartDate()) || inicio.isAfter(alquilerExistente.getEndDate()));
+    }
+
+    /**
+     * Verifica si un rango de fechas [inicio, fin] se superpone con la fecha de una reserva existente.
+     * Una reserva ocupa un único día, por lo que hay superposición si ese día cae dentro del rango.
+     *
+     * @param inicio           Fecha de inicio del nuevo período
+     * @param fin              Fecha de fin del nuevo período
+     * @param reservaExistente Reserva con la que se compara
+     * @return true si existe superposición de fechas
+     */
+    private boolean haySuperposicionConReserva(LocalDate inicio, LocalDate fin, Reserva reservaExistente) {
+        return !(fin.isBefore(reservaExistente.getDate()) || inicio.isAfter(reservaExistente.getDate()));
     }
 
 }

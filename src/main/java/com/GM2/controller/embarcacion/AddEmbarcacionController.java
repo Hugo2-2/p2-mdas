@@ -119,8 +119,8 @@ public class AddEmbarcacionController {
 
                 // 4. Validación de Patrón
                 String patronDni = newEmbarcacion.getSkipperId();
-                //El dni del patron no debe estar nulo, ni dejarse vacío
-                if (patronDni != null && !patronDni.trim().isEmpty()) {
+                // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'esDniValido'.
+                if (esDniValido(patronDni)) {
                     if (patronRepository.findPatronByDNI(patronDni) == null) {
                         redirectAttributes.addFlashAttribute("errorMessage", "Error: El patron no existe");
                         sessionStatus.setComplete();
@@ -146,4 +146,20 @@ public class AddEmbarcacionController {
         sessionStatus.setComplete();
         return "redirect:/api/embarcaciones/addEmbarcacion";
     }
+
+    // -----------------------------------------------------------------------
+    // Métodos privados extraídos - Clean Code Regla 6
+    // -----------------------------------------------------------------------
+
+    /**
+     * Verifica si un DNI es válido (no nulo y no vacío).
+     * Utilizado para comprobar si se ha proporcionado un patrón para la embarcación.
+     *
+     * @param dni El DNI a comprobar
+     * @return true si el DNI no es nulo y no está vacío
+     */
+    private boolean esDniValido(String dni) {
+        return dni != null && !dni.trim().isEmpty();
+    }
+
 }

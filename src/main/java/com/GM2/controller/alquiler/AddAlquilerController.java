@@ -189,7 +189,8 @@ public class AddAlquilerController {
             // Clean Code - Regla 6: Renombrado de variable 'a' a 'alquilerExistente' para evitar variables de una única letra.
             for (Alquiler alquilerExistente : alquileres) {
                 if (alquilerExistente.getBoatRegistration().equals(embarcacionEvaluada.getRegistration())) {
-                    if (!(inicio.isAfter(alquilerExistente.getEndDate()) || fin.isBefore(alquilerExistente.getStartDate()))) {
+                    // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'haySuperposicionConAlquiler'.
+                    if (haySuperposicionConAlquiler(inicio, fin, alquilerExistente)) {
                         ocupada = true;
                         break;
                     }
@@ -200,10 +201,8 @@ public class AddAlquilerController {
                 // Clean Code - Regla 6: Renombrado de variable 'r' a 'reservaExistente' para evitar variables de una única letra.
                 for (Reserva reservaExistente : reservas) {
                     if (reservaExistente.getBoatRegistration().equals(embarcacionEvaluada.getRegistration())) {
-                        // Una reserva ocupa la embarcación por UN DÍA específico
-                        // Verificar si alguna fecha del rango de alquiler coincide con la fecha de reserva
-                        LocalDate fechaReserva = reservaExistente.getDate();
-                        if (!fechaReserva.isBefore(inicio) && !fechaReserva.isAfter(fin)) {
+                        // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'fechaReservaEstaEnRangoAlquiler'.
+                        if (fechaReservaEstaEnRangoAlquiler(reservaExistente.getDate(), inicio, fin)) {
                             ocupada = true;
                             break;
                         }
@@ -268,5 +267,35 @@ public class AddAlquilerController {
         return modelAndView;
     }
 
+
+    // -----------------------------------------------------------------------
+    // Métodos privados extraídos - Clean Code Regla 6
+    // -----------------------------------------------------------------------
+
+    /**
+     * Verifica si un rango de fechas [inicio, fin] se superpone con el período de un alquiler existente.
+     * La superposición ocurre cuando el nuevo rango no termina antes de que empiece el alquiler
+     * ni empieza después de que termine el alquiler.
+     *
+     * @param inicio            Fecha de inicio del nuevo período
+     * @param fin               Fecha de fin del nuevo período
+     * @param alquilerExistente Alquiler con el que se compara
+     * @return true si existe superposición de fechas
+     */
+    private boolean haySuperposicionConAlquiler(LocalDate inicio, LocalDate fin, Alquiler alquilerExistente) {
+        return !(inicio.isAfter(alquilerExistente.getEndDate()) || fin.isBefore(alquilerExistente.getStartDate()));
+    }
+
+    /**
+     * Verifica si una fecha de reserva (que ocupa un único día) cae dentro del rango de fechas de un alquiler.
+     *
+     * @param fechaReserva Fecha concreta de la reserva
+     * @param inicio       Fecha de inicio del rango de alquiler
+     * @param fin          Fecha de fin del rango de alquiler
+     * @return true si la fecha de reserva está dentro del rango [inicio, fin]
+     */
+    private boolean fechaReservaEstaEnRangoAlquiler(LocalDate fechaReserva, LocalDate inicio, LocalDate fin) {
+        return !fechaReserva.isBefore(inicio) && !fechaReserva.isAfter(fin);
+    }
 
 }
