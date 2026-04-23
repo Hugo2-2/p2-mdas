@@ -95,7 +95,6 @@ public class InscripcionRepository extends AbstractRepository{
      *         o null si el ResultSet está vacío o si ocurre una SQLException.
      */
     private Inscripcion mapRowToInscripcion(ResultSet rs) {
-
         try {
             if(rs.first()) {
                 int id = rs.getInt("id");
@@ -179,7 +178,6 @@ public class InscripcionRepository extends AbstractRepository{
      * @return true si la inserción fue exitosa, false en caso contrario.
      */
     public boolean addInscripcion(Inscripcion inscripcion) {
-
         if( inscripcion == null ) return false;
 
         if( findInscripcionByDNITitular( inscripcion.getTitularMemberId() ) != null ) return false;
@@ -215,7 +213,6 @@ public class InscripcionRepository extends AbstractRepository{
      * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
      */
     public String updateInscripcion(Inscripcion inscripcion) {
-
         if( inscripcion == null ) return "No se ha podido ingresar la inscripcion";
 
         if( findInscripcionByDNITitular(inscripcion.getTitularMemberId()) == null )
@@ -256,7 +253,6 @@ public class InscripcionRepository extends AbstractRepository{
      * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
      */
     public String updateInscripcionSinHijos(String dniTitular, String dniSegundoAdulto){
-
         if(socioRepository.findSocioByDNI(dniTitular) == null && socioRepository.findSocioByDNI(dniSegundoAdulto) == null) {
             return "El titular y el segundo adulto no están registrados como socios";
         } else if(socioRepository.findSocioByDNI(dniTitular) == null) {

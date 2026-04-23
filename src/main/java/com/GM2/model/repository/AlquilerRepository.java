@@ -52,7 +52,6 @@ public class AlquilerRepository extends AbstractRepository{
             if( query != null ) {
                 List<Alquiler> result = jdbcTemplate.query(query, new RowMapper<Alquiler>() {
                     public Alquiler mapRow(ResultSet rs, int rowNum) throws SQLException {
-                 
                         int idAlquiler = rs.getInt("id");
                         List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(idAlquiler);
                         return new Alquiler(

@@ -223,7 +223,6 @@ public class HijosRepository extends AbstractRepository {
      */
 
     public boolean updateHijo(Hijos hijo) {
-
         if( hijo == null ) return false;
 
         if( findHijoByDni(hijo.getNationalId()) == null ) return false;

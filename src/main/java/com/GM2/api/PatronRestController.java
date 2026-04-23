@@ -73,7 +73,6 @@ public class PatronRestController {
      */
     @PostMapping(consumes = "application/json")
     public ResponseEntity<Patron> createPatron(@RequestBody Patron nuevoPatron) {
-
         try {
             // Verificamos que no queden campos nulos (Campos obligatorios NOT NULL)
             if (nuevoPatron.getNationalId() == null || nuevoPatron.getNationalId().trim().isEmpty() ||
@@ -124,7 +123,6 @@ public class PatronRestController {
      */
     @PatchMapping(path="/{dni}", consumes="application/json")
     public ResponseEntity<Patron> updatePatron(@PathVariable("dni") String dni, @RequestBody Patron newPatron) {
-
         Patron patronActual = patronRepository.findPatronByDNI(dni);
         if (patronActual == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -246,7 +244,6 @@ public class PatronRestController {
      */
     @DeleteMapping("/{dni}")
     public ResponseEntity<Void> deletePatron(@PathVariable String dni) {
-
         // Validar existencia del patrón
         if (patronRepository.findPatronByDNI(dni) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

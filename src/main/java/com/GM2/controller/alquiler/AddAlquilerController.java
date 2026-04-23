@@ -94,7 +94,6 @@ public class AddAlquilerController {
     // Clean Code - Regla 10: Se han eliminado los comentarios explicativos línea a línea, confiando en la expresividad del código y los buenos nombres.
     @PostMapping("/addAlquiler")
     public ModelAndView procesarFormularioAlquiler(@ModelAttribute Alquiler alquiler, SessionStatus status) {
-
         ModelAndView modelAndView = new ModelAndView();
 
         String resultado;

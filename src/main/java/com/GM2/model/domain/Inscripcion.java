@@ -96,7 +96,6 @@ public class Inscripcion {
             this.children = children;
     }
 
-
     public int getId() {
         return id;
     }

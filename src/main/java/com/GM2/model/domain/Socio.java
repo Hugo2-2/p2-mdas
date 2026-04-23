@@ -104,7 +104,6 @@ public class Socio {
         this.hasSkipperLicense = hasSkipperLicense;
     }
 
-
     public String getName() {
         return name;
     }

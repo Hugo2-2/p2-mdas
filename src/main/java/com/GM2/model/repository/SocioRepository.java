@@ -141,7 +141,6 @@ public class SocioRepository extends AbstractRepository {
      * @return "EXITO" si la inserción fue exitosa, mensaje de error en caso contrario.
      */
     public String addSocio(Socio socio) {
-
         boolean sqlRes;
 
         if( socio == null ) return "No se ha ingresado el socio";

@@ -210,7 +210,6 @@ public class InscripcionesRestController {
      */
     @PatchMapping(value = "/addMiembro/{idInscripcion}")
     public ResponseEntity<Inscripcion> addMiembroAFamiliar( @PathVariable int idInscripcion, @RequestBody String dniNuevoMiembro ) {
-
         try {
             // Validaciones básicas
             if(dniNuevoMiembro == null || dniNuevoMiembro.isEmpty()) {
@@ -267,7 +266,6 @@ public class InscripcionesRestController {
      */
     @PatchMapping(value = "/removeMiembro/{idInscripcion}")
     public ResponseEntity<Inscripcion> removeMiembroDeFamiliar( @PathVariable int idInscripcion, @RequestBody String dniMiembro ) {
-
         try {
             if( dniMiembro == null || dniMiembro.isEmpty() ) {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

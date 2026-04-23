@@ -37,7 +37,6 @@ public class Reserva {
         this.description = description;
     }
 
-
     public int getId() {
         return id;
     }

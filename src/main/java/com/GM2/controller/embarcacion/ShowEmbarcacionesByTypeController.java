@@ -64,7 +64,6 @@ public class ShowEmbarcacionesByTypeController {
     @GetMapping("/consultarEmbarcacionesPorTipo")
     public ModelAndView showEmbarcacionesByType(
             @RequestParam(value = "tipo", defaultValue = "none") String tipo) {
-
         //Comprobamos si el parámetro se ha proporcionado
         if (!tipo.equals("none")) {
             // Si SÍ se proporcionó, ejecutamos la búsqueda

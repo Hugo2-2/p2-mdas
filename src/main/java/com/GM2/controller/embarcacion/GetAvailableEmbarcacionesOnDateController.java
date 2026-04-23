@@ -73,7 +73,6 @@ public class GetAvailableEmbarcacionesOnDateController {
     public ModelAndView getEmbarcacionesDisponibles(
             @RequestParam(value = "inicio", required = false) String inicio,
             @RequestParam(value = "fin", required = false) String fin) {
-
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("embarcacion/embarcacionDisponibleView");
 

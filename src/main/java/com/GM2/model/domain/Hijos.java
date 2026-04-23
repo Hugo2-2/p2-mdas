@@ -47,9 +47,7 @@ public class Hijos {
      * Necesario para algunas librerías (como Spring MVC) para crear instancias.
      */
     public Hijos() {
-
     }
-
 
     public String getNationalId() {
         return nationalId;

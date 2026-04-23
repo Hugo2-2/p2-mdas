@@ -101,7 +101,6 @@ public class SociosRestController {
      */
     @PostMapping(value = "/socioSinInscripcion", consumes = "application/json")
     public ResponseEntity<Socio> createSocioSinInscripcion(@RequestBody Socio socio) {
-
             // Validaciones
             if(socio.getNationalId().isEmpty() || socio.getName().isEmpty() || socio.getSurname().isEmpty() ) {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -151,7 +150,6 @@ public class SociosRestController {
      */
     @PostMapping(value = "/socioConInscripcion", consumes = "application/json")
     public ResponseEntity<Socio> createSocioConInscripcion(@RequestBody SocioConInscripcionRequest socioConInscripcion) {
-        
         // Validaciones de los campos del socio
         if(socioConInscripcion.getNationalId() == null || socioConInscripcion.getNationalId().isEmpty() || 
            socioConInscripcion.getName() == null || socioConInscripcion.getName().isEmpty() || 
