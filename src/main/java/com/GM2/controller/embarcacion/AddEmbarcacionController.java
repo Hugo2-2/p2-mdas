@@ -147,10 +147,7 @@ public class AddEmbarcacionController {
         return "redirect:/api/embarcaciones/addEmbarcacion";
     }
 
-    // -----------------------------------------------------------------------
-    // Métodos privados extraídos - Clean Code Regla 6
-    // -----------------------------------------------------------------------
-
+    // Clean Code - Regla 7: Se han eliminado los marcadores de separación visuales (ej. --- Métodos privados ---) para evitar ruido innecesario en el código.
     /**
      * Verifica si un DNI es válido (no nulo y no vacío).
      * Utilizado para comprobar si se ha proporcionado un patrón para la embarcación.

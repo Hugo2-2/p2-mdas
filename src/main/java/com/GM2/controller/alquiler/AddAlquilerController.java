@@ -268,10 +268,7 @@ public class AddAlquilerController {
     }
 
 
-    // -----------------------------------------------------------------------
-    // Métodos privados extraídos - Clean Code Regla 6
-    // -----------------------------------------------------------------------
-
+    // Clean Code - Regla 7: Se han eliminado los marcadores de separación visuales (ej. --- Métodos privados ---) para evitar ruido innecesario en el código.
     /**
      * Verifica si un rango de fechas [inicio, fin] se superpone con el período de un alquiler existente.
      * La superposición ocurre cuando el nuevo rango no termina antes de que empiece el alquiler

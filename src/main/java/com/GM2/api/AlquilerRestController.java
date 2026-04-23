@@ -521,10 +521,7 @@ public class AlquilerRestController {
         }
     }
 
-    // -----------------------------------------------------------------------
-    // Métodos privados extraídos - Clean Code Regla 6
-    // -----------------------------------------------------------------------
-
+    // Clean Code - Regla 7: Se han eliminado los marcadores de separación visuales (ej. --- Métodos privados ---) para evitar ruido innecesario en el código.
     /**
      * Verifica si los campos obligatorios de un alquiler son nulos o están vacíos.
      *

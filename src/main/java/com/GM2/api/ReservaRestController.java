@@ -47,10 +47,7 @@ public class ReservaRestController {
         this.alquilerRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
-    // ========================================================================================
-    // MÉTODOS GET (LECTURA) - SEMANA 1
-    // ========================================================================================
-
+    // Clean Code - Regla 7: Se han eliminado los marcadores de separación visuales (ej. === MÉTODOS GET ===) para evitar ruido innecesario en el código.
     /**
      * Obtener la lista completa de reservas (GET)
      *
@@ -126,10 +123,6 @@ public class ReservaRestController {
         }
     }
 
-    // ========================================================================================
-    // MÉTODO POST (CREACIÓN) - SEMANA 1
-    // ========================================================================================
-
     /**
      * Crea una nueva reserva (POST)
      *
@@ -178,10 +171,6 @@ public class ReservaRestController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    // ========================================================================================
-    // MÉTODOS PATCH Y DELETE (MODIFICACIÓN) - SEMANA 2 (APARTADO D)
-    // ========================================================================================
 
     /**
      * Modificar la fecha de una reserva futura (PATCH)
@@ -299,10 +288,6 @@ public class ReservaRestController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    // ========================================================================================
-    // MÉTODOS PRIVADOS AUXILIARES
-    // ========================================================================================
 
     /**
      * Método auxiliar para comprobar si una embarcación está ocupada en una fecha específica.
