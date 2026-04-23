@@ -1,6 +1,6 @@
 package com.GM2.model.domain;
 
-import java.time.LocalDate; // Importa la clase para manejar fechas sin hora (inmutable)
+import java.time.LocalDate;
 
 /**
  * Clase de dominio que representa una Reserva en el sistema.
@@ -9,8 +9,7 @@ import java.time.LocalDate; // Importa la clase para manejar fechas sin hora (in
  */
 public class Reserva {
 
-    // --- Atributos de la Reserva (corresponden a las columnas de la tabla de BD) ---
-
+    // Clean Code - Regla 8: Se ha eliminado código obsoleto que estaba comentado, delegando el historial al control de versiones.
     private int id;
     private LocalDate date;
     private int seats;

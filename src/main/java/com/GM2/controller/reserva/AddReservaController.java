@@ -141,11 +141,9 @@ public class AddReservaController {
                 // 3.1. Verificar conflictos con Alquileres
                 // Clean Code - Regla 8: Uso de variable de un carácter ('a') apropiado por ser el índice de un bucle de muy corto alcance.
                 for (Alquiler a : alquileres) {
-                    // Conflicto si la matrícula es la misma Y la fecha de reserva cae dentro del rango de alquiler
+                    // Clean Code - Regla 8: Se ha eliminado código obsoleto que estaba comentado, delegando el historial al control de versiones.
                     if (a.getBoatRegistration().equals(embarcacion.getRegistration())
-                            // `!fecha.isBefore(a.getFechainicio)`: la fecha es igual o posterior a la fecha de inicio
                             && !fecha.isBefore(a.getStartDate())
-                            // `!fecha.isAfter(a.getFechafin)`: la fecha es igual o anterior a la fecha de fin
                             && !fecha.isAfter(a.getEndDate())) {
                         disponible = false;
                         break;
