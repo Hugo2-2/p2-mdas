@@ -98,8 +98,8 @@ public class AddReservaController {
             modelAndView.addObject("mensajeError", resultado);
             status.setComplete();
             return modelAndView;
-
-        } else if (!socio.isOfLegalAge()) {
+        // Clean Code - Regla de función: Función más pura posible
+        } else if (!socio.isOfLegalAge(LocalDate.now())) {
             resultado = "El socio debe ser mayor de edad para realizar una reserva.";
             modelAndView.addObject("mensajeError", resultado);
             status.setComplete();

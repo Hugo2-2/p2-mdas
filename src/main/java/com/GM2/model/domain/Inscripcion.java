@@ -128,7 +128,7 @@ public class Inscripcion {
      * Establece la fecha de creación como la fecha actual.
      * Método de conveniencia para actualizar la fecha de creación.
      */
-    //Clean Code - Regla 4: La función depende de 'LocalDate.now()', causando un efecto secundario y dificultando las pruebas.
+    //Clean Code - Regla de función: La función depende de 'LocalDate.now()', causando un efecto secundario y dificultando las pruebas. No es "pura"
     public void setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
     }

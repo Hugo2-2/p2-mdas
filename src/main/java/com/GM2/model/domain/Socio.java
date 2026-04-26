@@ -175,9 +175,8 @@ public class Socio {
      *
      * @return true si el socio es mayor de edad (18 años o más), false en caso contrario.
      */
-    public boolean isOfLegalAge() {
-        LocalDate today = LocalDate.now();
-        int age = Period.between(birthDate, today).getYears();
+    public boolean isOfLegalAge(LocalDate currentDate) { //Clean Code - Regla de función: La función depende de 'LocalDate.now()', causando un efecto secundario y dificultando las pruebas. No es "pura"
+        int age = Period.between(birthDate, currentDate).getYears();
         return age >= 18;
     }
 
