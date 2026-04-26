@@ -284,10 +284,7 @@ public class InscripcionRepository extends AbstractRepository{
      * actualiza la cuota anual incrementándola en 100€ por cada hijo.
      *
      * @param dniTitular DNI del socio titular de la inscripción.
-     * @param dnisHijos Lista de DNIs de los hijos a añadir.
-     * @param nombreHijos Lista de nombres de los hijos.
-     * @param apellidosHijos Lista de apellidos de los hijos.
-     * @param fechaNacimientoHijos Lista de fechas de nacimiento de los hijos.
+     * @param hijos Lista de objetos Hijos con los datos de los hijos.
      * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
      */
     public String updateInscripcionConHijos(String dniTitular, List<Hijos> hijos){ //Clean Code - Regla 2: Se reduce el número de parámetros de 5 a 2, pasando una lista de objetos Hijos
