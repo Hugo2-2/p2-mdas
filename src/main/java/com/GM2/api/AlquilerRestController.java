@@ -237,12 +237,12 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
-            // Clean Code - Regla 3: Validación de duración extraída a método privado
+            // Clean Code - Regla de función: Validación de duración extraída a método privado
             if (!esDuracionValida(nuevoAlquiler.getStartDate(), nuevoAlquiler.getEndDate())) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
-            // Clean Code - Regla 3: Cálculo de días extraído a método privado
+            // Clean Code - Regla de función: Cálculo de días extraído a método privado
             long totalDays = calcularDiasTotales(nuevoAlquiler.getStartDate(), nuevoAlquiler.getEndDate());
 
             Socio socioAlquiler = socioRepository.findSocioByDNI(nuevoAlquiler.getUserNationalId());
@@ -280,7 +280,7 @@ public class AlquilerRestController {
                 }
             }
 
-            // Clean Code - Regla 3: Cálculo de días extraído a método privado
+            // Clean Code - Regla de función: Cálculo de días extraído a método privado
             double priceInEuros = calcularPrecioAlquiler(totalDays);
             nuevoAlquiler.setPrice(priceInEuros);
             nuevoAlquiler.setSeats(1);
@@ -298,7 +298,7 @@ public class AlquilerRestController {
         }
     }
 
-    //Clean Code - Regla 3: Método extraído para mantener homogeneidad de abstracción
+    //Clean Code - Regla de función: Método extraído para mantener homogeneidad de abstracción
     private boolean esDuracionValida(LocalDate startDate, LocalDate endDate) {
         long totalDays = ChronoUnit.DAYS.between(startDate, endDate) + 1;
         int mesInicio = startDate.getMonthValue();
@@ -312,12 +312,12 @@ public class AlquilerRestController {
         return false;
     }
 
-    //Clean Code - Regla 3: Método extraído para cálculo de días
+    //Clean Code - Regla de función: Método extraído para cálculo de días totales
     private long calcularDiasTotales(LocalDate startDate, LocalDate endDate) {
         return ChronoUnit.DAYS.between(startDate, endDate) + 1;
     }
 
-    //Clean Code - Regla 3: Método extraído para cálculo del precio
+    //Clean Code - Regla de función: Método extraído para mantener homogeneidad de abstracción
     private double calcularPrecioAlquiler(long totalDays) {
         return 20.0 * totalDays;
     }

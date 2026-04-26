@@ -157,7 +157,8 @@ public class ReservaRestController {
             // Ignoramos cualquier precio que venga en el JSON para evitar fraudes.
 
             // Clean Code - Reglas de nombrado: variable con unidad (precioCalculado -> calculatedPriceInEuros )
-            double calculatedPriceInEuros = 40.0 * nuevaReserva.getSeats();
+            // Clean Code - Regla de función: Cálculo de días extraído a método privado
+            double calculatedPriceInEuros = calcularPrecioReserva(nuevaReserva.getSeats());
             nuevaReserva.setPrice(calculatedPriceInEuros);
 
             // 5. PERSISTENCIA: Guardar en BBDD.
@@ -170,6 +171,11 @@ public class ReservaRestController {
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    //Clean Code - Regla 3: Método extraído para mantener homogeneidad de abstracción
+    private double calcularPrecioReserva(int seats) {
+        return 40.0 * seats;
     }
 
     /**
