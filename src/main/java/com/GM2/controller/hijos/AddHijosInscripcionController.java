@@ -1,5 +1,6 @@
 package com.GM2.controller.hijos;
 
+import com.GM2.model.domain.Hijos;
 import com.GM2.model.repository.InscripcionRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -7,6 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -104,7 +106,18 @@ public class AddHijosInscripcionController {
             @RequestParam("fechaNacimiento") List<LocalDate> fechaNacimientoHijos,
             RedirectAttributes redirectAttributes) {
 
-        String resultado = inscripcionRepository.updateInscripcionConHijos(dniTitular, dnisHijos, nombreHijos, apellidosHijos, fechaNacimientoHijos);
+
+        List<Hijos> hijos = new ArrayList<>();
+        for (int i = 0; i < dnisHijos.size(); i++) {
+            Hijos hijo = new Hijos();
+            hijo.setNationalId(dnisHijos.get(i));
+            hijo.setName(nombreHijos.get(i));
+            hijo.setSurname(apellidosHijos.get(i));
+            hijo.setBirthDate(fechaNacimientoHijos.get(i));
+            hijos.add(hijo);
+        }
+
+        String resultado = inscripcionRepository.updateInscripcionConHijos(dniTitular, hijos);
 
         if (resultado.equals("EXITO")) {
             redirectAttributes.addFlashAttribute("mensajeExito", "Inscripción (con hijos) guardada.");

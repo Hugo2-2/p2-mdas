@@ -290,41 +290,43 @@ public class InscripcionRepository extends AbstractRepository{
      * @param fechaNacimientoHijos Lista de fechas de nacimiento de los hijos.
      * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
      */
-    public String updateInscripcionConHijos(String dniTitular, List<String> dnisHijos, List<String> nombreHijos, List<String> apellidosHijos, List<LocalDate> fechaNacimientoHijos){
+    public String updateInscripcionConHijos(String dniTitular, List<Hijos> hijos){ //Clean Code - Regla 2: Se reduce el número de parámetros de 5 a 2, pasando una lista de objetos Hijos
         Inscripcion inscripcion = findInscripcionByDNITitular(dniTitular);
 
         if (inscripcion == null) {
             return "No puedes actualizar la inscripcion porque no existe";
         }
 
-        for (int i = 0; i < dnisHijos.size(); i++) {
+        for (Hijos hijo : hijos) {
 
-            String dni = dnisHijos.get(i);
-
-            // Solo procesamos si el DNI no está vacío
-            if (dni != null && !dni.trim().isEmpty()) {
-
-                Hijos hijo = new Hijos();
-                hijo.setNationalId(dni);
-                hijo.setName(nombreHijos.get(i));
-                hijo.setSurname(apellidosHijos.get(i));
-
-                // Asignamos el ID de la inscripción principal
-                hijo.setRegistrationId(inscripcion.getId());
-
-                // Parseamos y validamos la fecha
-                try {
-                    hijo.setBirthDate(fechaNacimientoHijos.get(i));
-                } catch (DateTimeParseException e) {
-                    return "Error: El formato de fecha del hijo " + (i + 1) + " no es válido (use AAAA-MM-DD).";
-                }
-
-                // Guardamos el hijo completo en la base de datos
-                hijosRepository.addHijo(hijo);
-
-                // Actualizamos la cuota en el objeto de inscripción (100€ por hijo)
-                inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 100);
+            if (hijo.getNationalId() == null || hijo.getNationalId().trim().isEmpty()) {
+                return "DNI de hijo no válido o vacío.";            
             }
+
+            if (hijo.getName() == null || hijo.getName().trim().isEmpty()) {
+                return "Nombre de hijo no proporcionado para DNI: " + hijo.getNationalId();
+            }
+            
+            if (hijo.getSurname() == null || hijo.getSurname().trim().isEmpty()) {
+                return "Apellidos de hijo no proporcionados para DNI: " + hijo.getNationalId();
+            }
+
+            if (hijo.getBirthDate() == null) {
+                return "Fecha de nacimiento no proporcionada para DNI: " + hijo.getNationalId();
+            }
+
+            // Asignar el ID de la inscripción al hijo
+            hijo.setRegistrationId(inscripcion.getId());
+
+            // Guardar el hijo completo en la base de datos
+            boolean resultado = hijosRepository.addHijo(hijo);
+            
+            if (!resultado) {
+                return "Error al guardar el hijo con DNI: " + hijo.getNationalId();
+            }
+
+            // Actualizar la cuota en el objeto de inscripción (100€ por hijo)
+            inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 100);
         }
 
         return updateInscripcion(inscripcion);
