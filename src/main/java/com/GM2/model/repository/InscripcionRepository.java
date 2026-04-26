@@ -218,7 +218,8 @@ public class InscripcionRepository extends AbstractRepository{
         if( findInscripcionByDNITitular(inscripcion.getTitularMemberId()) == null )
             return "No puedes actualizar la inscripcion porque no existe";
 
-        inscripcion.setCreationDate();
+        // Clean Code - Regla de función: Función más pura posible  
+        inscripcion.setCreationDate(LocalDate.now());
 
         try {
             String query = sqlQueries.getProperty("update-Inscripcion");

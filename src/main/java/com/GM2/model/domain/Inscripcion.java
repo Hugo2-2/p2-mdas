@@ -128,8 +128,9 @@ public class Inscripcion {
      * Establece la fecha de creación como la fecha actual.
      * Método de conveniencia para actualizar la fecha de creación.
      */
-    public void setCreationDate() {
-        this.creationDate = LocalDate.now();
+    //Clean Code - Regla 4: La función depende de 'LocalDate.now()', causando un efecto secundario y dificultando las pruebas.
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
     }
 
     public String getSecondAdult() {
