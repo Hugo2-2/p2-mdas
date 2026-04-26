@@ -237,21 +237,13 @@ public class AlquilerRestController {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
-            LocalDate inicio = nuevoAlquiler.getStartDate();
-            LocalDate fin = nuevoAlquiler.getEndDate();
-            long totalDays = ChronoUnit.DAYS.between(inicio, fin) + 1;
-
-            int mesInicio = inicio.getMonthValue();
-
-            if (mesInicio >= 10 || mesInicio <= 4) {
-                if (totalDays > 3) {
-                    return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-                }
-            } else if (mesInicio >= 5 && mesInicio <= 9) {
-                if (totalDays != 7 && totalDays != 14) {
-                    return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-                }
+            // Clean Code - Regla 3: Validación de duración extraída a método privado
+            if (!esDuracionValida(nuevoAlquiler.getStartDate(), nuevoAlquiler.getEndDate())) {
+                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
+
+            // Clean Code - Regla 3: Cálculo de días extraído a método privado
+            long totalDays = calcularDiasTotales(nuevoAlquiler.getStartDate(), nuevoAlquiler.getEndDate());
 
             Socio socioAlquiler = socioRepository.findSocioByDNI(nuevoAlquiler.getUserNationalId());
             if (socioAlquiler == null) {
@@ -288,7 +280,8 @@ public class AlquilerRestController {
                 }
             }
 
-            double priceInEuros = 20.0 * totalDays;
+            // Clean Code - Regla 3: Cálculo de días extraído a método privado
+            double priceInEuros = calcularPrecioAlquiler(totalDays);
             nuevoAlquiler.setPrice(priceInEuros);
             nuevoAlquiler.setSeats(1);
 
@@ -305,6 +298,29 @@ public class AlquilerRestController {
         }
     }
 
+    //Clean Code - Regla 3: Método extraído para mantener homogeneidad de abstracción
+    private boolean esDuracionValida(LocalDate startDate, LocalDate endDate) {
+        long totalDays = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        int mesInicio = startDate.getMonthValue();
+        
+        if (mesInicio >= 10 || mesInicio <= 4) {
+            return totalDays <= 3;
+        } else if (mesInicio >= 5 && mesInicio <= 9) {
+            return totalDays == 7 || totalDays == 14;
+        }
+        
+        return false;
+    }
+
+    //Clean Code - Regla 3: Método extraído para cálculo de días
+    private long calcularDiasTotales(LocalDate startDate, LocalDate endDate) {
+        return ChronoUnit.DAYS.between(startDate, endDate) + 1;
+    }
+
+    //Clean Code - Regla 3: Método extraído para cálculo del precio
+    private double calcularPrecioAlquiler(long totalDays) {
+        return 20.0 * totalDays;
+    }
 
     /**
      * 6. Vincular a un nuevo socio (no titular) a un alquiler futuro, actualizando el coste y el número de plazas reservadas (PATCH)
