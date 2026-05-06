@@ -1,15 +1,23 @@
 package com.GM2.api;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.GM2.model.domain.Embarcacion;
 import com.GM2.model.domain.Patron;
 import com.GM2.model.repository.EmbarcacionRepository;
 import com.GM2.model.repository.PatronRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * Controlador REST para la gestión de recursos de tipo Patron.
@@ -20,7 +28,7 @@ import java.util.List;
  * @version 1.0
  */
 @RestController()
-@RequestMapping(path="api/patrones", produces="application/json")
+@RequestMapping(path = "api/patrones", produces = "application/json")
 public class PatronRestController {
     private final EmbarcacionRepository embarcacionRepository;
     PatronRepository patronRepository;
@@ -121,7 +129,7 @@ public class PatronRestController {
      * @param newPatron Objeto con los nuevos datos.
      * @return ResponseEntity con el patrón actualizado y estado 200 OK.
      */
-    @PatchMapping(path="/{dni}", consumes="application/json")
+    @PatchMapping(path = "/{dni}", consumes = "application/json")
     public ResponseEntity<Patron> updatePatron(@PathVariable("dni") String dni, @RequestBody Patron newPatron) {
         Patron patronActual = patronRepository.findPatronByDNI(dni);
         if (patronActual == null) {
@@ -168,7 +176,7 @@ public class PatronRestController {
      * @param dniPatron DNI del patrón a asignar (en el cuerpo de la petición).
      * @return ResponseEntity con el objeto Patron asignado.
      */
-    @PatchMapping(path="/{matricula}/patron")
+    @PatchMapping(path = "/{matricula}/patron")
     public ResponseEntity<Patron> assignPatronToEmbarcacion(@PathVariable String matricula, @RequestBody String dniPatron) {
         // Limpiamos el dni de posibles comillas del JSON
         String dniPatronLimpio = dniPatron.replaceAll("[\"{}]", "").trim();
@@ -204,7 +212,7 @@ public class PatronRestController {
      * @param dniPatron DNI del patrón a retirar (en el cuerpo de la petición).
      * @return ResponseEntity con el objeto Patron desvinculado.
      */
-    @PatchMapping(path="/{matricula}/noPatron")
+    @PatchMapping(path = "/{matricula}/noPatron")
     public ResponseEntity<Patron> unassignPatronToEmbarcacion(@PathVariable String matricula, @RequestBody String dniPatron) {
         // Limpiamos el dni
         String dniPatronLimpio = dniPatron.replaceAll("[\"{}]", "").trim();

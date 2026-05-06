@@ -1,13 +1,21 @@
 package com.GM2.api;
 
-import com.GM2.model.domain.Embarcacion;
-import com.GM2.model.repository.EmbarcacionRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.Arrays;
 import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.GM2.model.domain.Embarcacion;
+import com.GM2.model.repository.EmbarcacionRepository;
 
 /**
  * Controlador REST para la gestión de recursos de tipo Embarcacion.
@@ -17,7 +25,7 @@ import java.util.List;
  * @version 1.0
  */
 @RestController()
-@RequestMapping(path="api/embarcaciones", produces="application/json")
+@RequestMapping(path = "api/embarcaciones", produces = "application/json")
 public class EmbarcacionRestController {
     EmbarcacionRepository embarcacionRepository;
 
@@ -140,7 +148,7 @@ public class EmbarcacionRestController {
      * @return ResponseEntity con la embarcación actualizada y estado 200 OK,
      * o códigos de error correspondientes si fallan las validaciones.
      */
-    @PatchMapping(path="/{matricula}", consumes="application/json")
+    @PatchMapping(path = "/{matricula}", consumes = "application/json")
     public ResponseEntity<Embarcacion> updateEmbarcacion(@PathVariable String matricula, @RequestBody Embarcacion nuevaEmbarcacion) {
         try {
             // 1. Buscar si la embarcación existe

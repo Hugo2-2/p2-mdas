@@ -1,15 +1,16 @@
 package com.GM2.controller.embarcacion;
 
-import com.GM2.model.domain.Embarcacion;
-import com.GM2.model.repository.EmbarcacionRepository;
-import com.GM2.model.repository.PatronRepository;
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.List;
+import com.GM2.model.domain.Embarcacion;
+import com.GM2.model.repository.EmbarcacionRepository;
+import com.GM2.model.repository.PatronRepository;
 
 /**
  * Controlador encargado de gestionar la consulta de embarcaciones por tipo.
