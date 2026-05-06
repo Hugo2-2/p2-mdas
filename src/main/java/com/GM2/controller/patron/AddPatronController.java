@@ -77,7 +77,7 @@ public class AddPatronController {
                             SessionStatus sessionStatus,
                             RedirectAttributes redirectAttributes) {
 
-        if(patronRepository.isRegistered(patron.getNationalId())) {
+        if (patronRepository.isRegistered(patron.getNationalId())) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: El patron ya existe.");
         }else {
             System.out.println("[PatronController] Informacion recivida: Nombre=" + patron.getName() +
@@ -86,13 +86,13 @@ public class AddPatronController {
                     " fechaNacimiento=" + patron .getBirthDate() +
                     " fecha_expedicion_titulo=" + patron.getTitleIssueDate());
 
-            if(patron.getBirthDate().isAfter(LocalDate.now())) {
+            if (patron.getBirthDate().isAfter(LocalDate.now())) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Error: Fecha de nacimiento inválida.");
                 sessionStatus.setComplete();
                 return "redirect:/api/patrones/addPatron";
             }
 
-            if(patron.getTitleIssueDate().isAfter(LocalDate.now()) ||
+            if (patron.getTitleIssueDate().isAfter(LocalDate.now()) ||
                 patron.getTitleIssueDate().isBefore(patron.getBirthDate())) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Error: Fecha de expedición del título inválida.");
                 sessionStatus.setComplete();
@@ -101,7 +101,7 @@ public class AddPatronController {
 
             boolean success = patronRepository.addPatron(patron);
 
-            if(success){
+            if (success) {
                 redirectAttributes.addFlashAttribute("successMessage", "Patron guardado exitosamente.");
             }
             else {

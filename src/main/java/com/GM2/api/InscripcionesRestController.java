@@ -67,7 +67,7 @@ public class InscripcionesRestController {
         try {
             List<Inscripcion> todasInscripciones = inscripcionRepository.findAllInscripciones();
 
-            if(todasInscripciones == null || todasInscripciones.isEmpty()) {
+            if (todasInscripciones == null || todasInscripciones.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
@@ -76,7 +76,7 @@ public class InscripcionesRestController {
                 .filter(inscripcion -> inscripcion.getAnnualFee() == 300)
                 .collect(Collectors.toList());
 
-            if(inscripcionesIndividuales.isEmpty()) {
+            if (inscripcionesIndividuales.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
@@ -101,7 +101,7 @@ public class InscripcionesRestController {
         try {
             List<Inscripcion> todasInscripciones = inscripcionRepository.findAllInscripciones();
 
-            if(todasInscripciones == null || todasInscripciones.isEmpty()) {
+            if (todasInscripciones == null || todasInscripciones.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
@@ -110,7 +110,7 @@ public class InscripcionesRestController {
                 .filter(inscripcion -> inscripcion.getAnnualFee() > 300)
                 .collect(Collectors.toList());
 
-            if(inscripcionesFamiliares.isEmpty()) {
+            if (inscripcionesFamiliares.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
@@ -134,7 +134,7 @@ public class InscripcionesRestController {
         try {
             Inscripcion inscripcion = inscripcionRepository.findInscripcionByDNITitular(dniTitular);
 
-            if(inscripcion == null) {
+            if (inscripcion == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
@@ -161,20 +161,20 @@ public class InscripcionesRestController {
             
             // Validaciones básicas
             
-            if(inscripcion == null || inscripcion.getTitularMemberId() == null || 
+            if (inscripcion == null || inscripcion.getTitularMemberId() == null || 
                inscripcion.getTitularMemberId().isEmpty()) {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
 
             // Verificar que el socio titular existe
             Socio titular = socioRepository.findSocioByDNI(inscripcion.getTitularMemberId());
-            if(titular == null) {
+            if (titular == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // Socio no encontrado
             }
 
             // Verificar que no existe ya una inscripción para este titular
             Inscripcion existente = inscripcionRepository.findInscripcionByDNITitular(inscripcion.getTitularMemberId());
-            if(existente != null) {
+            if (existente != null) {
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT); // Ya tiene inscripción
             }
 
@@ -182,7 +182,7 @@ public class InscripcionesRestController {
             boolean resultado = inscripcionRepository.addInscripcion(inscripcion);
 
             
-            if(resultado) {
+            if (resultado) {
                 titular.setIsTitular(true);
                 socioRepository.updateSocio(titular);
                 return new ResponseEntity<>(inscripcionRepository.findInscripcionByDNITitular(inscripcion.getTitularMemberId()), HttpStatus.CREATED);
@@ -212,13 +212,13 @@ public class InscripcionesRestController {
     public ResponseEntity<Inscripcion> addMiembroAFamiliar( @PathVariable int idInscripcion, @RequestBody String dniNuevoMiembro ) {
         try {
             // Validaciones básicas
-            if(dniNuevoMiembro == null || dniNuevoMiembro.isEmpty()) {
+            if (dniNuevoMiembro == null || dniNuevoMiembro.isEmpty()) {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
 
             Inscripcion inscripcion = inscripcionRepository.findInscripcionById(idInscripcion);
 
-            if(inscripcion == null || inscripcion.getTitularMemberId() == null) {
+            if (inscripcion == null || inscripcion.getTitularMemberId() == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
@@ -227,13 +227,13 @@ public class InscripcionesRestController {
 
             // Clean Code - Reglas de comentarios: Comentario explícito sobre la intención del código
             Socio socio = socioRepository.findSocioByDNI(dniNuevoMiembro);
-            if(socio != null && !socio.getIsTitular()) {
+            if (socio != null && !socio.getIsTitular()) {
                 inscripcion.setSecondAdult(dniNuevoMiembro);
                 inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 250);
             }
             
             Hijos hijo = hijosRepository.findHijoByDni(dniNuevoMiembro);
-            if(hijo != null) {
+            if (hijo != null) {
 
                 hijo.setRegistrationId(idInscripcion);
                 resHijos = hijosRepository.updateHijo(hijo);
@@ -243,7 +243,7 @@ public class InscripcionesRestController {
 
             resInscripcion = inscripcionRepository.updateInscripcion(inscripcion).equals("EXITO");
 
-            if((resHijos && resInscripcion) || (resInscripcion && hijo == null)) {
+            if ((resHijos && resInscripcion) || (resInscripcion && hijo == null)) {
                 return new ResponseEntity<>(inscripcionRepository.findInscripcionById(idInscripcion), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -267,13 +267,13 @@ public class InscripcionesRestController {
     @PatchMapping(value = "/removeMiembro/{idInscripcion}")
     public ResponseEntity<Inscripcion> removeMiembroDeFamiliar( @PathVariable int idInscripcion, @RequestBody String dniMiembro ) {
         try {
-            if( dniMiembro == null || dniMiembro.isEmpty() ) {
+            if (dniMiembro == null || dniMiembro.isEmpty() ) {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
 
             Inscripcion inscripcion = inscripcionRepository.findInscripcionById(idInscripcion);
 
-            if(inscripcion == null || inscripcion.getTitularMemberId() == null) {
+            if (inscripcion == null || inscripcion.getTitularMemberId() == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
@@ -283,14 +283,14 @@ public class InscripcionesRestController {
             // Validar si estamos añadiendo un hijo o un segundo adulto
             Socio socio = socioRepository.findSocioByDNI(dniMiembro);
 
-            if(socio != null) {
+            if (socio != null) {
                 inscripcion.setSecondAdult(null);
                 inscripcion.setAnnualFee(inscripcion.getAnnualFee() - 250);
 
             }
 
             Hijos hijo = hijosRepository.findHijoByDni(dniMiembro);
-            if(hijo != null) {
+            if (hijo != null) {
                 hijo.setRegistrationId(0);
                 inscripcion.setAnnualFee(inscripcion.getAnnualFee() - 100);
                 resHijo = hijosRepository.updateHijo(hijo) == true;
@@ -299,7 +299,7 @@ public class InscripcionesRestController {
             resInscripcion = inscripcionRepository.updateInscripcion(inscripcion).equals("EXITO");
             inscripcion = inscripcionRepository.findInscripcionById(idInscripcion);
             
-            if((resHijo && resInscripcion) || (resInscripcion && hijo == null)) {
+            if ((resHijo && resInscripcion) || (resInscripcion && hijo == null)) {
                 return new ResponseEntity<>(inscripcion, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -325,20 +325,20 @@ public class InscripcionesRestController {
     public ResponseEntity<Void> deleteInscripcion(@PathVariable("dni") String dniTitular) {
         try {
             // Validación
-            if(dniTitular == null || dniTitular.isEmpty()) {
+            if (dniTitular == null || dniTitular.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             // Verificar que la inscripción existe
             Inscripcion inscripcion = inscripcionRepository.findInscripcionByDNITitular(dniTitular);
-            if(inscripcion == null) {
+            if (inscripcion == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
             // Eliminar la inscripción (los socios y los hijos no se eliminan)
             boolean resultado = inscripcionRepository.deleteInscripcionByDniTitular(dniTitular);
 
-            if(resultado) {
+            if (resultado) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             } else {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

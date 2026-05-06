@@ -39,7 +39,7 @@ public class AcompananteRepository extends AbstractRepository {
     public List<Acompanante> findAllAcompanantes() {
         try {
             String query = sqlQueries.getProperty("select-findAllAcompanantes");
-            if(query != null){
+            if (query != null) {
                 List<Acompanante> result = jdbcTemplate.query(query, new RowMapper<Acompanante>() {
                     public Acompanante mapRow(ResultSet rs, int rowNum) throws SQLException {
                         return new Acompanante(
@@ -71,7 +71,7 @@ public class AcompananteRepository extends AbstractRepository {
         try {
             String query = sqlQueries.getProperty("select-findAcompananteByDni");
             Acompanante result = jdbcTemplate.query(query, this::mapRowToAcompanante, dni);
-            if( result != null )
+            if (result != null )
                 return result;
             else return null;
         } catch(DataAccessException exception) {
@@ -91,7 +91,7 @@ public class AcompananteRepository extends AbstractRepository {
         try {
             String query = sqlQueries.getProperty("select-findAcompanantesByAlquiler");
             List<Acompanante> result = jdbcTemplate.query(query, this::mapRowFromAlquiler, id_alquiler);
-            if( result != null )
+            if (result != null )
                 return result;
             else return null;
         } catch(DataAccessException exception) {
@@ -132,7 +132,7 @@ public class AcompananteRepository extends AbstractRepository {
     private Acompanante mapRowToAcompanante(ResultSet row) {
         try {
 
-            if(row.first()) {
+            if (row.first()) {
                 int id = row.getInt("id");
                 String dni = row.getString("dni");
                 int id_alquiler = row.getInt("id_alquiler");

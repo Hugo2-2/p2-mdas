@@ -56,7 +56,7 @@ public class ClienteInscripciones {
             );
             System.out.println("Status code: " + response.getStatusCode());
             List<Inscripcion> lista = Arrays.asList(response.getBody());
-            for(Inscripcion i : lista) {
+            for (Inscripcion i : lista) {
                 System.out.println(i);
             }
         } catch (Exception e) { 
@@ -72,7 +72,7 @@ public class ClienteInscripciones {
             );
             System.out.println("Status code: " + response.getStatusCode());
             List<Inscripcion> lista = Arrays.asList(response.getBody());
-            for(Inscripcion i : lista) {
+            for (Inscripcion i : lista) {
                 System.out.println(i);
             }
         } catch (Exception e) { 

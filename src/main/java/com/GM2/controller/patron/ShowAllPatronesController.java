@@ -37,7 +37,7 @@ public class ShowAllPatronesController {
     ModelAndView getAll() {
         List<Patron> patrones = patronRepository.findAllPatrones();
 
-        if(patrones.isEmpty()){
+        if (patrones.isEmpty()) {
             this.modelAndView.addObject("listaPatrones", null);
         }
         else {

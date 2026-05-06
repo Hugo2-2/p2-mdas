@@ -22,7 +22,7 @@ public class Embarcacion {
      * Constructor por defecto.
      * Necesario para algunas librerías (como Spring MVC) para crear instancias.
      */
-    public Embarcacion(){
+    public Embarcacion() {
     }
 
     /**

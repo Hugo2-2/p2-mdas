@@ -49,7 +49,7 @@ public class SocioRepository extends AbstractRepository {
     public List<Socio> findAllSocios() {
         try {
             String query = sqlQueries.getProperty("select-findAllSocios");
-            if( query != null ) {
+            if (query != null ) {
                 List<Socio> result = jdbcTemplate.query(query, new RowMapper<Socio>() {
                    public Socio mapRow(ResultSet rs, int rowNum) throws SQLException {
                        return new Socio(
@@ -86,7 +86,7 @@ public class SocioRepository extends AbstractRepository {
         try {
             String query = sqlQueries.getProperty("select-findSocioByDNI");
             Socio result = jdbcTemplate.query(query, this::mapRowToSocio, dni);
-            if( result != null )
+            if (result != null )
                 return result;
             else return null;
         } catch(DataAccessException exception) {
@@ -108,7 +108,7 @@ public class SocioRepository extends AbstractRepository {
     private Socio mapRowToSocio(ResultSet row) {
         try {
 
-            if(row.first()) {
+            if (row.first()) {
                 String nombre = row.getString("nombre");
                 String apellidos = row.getString("apellidos");
                 String dni = row.getString("dni");
@@ -143,14 +143,14 @@ public class SocioRepository extends AbstractRepository {
     public String addSocio(Socio socio) {
         boolean sqlRes;
 
-        if( socio == null ) return "No se ha ingresado el socio";
+        if (socio == null ) return "No se ha ingresado el socio";
 
-        if( socio.getBirthDate().getYear() > 2007 && socio.getIsTitular() )
+        if (socio.getBirthDate().getYear() > 2007 && socio.getIsTitular() )
             return "Debes de ser mayor de edad para realizar esta inscripcion";
 
         try {
             String query = sqlQueries.getProperty("insert-addSocio");
-            if(query != null) {
+            if (query != null) {
                 int result = jdbcTemplate.update(query,
                    socio.getName(),
                    socio.getSurname(),
@@ -175,13 +175,13 @@ public class SocioRepository extends AbstractRepository {
         }
 
         // Creamos su inscripcion simple que posteriormente podrá se ampliada
-        if(socio.getIsTitular() && socio.getIsTitular() != null) {
+        if (socio.getIsTitular() && socio.getIsTitular() != null) {
 
             Inscripcion inscripcion = new Inscripcion(socio.getNationalId());
 
             boolean resInscripcion = inscripcionRepository.addInscripcion(inscripcion);
 
-            if( sqlRes & resInscripcion ) {
+            if (sqlRes & resInscripcion ) {
                 return "EXITO";
             } else {
                 return "No se ha podido guardar el socio";
@@ -189,7 +189,7 @@ public class SocioRepository extends AbstractRepository {
         }
 
 
-        if( sqlRes ) {
+        if (sqlRes ) {
             return "EXITO";
         } else {
             return "No se ha podido guardar el socio";
@@ -205,23 +205,23 @@ public class SocioRepository extends AbstractRepository {
      * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
      */
     public String updateSocio(Socio socio) {
-        if(socio == null) {
+        if (socio == null) {
             return "No se ha ingresado el socio";
         }
 
-        if(socio.getNationalId() == null || socio.getNationalId().isEmpty()) {
+        if (socio.getNationalId() == null || socio.getNationalId().isEmpty()) {
             return "El DNI es obligatorio para actualizar el socio";
         }
 
         // Verificar que el socio existe
         Socio socioExistente = findSocioByDNI(socio.getNationalId());
-        if(socioExistente == null) {
+        if (socioExistente == null) {
             return "No se puede actualizar, el socio no existe";
         }
 
         try {
             String query = sqlQueries.getProperty("update-socio");
-            if(query != null) {
+            if (query != null) {
                 int result = jdbcTemplate.update(query,
                     socio.getName(),
                     socio.getSurname(),
@@ -233,7 +233,7 @@ public class SocioRepository extends AbstractRepository {
                     socio.getNationalId()
                 );
 
-                if(result > 0) {
+                if (result > 0) {
                     return "EXITO";
                 } else {
                     return "No se ha podido actualizar el socio";
@@ -256,19 +256,19 @@ public class SocioRepository extends AbstractRepository {
      * @return true si la eliminación fue exitosa, false en caso contrario.
      */
     public boolean deleteSocio(String dni) {
-        if(dni == null || dni.isEmpty()) {
+        if (dni == null || dni.isEmpty()) {
             return false;
         }
 
         // Verificar que el socio existe
         Socio socio = findSocioByDNI(dni);
-        if(socio == null) {
+        if (socio == null) {
             return false;
         }
 
         try {
             String query = sqlQueries.getProperty("delete-deleteSocio");
-            if(query != null) {
+            if (query != null) {
                 int result = jdbcTemplate.update(query, dni);
                 return result > 0;
             } else {

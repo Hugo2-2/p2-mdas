@@ -52,7 +52,7 @@ public class ClienteEmbarcacion {
             ResponseEntity<Embarcacion[]> response = rest.getForEntity(baseURL + "/api/embarcaciones", Embarcacion[].class);
             List<Embarcacion> lista = Arrays.asList(response.getBody());
             System.out.println("==== REQUEST 1: GET all embarcaciones ====");
-            for(Embarcacion e : lista) {
+            for (Embarcacion e : lista) {
                 System.out.println(e);
                 System.out.println("------------------------");
             }
@@ -64,7 +64,7 @@ public class ClienteEmbarcacion {
             List<Embarcacion> lista = Arrays.asList(response.getBody());
             System.out.println();
             System.out.println("==== REQUEST 2: GET embarcaciones by type (VELERO) ====");
-            for(Embarcacion e : lista) {
+            for (Embarcacion e : lista) {
                 System.out.println(e);
                 System.out.println("------------------------");
             }

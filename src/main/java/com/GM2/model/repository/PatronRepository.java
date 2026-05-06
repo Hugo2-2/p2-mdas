@@ -63,7 +63,7 @@ public class PatronRepository extends AbstractRepository {
      * @return Lista de objetos Patron o null si la consulta es nula
      */
     private List<Patron> getPatrons(String query) {
-        if(query != null){
+        if (query != null) {
             List<Patron> result = jdbcTemplate.query(query, new RowMapper<Patron>() {
                 public Patron mapRow(ResultSet rs, int rowNum) throws SQLException {
                     return new Patron(
@@ -89,7 +89,7 @@ public class PatronRepository extends AbstractRepository {
         try {
             String query = sqlQueries.getProperty("select-findPatronByDNI");
             Patron result = jdbcTemplate.query(query, this::mapRowToPatron, dni);
-            if( result != null )
+            if (result != null )
                 return result;
             else return null;
         } catch(DataAccessException exception) {
@@ -108,7 +108,7 @@ public class PatronRepository extends AbstractRepository {
         try {
             String query = sqlQueries.getProperty("select-countPatronByDNI");
             Integer count = jdbcTemplate.queryForObject(query, Integer.class, dni);
-            if( count != null && count > 0 )
+            if (count != null && count > 0 )
                 return true;
             else return false;
         } catch(DataAccessException exception) {
@@ -126,7 +126,7 @@ public class PatronRepository extends AbstractRepository {
     private Patron mapRowToPatron(ResultSet row) {
         try {
 
-            if(row.first()) {
+            if (row.first()) {
                 String nombre = row.getString("nombre");
                 String apellidos = row.getString("apellidos");
                 String dni = row.getString("dni");
@@ -155,7 +155,7 @@ public class PatronRepository extends AbstractRepository {
     public boolean addPatron(Patron patron) {
         try {
             String query = sqlQueries.getProperty("insert-addPatron");
-            if(query != null) {
+            if (query != null) {
                 int result = jdbcTemplate.update(query,
                         patron.getName(),
                         patron.getSurname(),

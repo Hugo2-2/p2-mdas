@@ -37,7 +37,7 @@ public class ReservaRepository extends AbstractRepository{
         try {
             // Obtiene la consulta SQL del archivo de propiedades
             String query = sqlQueries.getProperty("select-findAllReservas");
-            if( query != null ) {
+            if (query != null ) {
                 // Ejecuta la consulta y mapea cada fila del ResultSet a un objeto Reserva
                 List<Reserva> result = jdbcTemplate.query(query, new RowMapper<Reserva>() {
                     // Implementación del mapeo de fila
@@ -79,7 +79,7 @@ public class ReservaRepository extends AbstractRepository{
             // Nota: Este uso de jdbcTemplate.query para un solo resultado puede ser incorrecto si la consulta
             // devuelve una lista; se recomienda usar `queryForObject` o revisar la implementación de `mapRowToReserva`.
             Reserva result = jdbcTemplate.query(query, this::mapRowToReserva, id);
-            if( result != null )
+            if (result != null )
                 return result;
             else return null;
         } catch(DataAccessException exception) {
@@ -102,7 +102,7 @@ public class ReservaRepository extends AbstractRepository{
     private Reserva mapRowToReserva(ResultSet row) {
         try {
             // Intenta posicionar el cursor en la primera fila (solo si se espera un único resultado)
-            if(row.first()) {
+            if (row.first()) {
                 // Extrae los valores de las columnas del ResultSet
                 int id = row.getInt("id");
                 Date fecha = row.getDate("fecha");
@@ -136,7 +136,7 @@ public class ReservaRepository extends AbstractRepository{
     public boolean addReserva(Reserva reserva) {
         try {
             String query = sqlQueries.getProperty("insert-addReserva");
-            if(query != null) {
+            if (query != null) {
                 // 1. Preparamos una "bolsa" (KeyHolder) para recoger la llave que nos dará la BBDD
                 KeyHolder keyHolder = new GeneratedKeyHolder();
 

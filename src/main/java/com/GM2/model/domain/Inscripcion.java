@@ -48,12 +48,12 @@ public class Inscripcion {
         this.annualFee = 300;
         this.creationDate = LocalDate.now();
 
-        if( secondAdult != null && !secondAdult.isEmpty()) {
+        if (secondAdult != null && !secondAdult.isEmpty()) {
             this.secondAdult = secondAdult;
             this.annualFee += 250;
         }
 
-        if( children != null && !children.isEmpty()) {
+        if (children != null && !children.isEmpty()) {
             this.children = children;
             this.annualFee += children.size() * 100;
         }
@@ -92,7 +92,7 @@ public class Inscripcion {
         this.creationDate = creationDate;
         this.secondAdult = secondAdult;
 
-        if(!children.isEmpty())
+        if (!children.isEmpty())
             this.children = children;
     }
 

@@ -77,7 +77,7 @@ public class AddEmbarcacionController {
     @PostMapping("/addEmbarcacion")
     public String addEmbarcacion(@ModelAttribute Embarcacion newEmbarcacion,
                                  SessionStatus sessionStatus,
-                                 RedirectAttributes redirectAttributes){
+                                 RedirectAttributes redirectAttributes) {
 
         System.out.println("[EmbarcacionController] Informacion recivida: matricula=" + newEmbarcacion.getRegistration() +
                 " nombre=" + newEmbarcacion.getName() +

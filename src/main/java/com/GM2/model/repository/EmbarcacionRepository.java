@@ -74,7 +74,7 @@ public class EmbarcacionRepository extends AbstractRepository {
         try {
             String query = sqlQueries.getProperty("select-findEmbarcacionByMatricula");
             Embarcacion result = jdbcTemplate.query(query, this::mapRowToEmbarcacion, matricula);
-            if(result != null)
+            if (result != null)
                 return result;
             else
                 return null;
@@ -95,7 +95,7 @@ public class EmbarcacionRepository extends AbstractRepository {
         try {
             String query = sqlQueries.getProperty("select-findEmbarcacionByNombre");
             Embarcacion result = jdbcTemplate.query(query, this::mapRowToEmbarcacion, nombre);
-            if(result != null)
+            if (result != null)
                 return result;
             else
                 return null;
@@ -157,7 +157,7 @@ public class EmbarcacionRepository extends AbstractRepository {
     private Embarcacion mapRowToEmbarcacion(ResultSet row) {
         try {
 
-            if(row.first()) {
+            if (row.first()) {
                 String id_patron = row.getString("id_patron");
                 String dimensiones = row.getString("dimensiones");
                 int plazas = row.getInt("plazas");
@@ -187,7 +187,7 @@ public class EmbarcacionRepository extends AbstractRepository {
     public boolean addEmbarcacion(Embarcacion embarcacion) {
         try {
             String query = sqlQueries.getProperty("insert-addEmbarcacion");
-            if(query != null) {
+            if (query != null) {
                 int result = jdbcTemplate.update(query,
                         embarcacion.getRegistration(),
                         embarcacion.getName(),
@@ -197,7 +197,7 @@ public class EmbarcacionRepository extends AbstractRepository {
                         embarcacion.getSkipperId()
                 );
 
-                if(result > 0)
+                if (result > 0)
                         return true;
                 else
                     return false;
@@ -264,7 +264,7 @@ public class EmbarcacionRepository extends AbstractRepository {
      */
     public boolean updatePatron(String patronDni,  String matricula) {
         String query = sqlQueries.getProperty("update-updatePatron");
-        if(query != null) {
+        if (query != null) {
             jdbcTemplate.update(query, patronDni, matricula);
             return true;
         }

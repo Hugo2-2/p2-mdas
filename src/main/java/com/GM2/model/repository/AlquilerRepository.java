@@ -49,7 +49,7 @@ public class AlquilerRepository extends AbstractRepository{
     public List<Alquiler> findAllAlquileres() {
         try {
             String query = sqlQueries.getProperty("select-findAllAlquileres");
-            if( query != null ) {
+            if (query != null ) {
                 List<Alquiler> result = jdbcTemplate.query(query, new RowMapper<Alquiler>() {
                     public Alquiler mapRow(ResultSet rs, int rowNum) throws SQLException {
                         int idAlquiler = rs.getInt("id");
@@ -86,7 +86,7 @@ public class AlquilerRepository extends AbstractRepository{
         try {
             String query = sqlQueries.getProperty("select-findAlquilerById");
             Alquiler result = jdbcTemplate.query(query, this::mapRowToAlquiler, id);
-            if( result != null )
+            if (result != null )
                 return result;
             else return null;
         } catch(DataAccessException exception) {
@@ -108,7 +108,7 @@ public class AlquilerRepository extends AbstractRepository{
     private Alquiler mapRowToAlquiler(ResultSet row) {
         try {
 
-            if(row.first()) {
+            if (row.first()) {
                 int id = row.getInt("id");
                 Date fechainicio = row.getDate("fechainicio");
                 Date fechafin = row.getDate("fechafin");
@@ -143,7 +143,7 @@ public class AlquilerRepository extends AbstractRepository{
             String query = sqlQueries.getProperty("insert-addAlquiler");
             String lastIdQuery = sqlQueries.getProperty("select-lastInsertedAlquilerId");
             
-            if(query != null) {
+            if (query != null) {
 
                 int result = jdbcTemplate.update(query,
                    
@@ -156,7 +156,7 @@ public class AlquilerRepository extends AbstractRepository{
                    
                 );
 
-                if (result <= 0){
+                if (result <= 0) {
                     return false;
                 }
 
@@ -185,7 +185,7 @@ public class AlquilerRepository extends AbstractRepository{
     public boolean updateAlquiler(Alquiler alquiler) {
         try {
             String query = sqlQueries.getProperty("update-updateAlquiler");
-            if(query != null) {
+            if (query != null) {
                 int result = jdbcTemplate.update(query,
                         Date.valueOf(alquiler.getStartDate()),
                         Date.valueOf(alquiler.getEndDate()),
@@ -196,7 +196,7 @@ public class AlquilerRepository extends AbstractRepository{
                         alquiler.getId()
                 );
 
-                if (result <= 0){
+                if (result <= 0) {
                     return false;
                 }
 
@@ -226,10 +226,10 @@ public class AlquilerRepository extends AbstractRepository{
 
             //Eliminar alquiler
             String query = sqlQueries.getProperty("delete-deteleAlquiler");
-            if(query != null) {
+            if (query != null) {
                 int result = jdbcTemplate.update(query, id);
 
-                if (result <= 0){
+                if (result <= 0) {
                     return false;
                 }
 

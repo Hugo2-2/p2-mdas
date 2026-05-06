@@ -49,7 +49,7 @@ public class GetInscripcionesController {
      *         (listInscripciones) y la lista de inscripciones para mostrar.
      */
     @GetMapping("/")
-    public ModelAndView getInscripciones(){
+    public ModelAndView getInscripciones() {
         ModelAndView mv = new ModelAndView("inscripcion/listInscripcionesView");
 
         List<Inscripcion> inscripciones = inscripcionRepository.findAllInscripciones();

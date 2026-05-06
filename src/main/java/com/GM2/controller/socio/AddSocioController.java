@@ -82,7 +82,7 @@ public class AddSocioController {
                 " esTitular=" + socio.getIsTitular() +
                 " tieneLicenciaPatron=" + socio.getHasSkipperLicense());
 
-        if(socioRepository.findSocioByDNI(socio.getNationalId()) != null) {
+        if (socioRepository.findSocioByDNI(socio.getNationalId()) != null) {
             redirectAttributes.addFlashAttribute("mensajeError", "Error: El socio ya existe");
             sessionStatus.setComplete();
             return "redirect:/api/socios/addSocio";
@@ -92,7 +92,7 @@ public class AddSocioController {
         String mensaje = socioRepository.addSocio(socio);
 
         //Evaluamos el mensaje que se mostrará en las flashcards de error
-        if(mensaje.equals("EXITO")) {
+        if (mensaje.equals("EXITO")) {
             redirectAttributes.addFlashAttribute("mensajeExito", "Socio guardado exitosamente");
         } else {
             redirectAttributes.addFlashAttribute("mensajeError", mensaje);
@@ -103,7 +103,7 @@ public class AddSocioController {
         //Confirmamos que la checkbox de la vista está marcada
         boolean quiereAmpliar = (ampliarInscripcion != null && ampliarInscripcion.equals("true"));
 
-        if(socio.getIsTitular() && quiereAmpliar) {
+        if (socio.getIsTitular() && quiereAmpliar) {
             // Pasamos el DNI del socio recién creado a la siguiente página
             redirectAttributes.addFlashAttribute("dniTitular", socio.getNationalId());
 

@@ -55,7 +55,7 @@ public class ClienteAlquiler {
             System.out.println("Status code: " + response.getStatusCode());
             //Clean Code - Reglas de nombrado: el nombre de una coleccion ayuda a entender su contenido (lista -> rentalList)
             List<Alquiler> rentalList = Arrays.asList(response.getBody());
-            for(Alquiler a : rentalList) {
+            for (Alquiler a : rentalList) {
                 System.out.println(a);
                 System.out.println("------------------------");
             }
@@ -74,7 +74,7 @@ public class ClienteAlquiler {
             System.out.println("Status code: " + response.getStatusCode());
             //Clean Code - Reglas de nombrado: el nombre de una coleccion ayuda a entender su contenido (lista -> FutureRentalList)
             List<Alquiler> futureRentalList = Arrays.asList(response.getBody());
-            for(Alquiler a : futureRentalList) {
+            for (Alquiler a : futureRentalList) {
                 System.out.println(a);
                 System.out.println("------------------------");
             }
@@ -129,7 +129,7 @@ public class ClienteAlquiler {
             System.out.println("Status code: " + response.getStatusCode());
             //Clean Code - Reglas de nombrado: el nombre de una coleccion ayuda a entender su contenido (lista -> availableBoats)
             List<Embarcacion> availableBoats = Arrays.asList(response.getBody());
-            for(Embarcacion e : availableBoats) {
+            for (Embarcacion e : availableBoats) {
                 System.out.println(e);
                 System.out.println("------------------------");
             }

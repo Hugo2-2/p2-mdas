@@ -51,7 +51,7 @@ public class ClientePatron {
             ResponseEntity<Patron[]> response = rest.getForEntity(baseURL + "/api/patrones", Patron[].class);
             List<Patron> lista = Arrays.asList(response.getBody());
             System.out.println("==== REQUEST 1: GET all patrones ====");
-            for(Patron p : lista) {
+            for (Patron p : lista) {
                 System.out.println(p);
                 System.out.println("------------------------");
             }

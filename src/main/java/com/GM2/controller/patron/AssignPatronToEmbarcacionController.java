@@ -104,7 +104,7 @@ public class AssignPatronToEmbarcacionController {
             // No tiene patron, está libre. Está libre. Asignamos directamente.
             boolean success = embarcacionRepository.updatePatron(dniPatronNuevo, matricula);
 
-            if(success) {
+            if (success) {
                 redirectAttributes.addFlashAttribute("successMessage", "Patrón asignado correctamente a la embarcación libre.");
             } else {
                 redirectAttributes.addFlashAttribute("errorMessage", "Error al asignar el patrón.");

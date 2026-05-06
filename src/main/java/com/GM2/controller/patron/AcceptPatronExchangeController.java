@@ -39,7 +39,7 @@ public class AcceptPatronExchangeController {
         // Ejecutamos la actualización
         boolean success = embarcacionRepository.updatePatron(dniPatronNuevo, matricula);
 
-        if(success) {
+        if (success) {
             redirectAttributes.addFlashAttribute("successMessage", "Patrón reemplazado con éxito.");
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "Error al reemplazar el patrón.");

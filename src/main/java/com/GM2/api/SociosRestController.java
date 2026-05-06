@@ -58,7 +58,7 @@ public class SociosRestController {
         try {
             List<Socio> socios = socioRepository.findAllSocios();
 
-            if( socios == null || socios.isEmpty() ) {
+            if (socios == null || socios.isEmpty() ) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
@@ -82,7 +82,7 @@ public class SociosRestController {
         try {
             Socio socio = socioRepository.findSocioByDNI(dni);
 
-            if(socio == null ) {
+            if (socio == null ) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
@@ -102,18 +102,18 @@ public class SociosRestController {
     @PostMapping(value = "/socioSinInscripcion", consumes = "application/json")
     public ResponseEntity<Socio> createSocioSinInscripcion(@RequestBody Socio socio) {
             // Validaciones
-            if(socio.getNationalId().isEmpty() || socio.getName().isEmpty() || socio.getSurname().isEmpty() ) {
+            if (socio.getNationalId().isEmpty() || socio.getName().isEmpty() || socio.getSurname().isEmpty() ) {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
 
-            if(socio.getBirthDate().getYear() > 2007) {
+            if (socio.getBirthDate().getYear() > 2007) {
                 Hijos hijo = new Hijos(socio.getNationalId(), socio.getName(), socio.getSurname(), socio.getBirthDate());
                 hijo.setRegistrationId(0); // Sin inscripción
 
                 try {
                     Boolean res = hijosRepository.addHijo(hijo) == true;
 
-                    if(res) {
+                    if (res) {
                         return new ResponseEntity<>(socio, HttpStatus.OK);
                     } else {
                         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -128,7 +128,7 @@ public class SociosRestController {
                 try {
                     Boolean res = socioRepository.addSocio(socio).equals("EXITO");
 
-                    if(res) {
+                    if (res) {
                         return new ResponseEntity<>(socio, HttpStatus.OK);
                     } else {
                         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -151,7 +151,7 @@ public class SociosRestController {
     @PostMapping(value = "/socioConInscripcion", consumes = "application/json")
     public ResponseEntity<Socio> createSocioConInscripcion(@RequestBody SocioConInscripcionRequest socioConInscripcion) {
         // Validaciones de los campos del socio
-        if(socioConInscripcion.getNationalId() == null || socioConInscripcion.getNationalId().isEmpty() || 
+        if (socioConInscripcion.getNationalId() == null || socioConInscripcion.getNationalId().isEmpty() || 
            socioConInscripcion.getName() == null || socioConInscripcion.getName().isEmpty() || 
            socioConInscripcion.getSurname() == null || socioConInscripcion.getSurname().isEmpty() || 
            socioConInscripcion.getAddress() == null || socioConInscripcion.getAddress().isEmpty() ||
@@ -160,7 +160,7 @@ public class SociosRestController {
         }
 
         // Validación del DNI del titular
-        if(socioConInscripcion.getTitularNationalId() == null || socioConInscripcion.getTitularNationalId().isEmpty()) {
+        if (socioConInscripcion.getTitularNationalId() == null || socioConInscripcion.getTitularNationalId().isEmpty()) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
@@ -168,14 +168,14 @@ public class SociosRestController {
             // Verificar que la inscripción existe
             Inscripcion inscripcion = inscripcionRepository.findInscripcionByDNITitular(socioConInscripcion.getTitularNationalId());
             
-            if(inscripcion == null) {
+            if (inscripcion == null) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
             Socio socio = new Socio(socioConInscripcion.getName(), socioConInscripcion.getSurname(), socioConInscripcion.getNationalId(), socioConInscripcion.getBirthDate(), socioConInscripcion.getAddress(), LocalDate.now(), socioConInscripcion.getIsSkipper());
 
 
-            if(socio.getBirthDate().getYear() > 2007) {
+            if (socio.getBirthDate().getYear() > 2007) {
                 Hijos hijo = new Hijos(socio.getNationalId(), socio.getName(), socio.getSurname(), socio.getBirthDate());
                 hijo.setRegistrationId(inscripcion.getId()); // Inscripción existente
 
@@ -184,7 +184,7 @@ public class SociosRestController {
 
                     inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 100);
 
-                    if(!res) {
+                    if (!res) {
                         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
                     }
                 } catch (Exception e) {
@@ -195,11 +195,11 @@ public class SociosRestController {
                 // Guardar el socio
                 String resultado = socioRepository.addSocio(socio);
                 
-                if(!resultado.equals("EXITO")) {
+                if (!resultado.equals("EXITO")) {
                     return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
                 }
 
-                if(inscripcion.getSecondAdult() == null)
+                if (inscripcion.getSecondAdult() == null)
                     inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 250);
 
                 inscripcion.setSecondAdult(socio.getNationalId());
@@ -209,7 +209,7 @@ public class SociosRestController {
             // Añadir el socio como segundo adulto a la inscripción
             Boolean resultadoInscripcion = inscripcionRepository.updateInscripcion(inscripcion).equals("EXITO");
 
-            if(!resultadoInscripcion) {
+            if (!resultadoInscripcion) {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
@@ -235,37 +235,37 @@ public class SociosRestController {
             // Buscar el socio existente
             Socio socio = socioRepository.findSocioByDNI(dni);
             
-            if(socio == null) {
+            if (socio == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
             // Aplicar las actualizaciones parciales
-            if(updates.containsKey("nombre")) {
+            if (updates.containsKey("nombre")) {
                 socio.setName((String) updates.get("nombre"));
             }
-            if(updates.containsKey("apellidos")) {
+            if (updates.containsKey("apellidos")) {
                 socio.setSurname((String) updates.get("apellidos"));
             }
-            if(updates.containsKey("fechaNacimiento")) {
+            if (updates.containsKey("fechaNacimiento")) {
                 socio.setBirthDate(LocalDate.parse((String) updates.get("fechaNacimiento")));
             }
-            if(updates.containsKey("direccion")) {
+            if (updates.containsKey("direccion")) {
                 socio.setAddress((String) updates.get("direccion"));
             }
-            if(updates.containsKey("fechaInscripcion")) {
+            if (updates.containsKey("fechaInscripcion")) {
                 socio.setRegistrationDate(LocalDate.parse((String) updates.get("fechaInscripcion")));
             }
-            if(updates.containsKey("esTitular")) {
+            if (updates.containsKey("esTitular")) {
                 socio.setIsTitular((Boolean) updates.get("esTitular"));
             }
-            if(updates.containsKey("tieneLicenciaPatron")) {
+            if (updates.containsKey("tieneLicenciaPatron")) {
                 socio.setHasSkipperLicense((Boolean) updates.get("tieneLicenciaPatron"));
             }
 
             // Guardar los cambios
             String resultado = socioRepository.updateSocio(socio);
             
-            if(resultado.equals("EXITO")) {
+            if (resultado.equals("EXITO")) {
                 return new ResponseEntity<>(socio, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -289,29 +289,29 @@ public class SociosRestController {
     public ResponseEntity<Void> deleteSocio(@PathVariable String dni) {
         try {
             // Validación
-            if(dni == null || dni.isEmpty()) {
+            if (dni == null || dni.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             // Primero verificar si existe como socio
             Socio socio = socioRepository.findSocioByDNI(dni);
             
-            if(socio != null) {
+            if (socio != null) {
                 // Es un socio adulto - verificar que no esté vinculado a inscripciones
                 
                 // Verificar si es titular de alguna inscripción
-                if(socio.getIsTitular()) {
+                if (socio.getIsTitular()) {
                     Inscripcion inscripcion = inscripcionRepository.findInscripcionByDNITitular(dni);
-                    if(inscripcion != null) {
+                    if (inscripcion != null) {
                         return new ResponseEntity<>(HttpStatus.CONFLICT);
                     }
                 }
 
                 // Verificar si es segundo adulto en alguna inscripción
                 List<Inscripcion> todasInscripciones = inscripcionRepository.findAllInscripciones();
-                if(todasInscripciones != null) {
-                    for(Inscripcion insc : todasInscripciones) {
-                        if(insc.getSecondAdult() != null && insc.getSecondAdult().equals(dni)) {
+                if (todasInscripciones != null) {
+                    for (Inscripcion insc : todasInscripciones) {
+                        if (insc.getSecondAdult() != null && insc.getSecondAdult().equals(dni)) {
                             return new ResponseEntity<>(HttpStatus.CONFLICT);
                         }
                     }
@@ -319,7 +319,7 @@ public class SociosRestController {
 
                 // Si pasa las validaciones, eliminar el socio
                 boolean resultado = socioRepository.deleteSocio(dni);
-                if(resultado) {
+                if (resultado) {
                     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                 } else {
                     return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -329,15 +329,15 @@ public class SociosRestController {
             // Si no es socio, verificar si existe como hijo
             Hijos hijo = hijosRepository.findHijoByDni(dni);
             
-            if(hijo != null) {
+            if (hijo != null) {
                 // Es un hijo - verificar que no esté vinculado a una inscripción (id_inscripcion > 0)
-                if(hijo.getRegistrationId() > 0) {
+                if (hijo.getRegistrationId() > 0) {
                     return new ResponseEntity<>(HttpStatus.CONFLICT);
                 }
 
                 // Si no está vinculado, eliminar el hijo
                 boolean resultado = hijosRepository.deleteHijo(dni);
-                if(resultado) {
+                if (resultado) {
                     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                 } else {
                     return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

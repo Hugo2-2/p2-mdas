@@ -51,7 +51,7 @@ public class ShowAllEmbarcacionesController {
     ModelAndView showAllEmbarcaciones() {
         List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcaciones();
 
-        if(embarcaciones.isEmpty()){
+        if (embarcaciones.isEmpty()) {
             this.modelAndView.addObject("listaEmbarcaciones", null);
         }
         else {

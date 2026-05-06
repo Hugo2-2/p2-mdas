@@ -55,7 +55,7 @@ public class ClienteSocio {
             ResponseEntity<Socio[]> response = rest.getForEntity(baseURL + "/api/socios", Socio[].class);
             System.out.println("Status code: " + response.getStatusCode());
             List<Socio> lista = Arrays.asList(response.getBody());
-            for(Socio s : lista) {
+            for (Socio s : lista) {
                 System.out.println(s);
             }
         } catch (Exception e) { 

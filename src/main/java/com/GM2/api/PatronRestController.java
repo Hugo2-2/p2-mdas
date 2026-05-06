@@ -136,7 +136,7 @@ public class PatronRestController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
-        if(newPatron.getNationalId() != null) {
+        if (newPatron.getNationalId() != null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
@@ -181,23 +181,23 @@ public class PatronRestController {
         // Limpiamos el dni de posibles comillas del JSON
         String dniPatronLimpio = dniPatron.replaceAll("[\"{}]", "").trim();
 
-        if(embarcacionRepository.findEmbarcacionByMatricula(matricula) == null){
+        if (embarcacionRepository.findEmbarcacionByMatricula(matricula) == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
         Patron patron = patronRepository.findPatronByDNI(dniPatronLimpio);
-        if(patron == null) {
+        if (patron == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
         // Comprobar que el patrón no está asignado a ninguna otra embarcación
-        if(embarcacionRepository.isPatronAssignedToEmbarcacion(dniPatronLimpio)) {
+        if (embarcacionRepository.isPatronAssignedToEmbarcacion(dniPatronLimpio)) {
             return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         }
 
         boolean result = embarcacionRepository.updatePatron(dniPatronLimpio, matricula);
 
-        if(result) {
+        if (result) {
             return new ResponseEntity<>(patron, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -218,25 +218,25 @@ public class PatronRestController {
         String dniPatronLimpio = dniPatron.replaceAll("[\"{}]", "").trim();
 
         Embarcacion embarcacionActual = embarcacionRepository.findEmbarcacionByMatricula(matricula);
-        if( embarcacionActual == null){
+        if (embarcacionActual == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
         Patron patron = patronRepository.findPatronByDNI(dniPatronLimpio);
-        if(patron == null) {
+        if (patron == null) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
         String patronEmbarcacionActual = embarcacionActual.getSkipperId();
 
         // Seguridad: Si el barco está vacío O el patrón no coincide, damos error para evitar borrados accidentales
-        if(patronEmbarcacionActual == null || !patronEmbarcacionActual.equals(dniPatronLimpio)) {
+        if (patronEmbarcacionActual == null || !patronEmbarcacionActual.equals(dniPatronLimpio)) {
             return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         }
 
         boolean result = embarcacionRepository.updatePatron(null, matricula);
 
-        if(result) {
+        if (result) {
             return new ResponseEntity<>(patron, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

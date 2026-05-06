@@ -57,7 +57,7 @@ public class InscripcionRepository extends AbstractRepository{
     public List<Inscripcion> findAllInscripciones() {
         try {
             String query = sqlQueries.getProperty("select-findAllInscripciones");
-            if( query != null ) {
+            if (query != null ) {
                 List<Inscripcion> result = jdbcTemplate.query(query, new RowMapper<Inscripcion>() {
                     public Inscripcion mapRow(ResultSet rs, int rowNum) throws SQLException {
                         int id = rs.getInt("id");
@@ -68,7 +68,7 @@ public class InscripcionRepository extends AbstractRepository{
 
                         List<Hijos> hijos = new ArrayList<>();
 
-                        if(cuota > 300) {
+                        if (cuota > 300) {
                             hijos = hijosRepository.findHijosByInscripcion(id);
                         }
 
@@ -96,7 +96,7 @@ public class InscripcionRepository extends AbstractRepository{
      */
     private Inscripcion mapRowToInscripcion(ResultSet rs) {
         try {
-            if(rs.first()) {
+            if (rs.first()) {
                 int id = rs.getInt("id");
                 String socioTitular = rs.getString("socio_Titular");
                 float cuotaAnual = rs.getFloat("cuota_anual");
@@ -105,7 +105,7 @@ public class InscripcionRepository extends AbstractRepository{
 
                 List<Hijos> hijos = new ArrayList<>();
 
-                if(cuotaAnual > 300) {
+                if (cuotaAnual > 300) {
                     hijos = hijosRepository.findHijosByInscripcion(id);
                 }
 
@@ -137,7 +137,7 @@ public class InscripcionRepository extends AbstractRepository{
             String query = sqlQueries.getProperty("select-findInscripcionById");
             Inscripcion result = jdbcTemplate.query(query, this::mapRowToInscripcion, id);
 
-            if(result != null)
+            if (result != null)
                 return result;
             else return null;
 
@@ -160,7 +160,7 @@ public class InscripcionRepository extends AbstractRepository{
             String query = sqlQueries.getProperty("select-findInscripcionByDniTitular");
             Inscripcion result = jdbcTemplate.query(query, this::mapRowToInscripcion, dniTitular);
 
-            if(result != null)
+            if (result != null)
                 return result;
             else return null;
         }  catch (DataAccessException ex) {
@@ -178,20 +178,20 @@ public class InscripcionRepository extends AbstractRepository{
      * @return true si la inserción fue exitosa, false en caso contrario.
      */
     public boolean addInscripcion(Inscripcion inscripcion) {
-        if( inscripcion == null ) return false;
+        if (inscripcion == null ) return false;
 
-        if( findInscripcionByDNITitular( inscripcion.getTitularMemberId() ) != null ) return false;
+        if (findInscripcionByDNITitular( inscripcion.getTitularMemberId() ) != null ) return false;
 
         try {
             String query = sqlQueries.getProperty("insert-addInscripcion");
-            if(query != null) {
+            if (query != null) {
                 int result = jdbcTemplate.update(query,
                     inscripcion.getTitularMemberId(),
                     inscripcion.getAnnualFee(),
                     inscripcion.getCreationDate()
                 );
 
-                if(result > 0)
+                if (result > 0)
                     return true;
                 else return false;
             } else return false;
@@ -213,9 +213,9 @@ public class InscripcionRepository extends AbstractRepository{
      * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
      */
     public String updateInscripcion(Inscripcion inscripcion) {
-        if( inscripcion == null ) return "No se ha podido ingresar la inscripcion";
+        if (inscripcion == null ) return "No se ha podido ingresar la inscripcion";
 
-        if( findInscripcionByDNITitular(inscripcion.getTitularMemberId()) == null )
+        if (findInscripcionByDNITitular(inscripcion.getTitularMemberId()) == null )
             return "No puedes actualizar la inscripcion porque no existe";
 
         // Clean Code - Regla de función: Función más pura posible  
@@ -223,7 +223,7 @@ public class InscripcionRepository extends AbstractRepository{
 
         try {
             String query = sqlQueries.getProperty("update-Inscripcion");
-            if(query != null) {
+            if (query != null) {
                 int result = jdbcTemplate.update(query,
                     inscripcion.getAnnualFee(),
                     inscripcion.getCreationDate(),
@@ -231,7 +231,7 @@ public class InscripcionRepository extends AbstractRepository{
                     inscripcion.getId()
                 );
 
-                if(result > 0)
+                if (result > 0)
                     return "EXITO";
                 else return "No se ha podido actualizar la inscripcion";
 
@@ -253,16 +253,16 @@ public class InscripcionRepository extends AbstractRepository{
      * @param dniSegundoAdulto DNI del segundo adulto a añadir.
      * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
      */
-    public String updateInscripcionSinHijos(String dniTitular, String dniSegundoAdulto){
-        if(socioRepository.findSocioByDNI(dniTitular) == null && socioRepository.findSocioByDNI(dniSegundoAdulto) == null) {
+    public String updateInscripcionSinHijos(String dniTitular, String dniSegundoAdulto) {
+        if (socioRepository.findSocioByDNI(dniTitular) == null && socioRepository.findSocioByDNI(dniSegundoAdulto) == null) {
             return "El titular y el segundo adulto no están registrados como socios";
-        } else if(socioRepository.findSocioByDNI(dniTitular) == null) {
+        } else if (socioRepository.findSocioByDNI(dniTitular) == null) {
             return "El titular no está registrado como socio";
-        } else if(socioRepository.findSocioByDNI(dniSegundoAdulto) == null) {
+        } else if (socioRepository.findSocioByDNI(dniSegundoAdulto) == null) {
             return "El segundo adulto no está registrado como socio.";
         }
 
-        if(!socioRepository.findSocioByDNI(dniTitular).getIsTitular()) {
+        if (!socioRepository.findSocioByDNI(dniTitular).getIsTitular()) {
             return "El socio introducido como titular no es titular de ninguna inscripción";
         }
 
@@ -288,7 +288,7 @@ public class InscripcionRepository extends AbstractRepository{
      * @param hijos Lista de objetos Hijos con los datos de los hijos.
      * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
      */
-    public String updateInscripcionConHijos(String dniTitular, List<Hijos> hijos){ //Clean Code - Regla 2: Se reduce el número de parámetros de 5 a 2, pasando una lista de objetos Hijos
+    public String updateInscripcionConHijos(String dniTitular, List<Hijos> hijos) { //Clean Code - Regla 2: Se reduce el número de parámetros de 5 a 2, pasando una lista de objetos Hijos
         Inscripcion inscripcion = findInscripcionByDNITitular(dniTitular);
 
         if (inscripcion == null) {
@@ -340,19 +340,19 @@ public class InscripcionRepository extends AbstractRepository{
      * @return true si la eliminación fue exitosa, false en caso contrario.
      */
     public boolean deleteInscripcionByDniTitular(String dniTitular) {
-        if(dniTitular == null || dniTitular.isEmpty()) {
+        if (dniTitular == null || dniTitular.isEmpty()) {
             return false;
         }
 
         // Verificar que la inscripción existe
         Inscripcion inscripcion = findInscripcionByDNITitular(dniTitular);
-        if(inscripcion == null) {
+        if (inscripcion == null) {
             return false;
         }
 
         try {
             String query = sqlQueries.getProperty("delete-deleteInscripcionByDniTitular");
-            if(query != null) {
+            if (query != null) {
                 int result = jdbcTemplate.update(query, dniTitular);
                 return result > 0;
             } else {

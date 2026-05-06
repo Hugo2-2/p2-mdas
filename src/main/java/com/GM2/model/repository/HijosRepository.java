@@ -34,7 +34,7 @@ public class HijosRepository extends AbstractRepository {
     public List<Hijos> findAllHijos() {
         try {
             String query = sqlQueries.getProperty("select-findAllHijos");
-            if(query != null){
+            if (query != null) {
                 List<Hijos> result = jdbcTemplate.query(query, new RowMapper<Hijos>() {
                     public Hijos mapRow(ResultSet rs, int rowNum) throws SQLException {
                         return new Hijos(
@@ -67,7 +67,7 @@ public class HijosRepository extends AbstractRepository {
         try {
             String query = sqlQueries.getProperty("select-findHijoByDNI");
             Hijos result = jdbcTemplate.query(query, this::mapRowToHijos, dni);
-            if( result != null )
+            if (result != null )
                 return result;
             else return null;
         } catch(DataAccessException exception) {
@@ -89,7 +89,7 @@ public class HijosRepository extends AbstractRepository {
     private Hijos mapRowToHijos(ResultSet row) {
         try {
 
-            if(row.first()) {
+            if (row.first()) {
                 String dni = row.getString("dni");
                 String nombre = row.getString("nombre");
                 String apellidos = row.getString("apellidos");
@@ -120,7 +120,7 @@ public class HijosRepository extends AbstractRepository {
             String query = sqlQueries.getProperty("select-findHijosByInscripcion");
             List<Hijos> hijos = jdbcTemplate.query(query, this::mapRowFromInscripcion, inscripcion);
 
-            if( hijos != null )
+            if (hijos != null )
                 return hijos;
             else return null;
         } catch(DataAccessException exception) {
@@ -160,7 +160,7 @@ public class HijosRepository extends AbstractRepository {
     public boolean addHijo(Hijos hijo) {
          try {
             String query = sqlQueries.getProperty("insert-addHijo");
-            if(query != null) {
+            if (query != null) {
                 int result = jdbcTemplate.update(query,
                         hijo.getNationalId(),
                         hijo.getName(),
@@ -193,10 +193,10 @@ public class HijosRepository extends AbstractRepository {
      * @return true si todas las inserciones fueron exitosas, false si alguna falla.
      */
     public boolean addHijos(List<Hijos> hijos) {
-        for(Hijos hijo : hijos) {
+        for (Hijos hijo : hijos) {
             try {
                 String query = sqlQueries.getProperty("insert-addHijo");
-                if(query != null){
+                if (query != null) {
                     int result = jdbcTemplate.update(query,
                             hijo.getNationalId(),
                             hijo.getRegistrationId()
@@ -223,13 +223,13 @@ public class HijosRepository extends AbstractRepository {
      */
 
     public boolean updateHijo(Hijos hijo) {
-        if( hijo == null ) return false;
+        if (hijo == null ) return false;
 
-        if( findHijoByDni(hijo.getNationalId()) == null ) return false;
+        if (findHijoByDni(hijo.getNationalId()) == null ) return false;
 
         try {
             String query = sqlQueries.getProperty("update-hijo");
-            if(query != null) {
+            if (query != null) {
                 int result = jdbcTemplate.update(query,
                         hijo.getName(),
                         hijo.getSurname(),
@@ -258,19 +258,19 @@ public class HijosRepository extends AbstractRepository {
      * @return true si la eliminación fue exitosa, false en caso contrario.
      */
     public boolean deleteHijo(String dni) {
-        if(dni == null || dni.isEmpty()) {
+        if (dni == null || dni.isEmpty()) {
             return false;
         }
 
         // Verificar que el hijo existe
         Hijos hijo = findHijoByDni(dni);
-        if(hijo == null) {
+        if (hijo == null) {
             return false;
         }
 
         try {
             String query = sqlQueries.getProperty("delete-deleteHijo");
-            if(query != null) {
+            if (query != null) {
                 int result = jdbcTemplate.update(query, dni);
                 return result > 0;
             } else {

@@ -158,7 +158,7 @@ public class EmbarcacionRestController {
             }
 
             // 2. Comprobar que no se quiera cambiar la matricula
-            if(nuevaEmbarcacion.getRegistration() != null) {
+            if (nuevaEmbarcacion.getRegistration() != null) {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
 

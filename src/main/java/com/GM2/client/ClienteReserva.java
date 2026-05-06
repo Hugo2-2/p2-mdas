@@ -57,7 +57,7 @@ public class ClienteReserva {
 
             if (response.getBody() != null) {
                 List<Reserva> lista = Arrays.asList(response.getBody());
-                for(Reserva r : lista) {
+                for (Reserva r : lista) {
                     imprimirReserva(r);
                     System.out.println("------------------------");
                 }
@@ -78,7 +78,7 @@ public class ClienteReserva {
 
             if (response.getBody() != null) {
                 List<Reserva> lista = Arrays.asList(response.getBody());
-                for(Reserva r : lista) {
+                for (Reserva r : lista) {
                     imprimirReserva(r);
                     System.out.println("------------------------");
                 }
