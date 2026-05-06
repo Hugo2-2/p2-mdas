@@ -51,7 +51,7 @@ public class AddAcompanantesController {
      * @param redirectAttributes Atributos para redirección y mensajes flash
      * @return String con la redirección a la vista de alquiler
      */
-   @PostMapping
+    @PostMapping
     public ModelAndView addAcompanantes(@RequestParam("alquilerId") Integer alquilerId,
                         @RequestParam("dni") List<String> dnis,
                         RedirectAttributes redirectAttributes) {

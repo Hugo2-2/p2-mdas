@@ -79,7 +79,7 @@ public class AddPatronController {
 
         if (patronRepository.isRegistered(patron.getNationalId())) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error: El patron ya existe.");
-        }else {
+        } else {
             System.out.println("[PatronController] Informacion recivida: Nombre=" + patron.getName() +
                     " Apellidos=" + patron.getSurname() +
                     " DNI=" + patron.getNationalId() +
@@ -103,8 +103,7 @@ public class AddPatronController {
 
             if (success) {
                 redirectAttributes.addFlashAttribute("successMessage", "Patron guardado exitosamente.");
-            }
-            else {
+            } else {
                 redirectAttributes.addFlashAttribute("errorMessage", "El patron no pudo ser guardado.");
             }
         }

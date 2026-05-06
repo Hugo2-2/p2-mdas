@@ -101,44 +101,42 @@ public class SociosRestController {
      */
     @PostMapping(value = "/socioSinInscripcion", consumes = "application/json")
     public ResponseEntity<Socio> createSocioSinInscripcion(@RequestBody Socio socio) {
-            // Validaciones
-            if (socio.getNationalId().isEmpty() || socio.getName().isEmpty() || socio.getSurname().isEmpty() ) {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            }
+        // Validaciones
+        if (socio.getNationalId().isEmpty() || socio.getName().isEmpty() || socio.getSurname().isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
 
-            if (socio.getBirthDate().getYear() > 2007) {
-                Hijos hijo = new Hijos(socio.getNationalId(), socio.getName(), socio.getSurname(), socio.getBirthDate());
-                hijo.setRegistrationId(0); // Sin inscripción
+        if (socio.getBirthDate().getYear() > 2007) {
+            Hijos hijo = new Hijos(socio.getNationalId(), socio.getName(), socio.getSurname(), socio.getBirthDate());
+            hijo.setRegistrationId(0); // Sin inscripción
 
-                try {
-                    Boolean res = hijosRepository.addHijo(hijo) == true;
+            try {
+                Boolean res = hijosRepository.addHijo(hijo) == true;
 
-                    if (res) {
-                        return new ResponseEntity<>(socio, HttpStatus.OK);
-                    } else {
-                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                    }
-                } catch (Exception e) {
-                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+                if (res) {
+                    return new ResponseEntity<>(socio, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
                 }
-            } else {
-                socio.setIsTitular(false);
-                socio.setRegistrationDate(LocalDate.now());
-
-                try {
-                    Boolean res = socioRepository.addSocio(socio).equals("EXITO");
-
-                    if (res) {
-                        return new ResponseEntity<>(socio, HttpStatus.OK);
-                    } else {
-                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                    }
-                } catch (Exception e) {
-                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-                }
+            } catch (Exception e) {
+                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
+        } else {
+            socio.setIsTitular(false);
+            socio.setRegistrationDate(LocalDate.now());
 
-            
+            try {
+                Boolean res = socioRepository.addSocio(socio).equals("EXITO");
+
+                if (res) {
+                    return new ResponseEntity<>(socio, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } catch (Exception e) {
+                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
     }
 
     /**
@@ -199,8 +197,9 @@ public class SociosRestController {
                     return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
                 }
 
-                if (inscripcion.getSecondAdult() == null)
+                if (inscripcion.getSecondAdult() == null) {
                     inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 250);
+                }
 
                 inscripcion.setSecondAdult(socio.getNationalId());
 

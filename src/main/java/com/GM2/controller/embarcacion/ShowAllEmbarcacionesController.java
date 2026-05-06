@@ -53,8 +53,7 @@ public class ShowAllEmbarcacionesController {
 
         if (embarcaciones.isEmpty()) {
             this.modelAndView.addObject("listaEmbarcaciones", null);
-        }
-        else {
+        } else {
             this.modelAndView.addObject("listaEmbarcaciones", embarcaciones);
         }
 

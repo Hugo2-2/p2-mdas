@@ -39,8 +39,7 @@ public class ShowAllPatronesController {
 
         if (patrones.isEmpty()) {
             this.modelAndView.addObject("listaPatrones", null);
-        }
-        else {
+        } else {
             this.modelAndView.addObject("listaPatrones", patrones);
         }
 
