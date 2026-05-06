@@ -1,6 +1,7 @@
 package com.GM2.model.repository;
 
 import com.GM2.model.domain.Alquiler;
+import com.GM2.model.domain.AlquilerRentalDetails;
 import com.GM2.model.domain.Acompanante;
 
 import org.springframework.dao.DataAccessException;
@@ -54,16 +55,15 @@ public class AlquilerRepository extends AbstractRepository{
                     public Alquiler mapRow(ResultSet rs, int rowNum) throws SQLException {
                         int idAlquiler = rs.getInt("id");
                         List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(idAlquiler);
-                        return new Alquiler(
-                                idAlquiler,
+                        AlquilerRentalDetails rentalDetails = new AlquilerRentalDetails(
                                 rs.getDate("fechainicio").toLocalDate(),
                                 rs.getDate("fechafin").toLocalDate(),
                                 rs.getDouble("precio"),
                                 rs.getInt("plazas"),
                                 rs.getString("usuario_dni"),
-                                rs.getString("matricula_embarcacion"),
-                                acompanantes
+                                rs.getString("matricula_embarcacion")
                         );
+                        return new Alquiler(idAlquiler, rentalDetails, acompanantes);
                     };
                 });
 
@@ -118,7 +118,10 @@ public class AlquilerRepository extends AbstractRepository{
                 String matricula_embarcacion = row.getString("matricula_embarcacion");
                 
                 List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
-                Alquiler alquiler = new Alquiler(id, fechainicio.toLocalDate(), fechafin.toLocalDate(), precio, plazas, usuario_dni, matricula_embarcacion, acompanantes);
+                AlquilerRentalDetails rentalDetails = new AlquilerRentalDetails(
+                        fechainicio.toLocalDate(), fechafin.toLocalDate(), precio, plazas, usuario_dni, matricula_embarcacion
+                );
+                Alquiler alquiler = new Alquiler(id, rentalDetails, acompanantes);
                 return alquiler;
 
             } else {

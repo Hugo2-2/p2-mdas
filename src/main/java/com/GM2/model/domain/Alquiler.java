@@ -29,26 +29,23 @@ public class Alquiler {
         this.companions = new ArrayList<>();
     }
 
+    // Clean Code - Regla 1 Funciones (argumentos): Se ha reducido el número de argumentos encapsulándolos en el objeto 'AlquilerRentalDetails'.
     /**
-     * Constructor con todos los parámetros.
+     * Constructor con todos los parámetros, refactorizado para recibir un objeto
+     * {@link AlquilerRentalDetails} en lugar de una lista larga de argumentos.
      * 
      * @param id ID del alquiler
-     * @param startDate Fecha de inicio del alquiler
-     * @param endDate Fecha de fin del alquiler
-     * @param price Precio total del alquiler
-     * @param seats Número de plazas reservadas
-     * @param userNationalId DNI del usuario que realiza el alquiler
-     * @param boatRegistration Matrícula de la embarcación alquilada
+     * @param rentalDetails Objeto que encapsula los detalles del alquiler (fechas, precio, plazas, socio, embarcación)
      * @param companions Lista de acompañantes
      */
-    public Alquiler(int id, LocalDate startDate, LocalDate endDate, double price, int seats, String userNationalId, String boatRegistration, List<Acompanante> companions) {
+    public Alquiler(int id, AlquilerRentalDetails rentalDetails, List<Acompanante> companions) {
         this.id = id;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.price = price;
-        this.seats = seats;
-        this.userNationalId = userNationalId;
-        this.boatRegistration = boatRegistration;
+        this.startDate = rentalDetails.getStartDate();
+        this.endDate = rentalDetails.getEndDate();
+        this.price = rentalDetails.getPrice();
+        this.seats = rentalDetails.getSeats();
+        this.userNationalId = rentalDetails.getUserNationalId();
+        this.boatRegistration = rentalDetails.getBoatRegistration();
         this.companions = companions;
     }
 
