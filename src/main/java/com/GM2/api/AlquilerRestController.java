@@ -298,30 +298,6 @@ public class AlquilerRestController {
         }
     }
 
-    //Clean Code - Regla de función: Método extraído para mantener homogeneidad de abstracción
-    private boolean esDuracionValida(LocalDate startDate, LocalDate endDate) {
-        long totalDays = ChronoUnit.DAYS.between(startDate, endDate) + 1;
-        int mesInicio = startDate.getMonthValue();
-        
-        if (mesInicio >= 10 || mesInicio <= 4) {
-            return totalDays <= 3;
-        } else if (mesInicio >= 5 && mesInicio <= 9) {
-            return totalDays == 7 || totalDays == 14;
-        }
-        
-        return false;
-    }
-
-    //Clean Code - Regla de función: Método extraído para cálculo de días totales
-    private long calcularDiasTotales(LocalDate startDate, LocalDate endDate) {
-        return ChronoUnit.DAYS.between(startDate, endDate) + 1;
-    }
-
-    //Clean Code - Regla de función: Método extraído para mantener homogeneidad de abstracción
-    private double calcularPrecioAlquiler(long totalDays) {
-        return 20.0 * totalDays;
-    }
-
     /**
      * 6. Vincular a un nuevo socio (no titular) a un alquiler futuro, actualizando el coste y el número de plazas reservadas (PATCH)
      * 
@@ -505,6 +481,30 @@ public class AlquilerRestController {
     }
 
     // Clean Code - Regla 7: Se han eliminado los marcadores de separación visuales (ej. --- Métodos privados ---) para evitar ruido innecesario en el código.
+    //Clean Code - Regla de función: Método extraído para mantener homogeneidad de abstracción
+    private boolean esDuracionValida(LocalDate startDate, LocalDate endDate) {
+        long totalDays = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        int mesInicio = startDate.getMonthValue();
+
+        if (mesInicio >= 10 || mesInicio <= 4) {
+            return totalDays <= 3;
+        } else if (mesInicio >= 5 && mesInicio <= 9) {
+            return totalDays == 7 || totalDays == 14;
+        }
+
+        return false;
+    }
+
+    //Clean Code - Regla de función: Método extraído para cálculo de días totales
+    private long calcularDiasTotales(LocalDate startDate, LocalDate endDate) {
+        return ChronoUnit.DAYS.between(startDate, endDate) + 1;
+    }
+
+    //Clean Code - Regla de función: Método extraído para mantener homogeneidad de abstracción
+    private double calcularPrecioAlquiler(long totalDays) {
+        return 20.0 * totalDays;
+    }
+
     /**
      * Verifica si los campos obligatorios de un alquiler son nulos o están vacíos.
      *

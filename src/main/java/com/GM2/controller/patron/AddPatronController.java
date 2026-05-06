@@ -1,16 +1,19 @@
 package com.GM2.controller.patron;
 
 
-import com.GM2.model.domain.Patron;
-import com.GM2.model.repository.PatronRepository;
+import java.time.LocalDate;
+
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDate;
-import java.util.List;
+import com.GM2.model.domain.Patron;
+import com.GM2.model.repository.PatronRepository;
 
 /**
  * Controlador web (MVC) encargado de gestionar la creación de nuevos patrones.

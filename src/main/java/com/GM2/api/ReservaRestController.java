@@ -173,11 +173,6 @@ public class ReservaRestController {
         }
     }
 
-    //Clean Code - Regla 3: Método extraído para mantener homogeneidad de abstracción
-    private double calcularPrecioReserva(int seats) {
-        return 40.0 * seats;
-    }
-
     /**
      * Modificar la fecha de una reserva futura (PATCH)
      *
@@ -293,6 +288,11 @@ public class ReservaRestController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    //Clean Code - Regla 3: Método extraído para mantener homogeneidad de abstracción
+    private double calcularPrecioReserva(int seats) {
+        return 40.0 * seats;
     }
 
     /**

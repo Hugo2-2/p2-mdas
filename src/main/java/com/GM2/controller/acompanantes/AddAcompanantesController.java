@@ -1,18 +1,20 @@
 package com.GM2.controller.acompanantes;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.GM2.model.domain.Acompanante;
 import com.GM2.model.domain.Alquiler;
 import com.GM2.model.repository.AcompananteRepository;
 import com.GM2.model.repository.AlquilerRepository;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Controlador web (MVC) para la gestión de Acompañantes.
