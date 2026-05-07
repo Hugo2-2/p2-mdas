@@ -1,5 +1,22 @@
 package com.GM2.api;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.GM2.model.domain.Acompanante;
 import com.GM2.model.domain.Alquiler;
 import com.GM2.model.domain.Embarcacion;
@@ -10,14 +27,6 @@ import com.GM2.model.repository.AlquilerRepository;
 import com.GM2.model.repository.EmbarcacionRepository;
 import com.GM2.model.repository.ReservaRepository;
 import com.GM2.model.repository.SocioRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Controlador REST de la API de alquileres.
@@ -96,27 +105,30 @@ public class AlquilerRestController {
     @GetMapping(params = "fecha")
     public ResponseEntity<List<Alquiler>> getAlquileresFuturos(@RequestParam LocalDate fecha) {
         try {
-            List<Alquiler> todosAlquileres = alquilerRepository.findAllAlquileres();
-            List<Alquiler> alquileresFuturos = new ArrayList<>();
-
-            if (todosAlquileres != null) {
-                for (Alquiler alquiler : todosAlquileres) {
-                    if (alquiler.getStartDate().isAfter(fecha) || 
-                        alquiler.getStartDate().isEqual(fecha)) {
-                        alquileresFuturos.add(alquiler);
-                    }
-                }
-            }
-
-            if (alquileresFuturos.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            return new ResponseEntity<>(alquileresFuturos, HttpStatus.OK);
-
+            return filtrarAlquileresFuturos(fecha);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private ResponseEntity<List<Alquiler>> filtrarAlquileresFuturos(LocalDate fecha) {
+        List<Alquiler> todosAlquileres = alquilerRepository.findAllAlquileres();
+        List<Alquiler> alquileresFuturos = new ArrayList<>();
+
+        if (todosAlquileres != null) {
+            for (Alquiler alquiler : todosAlquileres) {
+                if (alquiler.getStartDate().isAfter(fecha) ||
+                    alquiler.getStartDate().isEqual(fecha)) {
+                    alquileresFuturos.add(alquiler);
+                }
+            }
+        }
+
+        if (alquileresFuturos.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(alquileresFuturos, HttpStatus.OK);
     }
 
     /**
@@ -152,67 +164,64 @@ public class AlquilerRestController {
      */
     @GetMapping("/disponibles")
     public ResponseEntity<List<Embarcacion>> getEmbarcacionesDisponibles(
-            @RequestParam LocalDate fechaInicio, 
+            @RequestParam LocalDate fechaInicio,
             @RequestParam LocalDate fechaFin) {
-        // Clean Code - Regla 10: Se han eliminado los comentarios explicativos línea a línea, confiando en la expresividad del código y los buenos nombres.
         try {
-            if (fechaInicio.isAfter(fechaFin)) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-            }
-
-            List<Embarcacion> todasEmbarcaciones = embarcacionRepository.findAllEmbarcaciones();
-            List<Alquiler> todosAlquileres = alquilerRepository.findAllAlquileres();
-            List<Reserva> todosReservas = reservaRepository.findAllReservas();
-            List<Embarcacion> embarcacionesDisponibles = new ArrayList<>();
-
-            if (todasEmbarcaciones == null) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            for (Embarcacion embarcacion : todasEmbarcaciones) {
-                boolean disponible = true;
-
-                // Clean Code - Reglas de comentarios: Comentario que explica intención del código
-                if (todosAlquileres != null) {
-                    for (Alquiler alquiler : todosAlquileres) {
-                        if (alquiler.getBoatRegistration().equals(embarcacion.getRegistration())) {
-                            // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'haySuperposicionConAlquiler'.
-                            if (haySuperposicionConAlquiler(fechaInicio, fechaFin, alquiler)) {
-                                disponible = false;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (disponible) {
-                    if (todosReservas != null) {
-                        for (Reserva reserva : todosReservas) {
-                            if (reserva.getBoatRegistration().equals(embarcacion.getRegistration())) {
-                                // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'haySuperposicionConReserva'.
-                                if (haySuperposicionConReserva(fechaInicio, fechaFin, reserva)) {
-                                    disponible = false;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (disponible) {
-                    embarcacionesDisponibles.add(embarcacion);
-                }
-            }
-
-            if (embarcacionesDisponibles.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            return new ResponseEntity<>(embarcacionesDisponibles, HttpStatus.OK);
-
+            return buscarEmbarcacionesDisponibles(fechaInicio, fechaFin);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private ResponseEntity<List<Embarcacion>> buscarEmbarcacionesDisponibles(LocalDate fechaInicio, LocalDate fechaFin) {
+        if (fechaInicio.isAfter(fechaFin)) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        List<Embarcacion> todasEmbarcaciones = embarcacionRepository.findAllEmbarcaciones();
+        List<Alquiler> todosAlquileres = alquilerRepository.findAllAlquileres();
+        List<Reserva> todosReservas = reservaRepository.findAllReservas();
+        List<Embarcacion> embarcacionesDisponibles = new ArrayList<>();
+
+        if (todasEmbarcaciones == null) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        for (Embarcacion embarcacion : todasEmbarcaciones) {
+            boolean disponible = true;
+
+            if (todosAlquileres != null) {
+                for (Alquiler alquiler : todosAlquileres) {
+                    if (alquiler.getBoatRegistration().equals(embarcacion.getRegistration())) {
+                        if (haySuperposicionConAlquiler(fechaInicio, fechaFin, alquiler)) {
+                            disponible = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (disponible && todosReservas != null) {
+                for (Reserva reserva : todosReservas) {
+                    if (reserva.getBoatRegistration().equals(embarcacion.getRegistration())) {
+                        if (haySuperposicionConReserva(fechaInicio, fechaFin, reserva)) {
+                            disponible = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (disponible) {
+                embarcacionesDisponibles.add(embarcacion);
+            }
+        }
+
+        if (embarcacionesDisponibles.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(embarcacionesDisponibles, HttpStatus.OK);
     }
 
     /**
@@ -225,75 +234,70 @@ public class AlquilerRestController {
      */
     @PostMapping(consumes = "application/json")
     public ResponseEntity<Alquiler> createAlquiler(@RequestBody Alquiler nuevoAlquiler) {
-        // Clean Code - Regla 10: Se han eliminado los comentarios explicativos línea a línea, confiando en la expresividad del código y los buenos nombres.
         try {
-
-            // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'tieneCamposObligatoriosNulos'.
-            if (tieneCamposObligatoriosNulos(nuevoAlquiler)) {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            }
-
-            if (nuevoAlquiler.getStartDate().isAfter(nuevoAlquiler.getEndDate())) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-            }
-
-            // Clean Code - Regla de función: Validación de duración extraída a método privado
-            if (!esDuracionValida(nuevoAlquiler.getStartDate(), nuevoAlquiler.getEndDate())) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-            }
-
-            // Clean Code - Regla de función: Cálculo de días extraído a método privado
-            long totalDays = calcularDiasTotales(nuevoAlquiler.getStartDate(), nuevoAlquiler.getEndDate());
-
-            Socio socioAlquiler = socioRepository.findSocioByDNI(nuevoAlquiler.getUserNationalId());
-            if (socioAlquiler == null) {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-
-            if (!socioAlquiler.getHasSkipperLicense()) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-            }
-
-            Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(nuevoAlquiler.getBoatRegistration());
-            if (embarcacion == null) {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-
-            List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
-            List<Reserva> reservas = reservaRepository.findAllReservas();
-
-            for (Alquiler alquiler : alquileres) {
-                if (alquiler.getBoatRegistration().equals(nuevoAlquiler.getBoatRegistration())) {
-                    // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'haySuperposicionConAlquiler'.
-                    if (haySuperposicionConAlquiler(nuevoAlquiler.getStartDate(), nuevoAlquiler.getEndDate(), alquiler)) {
-                        return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-                    }
-                }
-            }
-
-            for (Reserva reserva : reservas) {
-                if (reserva.getBoatRegistration().equals(nuevoAlquiler.getBoatRegistration())) {
-                    // Clean Code - Regla 6: Se ha eliminado el comentario explicativo y extraído la condicional compleja a la función 'haySuperposicionConReserva'.
-                    if (haySuperposicionConReserva(nuevoAlquiler.getStartDate(), nuevoAlquiler.getEndDate(), reserva)) {
-                        return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-                    }
-                }
-            }
-
-            // Clean Code - Regla de función: Cálculo de días extraído a método privado
-            double priceInEuros = calcularPrecioAlquiler(totalDays);
-            nuevoAlquiler.setPrice(priceInEuros);
-            nuevoAlquiler.setSeats(1);
-
-            boolean exito = alquilerRepository.addAlquiler(nuevoAlquiler);
-
-            if (exito) {
-                return new ResponseEntity<>(nuevoAlquiler, HttpStatus.CREATED);
-            } else {
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
+            return procesarCreacionAlquiler(nuevoAlquiler);
         } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ResponseEntity<Alquiler> procesarCreacionAlquiler(Alquiler nuevoAlquiler) {
+        if (tieneCamposObligatoriosNulos(nuevoAlquiler)) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        if (nuevoAlquiler.getStartDate().isAfter(nuevoAlquiler.getEndDate())) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        if (!esDuracionValida(nuevoAlquiler.getStartDate(), nuevoAlquiler.getEndDate())) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        long totalDays = calcularDiasTotales(nuevoAlquiler.getStartDate(), nuevoAlquiler.getEndDate());
+
+        Socio socioAlquiler = socioRepository.findSocioByDNI(nuevoAlquiler.getUserNationalId());
+        if (socioAlquiler == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        if (!socioAlquiler.getHasSkipperLicense()) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(nuevoAlquiler.getBoatRegistration());
+        if (embarcacion == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
+        List<Reserva> reservas = reservaRepository.findAllReservas();
+
+        for (Alquiler alquiler : alquileres) {
+            if (alquiler.getBoatRegistration().equals(nuevoAlquiler.getBoatRegistration())) {
+                if (haySuperposicionConAlquiler(nuevoAlquiler.getStartDate(), nuevoAlquiler.getEndDate(), alquiler)) {
+                    return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+                }
+            }
+        }
+
+        for (Reserva reserva : reservas) {
+            if (reserva.getBoatRegistration().equals(nuevoAlquiler.getBoatRegistration())) {
+                if (haySuperposicionConReserva(nuevoAlquiler.getStartDate(), nuevoAlquiler.getEndDate(), reserva)) {
+                    return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+                }
+            }
+        }
+
+        double priceInEuros = calcularPrecioAlquiler(totalDays);
+        nuevoAlquiler.setPrice(priceInEuros);
+        nuevoAlquiler.setSeats(1);
+
+        boolean exito = alquilerRepository.addAlquiler(nuevoAlquiler);
+
+        if (exito) {
+            return new ResponseEntity<>(nuevoAlquiler, HttpStatus.CREATED);
+        } else {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -308,74 +312,76 @@ public class AlquilerRestController {
      */
     @PatchMapping("/{id}/acompanantes")
     public ResponseEntity<Alquiler> addAcompanante(@PathVariable Integer id, @RequestBody String dniSocio) {
-        // Clean Code - Regla 10: Se han eliminado los comentarios explicativos línea a línea, confiando en la expresividad del código y los buenos nombres.
         try {
-            Alquiler alquiler = alquilerRepository.findAlquilerById(id);
-            if (alquiler == null) {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-
-            if (alquiler.getStartDate().isBefore(LocalDate.now())) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-            }
-
-            Socio socio = socioRepository.findSocioByDNI(dniSocio);
-            if (socio == null) {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-
-            if (dniSocio.equals(alquiler.getUserNationalId())) {
-                return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-            }
-
-            List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
-            for (Acompanante acompanante : acompanantes) {
-                if (acompanante.getNationalId().equals(dniSocio)) {
-                    return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-                }
-            }
-
-            Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(alquiler.getBoatRegistration());
-            if (embarcacion == null) {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-
-            int totalPersonas = acompanantes.size() + 1;
-            if (totalPersonas >= embarcacion.getSeats()) {
-                return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-            }
-
-            Acompanante acompanante = new Acompanante();
-            acompanante.setNationalId(dniSocio);
-            acompanante.setRentalId(id);
-
-            boolean exito = acompanantesRepository.addAcompanante(acompanante);
-            if (!exito) {
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
-            int nuevasPlazas = totalPersonas + 1;
-            alquiler.setSeats(nuevasPlazas);
-
-            long totalDays = ChronoUnit.DAYS.between(alquiler.getStartDate(), alquiler.getEndDate()) + 1;
-            double newPriceInEuros = 20.0 * alquiler.getSeats() * totalDays;
-            alquiler.setPrice(newPriceInEuros);
-
-            boolean actualizado = alquilerRepository.updateAlquiler(alquiler);
-            if (!actualizado) {
-                acompanantesRepository.deleteAcompanante(id, dniSocio);
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
-            alquiler = alquilerRepository.findAlquilerById(id);
-            if (alquiler == null) {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(alquiler, HttpStatus.OK);
-
+            return procesarAddAcompanante(id, dniSocio);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private ResponseEntity<Alquiler> procesarAddAcompanante(Integer id, String dniSocio) {
+        Alquiler alquiler = alquilerRepository.findAlquilerById(id);
+        if (alquiler == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        if (alquiler.getStartDate().isBefore(LocalDate.now())) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        Socio socio = socioRepository.findSocioByDNI(dniSocio);
+        if (socio == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        if (dniSocio.equals(alquiler.getUserNationalId())) {
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        }
+
+        List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
+        for (Acompanante acompanante : acompanantes) {
+            if (acompanante.getNationalId().equals(dniSocio)) {
+                return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+            }
+        }
+
+        Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(alquiler.getBoatRegistration());
+        if (embarcacion == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        int totalPersonas = acompanantes.size() + 1;
+        if (totalPersonas >= embarcacion.getSeats()) {
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        }
+
+        Acompanante acompanante = new Acompanante();
+        acompanante.setNationalId(dniSocio);
+        acompanante.setRentalId(id);
+
+        boolean exito = acompanantesRepository.addAcompanante(acompanante);
+        if (!exito) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        int nuevasPlazas = totalPersonas + 1;
+        alquiler.setSeats(nuevasPlazas);
+
+        long totalDays = ChronoUnit.DAYS.between(alquiler.getStartDate(), alquiler.getEndDate()) + 1;
+        double newPriceInEuros = 20.0 * alquiler.getSeats() * totalDays;
+        alquiler.setPrice(newPriceInEuros);
+
+        boolean actualizado = alquilerRepository.updateAlquiler(alquiler);
+        if (!actualizado) {
+            acompanantesRepository.deleteAcompanante(id, dniSocio);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        alquiler = alquilerRepository.findAlquilerById(id);
+        if (alquiler == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(alquiler, HttpStatus.OK);
     }
 
     /**
@@ -388,63 +394,65 @@ public class AlquilerRestController {
      * y en caso de error: 404 (Not Found), 409 (Conflict), 422 (Unprocessable Entity) o 500 (Internal Server Error)
      */
     @PatchMapping("/{id}/acompanantes/{dniSocio}")
-    public ResponseEntity<Alquiler> removeAcompanante(@PathVariable Integer id, 
+    public ResponseEntity<Alquiler> removeAcompanante(@PathVariable Integer id,
                                                     @PathVariable String dniSocio) {
-        // Clean Code - Regla 10: Se han eliminado los comentarios explicativos línea a línea, confiando en la expresividad del código y los buenos nombres.
         try {
-            Alquiler alquiler = alquilerRepository.findAlquilerById(id);
-            if (alquiler == null) {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-
-            if (alquiler.getStartDate().isBefore(LocalDate.now())) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-            }
-
-            if (dniSocio.equals(alquiler.getUserNationalId())) {
-                return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-            }
-
-            boolean encontrado = false;
-            List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
-            for (Acompanante acompanante : acompanantes) {
-                if (acompanante.getNationalId().equals(dniSocio)) {
-                    encontrado = true;
-                    break;
-                }
-            }
-
-            if (!encontrado) {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-
-            boolean exito = acompanantesRepository.deleteAcompanante(id, dniSocio);
-            if (!exito) {
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
-            acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
-            alquiler.setSeats(acompanantes.size() + 1);
-
-            long totalDays = ChronoUnit.DAYS.between(alquiler.getStartDate(), alquiler.getEndDate()) + 1;
-            double nuevoPrecio = 20.0 * alquiler.getSeats() * totalDays;
-            alquiler.setPrice(nuevoPrecio);
-
-            boolean actualizado = alquilerRepository.updateAlquiler(alquiler);
-            if (!actualizado) {
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
-            alquiler = alquilerRepository.findAlquilerById(id);
-            if (alquiler == null) {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-
-            return new ResponseEntity<>(alquiler, HttpStatus.OK);
-
+            return procesarRemoveAcompanante(id, dniSocio);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private ResponseEntity<Alquiler> procesarRemoveAcompanante(Integer id, String dniSocio) {
+        Alquiler alquiler = alquilerRepository.findAlquilerById(id);
+        if (alquiler == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        if (alquiler.getStartDate().isBefore(LocalDate.now())) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        if (dniSocio.equals(alquiler.getUserNationalId())) {
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        }
+
+        boolean encontrado = false;
+        List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
+        for (Acompanante acompanante : acompanantes) {
+            if (acompanante.getNationalId().equals(dniSocio)) {
+                encontrado = true;
+                break;
+            }
+        }
+
+        if (!encontrado) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        boolean exito = acompanantesRepository.deleteAcompanante(id, dniSocio);
+        if (!exito) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
+        alquiler.setSeats(acompanantes.size() + 1);
+
+        long totalDays = ChronoUnit.DAYS.between(alquiler.getStartDate(), alquiler.getEndDate()) + 1;
+        double nuevoPrecio = 20.0 * alquiler.getSeats() * totalDays;
+        alquiler.setPrice(nuevoPrecio);
+
+        boolean actualizado = alquilerRepository.updateAlquiler(alquiler);
+        if (!actualizado) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        alquiler = alquilerRepository.findAlquilerById(id);
+        if (alquiler == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(alquiler, HttpStatus.OK);
     }
 
     /**

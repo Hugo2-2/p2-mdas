@@ -151,68 +151,58 @@ public class SociosRestController {
      */
     @PostMapping(value = "/socioConInscripcion", consumes = "application/json")
     public ResponseEntity<Socio> createSocioConInscripcion(@RequestBody SocioConInscripcionRequest socioConInscripcion) {
-        // Validaciones de los campos del socio
-        if (socioConInscripcion.getNationalId() == null || socioConInscripcion.getNationalId().isEmpty() || 
-           socioConInscripcion.getName() == null || socioConInscripcion.getName().isEmpty() || 
-           socioConInscripcion.getSurname() == null || socioConInscripcion.getSurname().isEmpty() || 
+        if (socioConInscripcion.getNationalId() == null || socioConInscripcion.getNationalId().isEmpty() ||
+           socioConInscripcion.getName() == null || socioConInscripcion.getName().isEmpty() ||
+           socioConInscripcion.getSurname() == null || socioConInscripcion.getSurname().isEmpty() ||
            socioConInscripcion.getAddress() == null || socioConInscripcion.getAddress().isEmpty() ||
            socioConInscripcion.getBirthDate() == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        // Validación del DNI del titular
         if (socioConInscripcion.getTitularNationalId() == null || socioConInscripcion.getTitularNationalId().isEmpty()) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
         try {
-            // Verificar que la inscripción existe
-            Inscripcion inscripcion = inscripcionRepository.findInscripcionByDNITitular(socioConInscripcion.getTitularNationalId());
-            
-            if (inscripcion == null) {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-
-            Socio socio = new Socio(socioConInscripcion.getName(), socioConInscripcion.getSurname(), socioConInscripcion.getNationalId(), socioConInscripcion.getBirthDate(), socioConInscripcion.getAddress(), LocalDate.now(), socioConInscripcion.getIsSkipper());
-
-
-            if (socio.getBirthDate().getYear() > 2007) {
-                Hijos hijo = new Hijos(socio.getNationalId(), socio.getName(), socio.getSurname(), socio.getBirthDate());
-                hijo.setRegistrationId(inscripcion.getId()); // Inscripción existente
-
-                try {
-                    Boolean res = hijosRepository.addHijo(hijo) == true;
-
-                    inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 100);
-
-                    if (!res) {
-                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                    }
-                } catch (Exception e) {
-                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-            } else {
-
-                // Guardar el socio
-                socioRepository.addSocio(socio);
-
-                if (inscripcion.getSecondAdult() == null) {
-                    inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 250);
-                }
-
-                inscripcion.setSecondAdult(socio.getNationalId());
-
-            }
-
-            // Añadir el socio como segundo adulto a la inscripción
-            inscripcionRepository.updateInscripcion(inscripcion);
-
-            return new ResponseEntity<>(socio, HttpStatus.CREATED);
-            
+            return procesarCreacionSocioConInscripcion(socioConInscripcion);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private ResponseEntity<Socio> procesarCreacionSocioConInscripcion(SocioConInscripcionRequest socioConInscripcion) {
+        Inscripcion inscripcion = inscripcionRepository.findInscripcionByDNITitular(socioConInscripcion.getTitularNationalId());
+
+        if (inscripcion == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        Socio socio = new Socio(socioConInscripcion.getName(), socioConInscripcion.getSurname(), socioConInscripcion.getNationalId(), socioConInscripcion.getBirthDate(), socioConInscripcion.getAddress(), LocalDate.now(), socioConInscripcion.getIsSkipper());
+
+        if (socio.getBirthDate().getYear() > 2007) {
+            Hijos hijo = new Hijos(socio.getNationalId(), socio.getName(), socio.getSurname(), socio.getBirthDate());
+            hijo.setRegistrationId(inscripcion.getId());
+
+            Boolean res = hijosRepository.addHijo(hijo);
+            inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 100);
+
+            if (!res) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            socioRepository.addSocio(socio);
+
+            if (inscripcion.getSecondAdult() == null) {
+                inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 250);
+            }
+
+            inscripcion.setSecondAdult(socio.getNationalId());
+        }
+
+        inscripcionRepository.updateInscripcion(inscripcion);
+
+        return new ResponseEntity<>(socio, HttpStatus.CREATED);
     }
 
     /**
@@ -226,44 +216,44 @@ public class SociosRestController {
     @PatchMapping(value = "/{dni}", consumes = "application/json")
     public ResponseEntity<Socio> updateSocio(@PathVariable String dni, @RequestBody Map<String, Object> updates) {
         try {
-            // Buscar el socio existente
-            Socio socio = socioRepository.findSocioByDNI(dni);
-            
-            if (socio == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-
-            // Aplicar las actualizaciones parciales
-            if (updates.containsKey("nombre")) {
-                socio.setName((String) updates.get("nombre"));
-            }
-            if (updates.containsKey("apellidos")) {
-                socio.setSurname((String) updates.get("apellidos"));
-            }
-            if (updates.containsKey("fechaNacimiento")) {
-                socio.setBirthDate(LocalDate.parse((String) updates.get("fechaNacimiento")));
-            }
-            if (updates.containsKey("direccion")) {
-                socio.setAddress((String) updates.get("direccion"));
-            }
-            if (updates.containsKey("fechaInscripcion")) {
-                socio.setRegistrationDate(LocalDate.parse((String) updates.get("fechaInscripcion")));
-            }
-            if (updates.containsKey("esTitular")) {
-                socio.setIsTitular((Boolean) updates.get("esTitular"));
-            }
-            if (updates.containsKey("tieneLicenciaPatron")) {
-                socio.setHasSkipperLicense((Boolean) updates.get("tieneLicenciaPatron"));
-            }
-
-            // Guardar los cambios
-            socioRepository.updateSocio(socio);
-            return new ResponseEntity<>(socio, HttpStatus.OK);
-
+            return procesarUpdateSocio(dni, updates);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private ResponseEntity<Socio> procesarUpdateSocio(String dni, Map<String, Object> updates) {
+        Socio socio = socioRepository.findSocioByDNI(dni);
+
+        if (socio == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (updates.containsKey("nombre")) {
+            socio.setName((String) updates.get("nombre"));
+        }
+        if (updates.containsKey("apellidos")) {
+            socio.setSurname((String) updates.get("apellidos"));
+        }
+        if (updates.containsKey("fechaNacimiento")) {
+            socio.setBirthDate(LocalDate.parse((String) updates.get("fechaNacimiento")));
+        }
+        if (updates.containsKey("direccion")) {
+            socio.setAddress((String) updates.get("direccion"));
+        }
+        if (updates.containsKey("fechaInscripcion")) {
+            socio.setRegistrationDate(LocalDate.parse((String) updates.get("fechaInscripcion")));
+        }
+        if (updates.containsKey("esTitular")) {
+            socio.setIsTitular((Boolean) updates.get("esTitular"));
+        }
+        if (updates.containsKey("tieneLicenciaPatron")) {
+            socio.setHasSkipperLicense((Boolean) updates.get("tieneLicenciaPatron"));
+        }
+
+        socioRepository.updateSocio(socio);
+        return new ResponseEntity<>(socio, HttpStatus.OK);
     }
 
     /**
@@ -277,69 +267,61 @@ public class SociosRestController {
     @DeleteMapping("/{dni}")
     public ResponseEntity<Void> deleteSocio(@PathVariable String dni) {
         try {
-            // Validación
-            if (dni == null || dni.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-
-            // Primero verificar si existe como socio
-            Socio socio = socioRepository.findSocioByDNI(dni);
-            
-            if (socio != null) {
-                // Es un socio adulto - verificar que no esté vinculado a inscripciones
-                
-                // Verificar si es titular de alguna inscripción
-                if (socio.getIsTitular()) {
-                    Inscripcion inscripcion = inscripcionRepository.findInscripcionByDNITitular(dni);
-                    if (inscripcion != null) {
-                        return new ResponseEntity<>(HttpStatus.CONFLICT);
-                    }
-                }
-
-                // Verificar si es segundo adulto en alguna inscripción
-                List<Inscripcion> todasInscripciones = inscripcionRepository.findAllInscripciones();
-                if (todasInscripciones != null) {
-                    for (Inscripcion insc : todasInscripciones) {
-                        if (insc.getSecondAdult() != null && insc.getSecondAdult().equals(dni)) {
-                            return new ResponseEntity<>(HttpStatus.CONFLICT);
-                        }
-                    }
-                }
-
-                // Si pasa las validaciones, eliminar el socio
-                boolean resultado = socioRepository.deleteSocio(dni);
-                if (resultado) {
-                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-                } else {
-                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-            }
-            
-            // Si no es socio, verificar si existe como hijo
-            Hijos hijo = hijosRepository.findHijoByDni(dni);
-            
-            if (hijo != null) {
-                // Es un hijo - verificar que no esté vinculado a una inscripción (id_inscripcion > 0)
-                if (hijo.getRegistrationId() > 0) {
-                    return new ResponseEntity<>(HttpStatus.CONFLICT);
-                }
-
-                // Si no está vinculado, eliminar el hijo
-                boolean resultado = hijosRepository.deleteHijo(dni);
-                if (resultado) {
-                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-                } else {
-                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-            }
-
-            // Si no existe ni como socio ni como hijo
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
+            return procesarDeleteSocio(dni);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private ResponseEntity<Void> procesarDeleteSocio(String dni) {
+        if (dni == null || dni.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Socio socio = socioRepository.findSocioByDNI(dni);
+
+        if (socio != null) {
+            if (socio.getIsTitular()) {
+                Inscripcion inscripcion = inscripcionRepository.findInscripcionByDNITitular(dni);
+                if (inscripcion != null) {
+                    return new ResponseEntity<>(HttpStatus.CONFLICT);
+                }
+            }
+
+            List<Inscripcion> todasInscripciones = inscripcionRepository.findAllInscripciones();
+            if (todasInscripciones != null) {
+                for (Inscripcion insc : todasInscripciones) {
+                    if (insc.getSecondAdult() != null && insc.getSecondAdult().equals(dni)) {
+                        return new ResponseEntity<>(HttpStatus.CONFLICT);
+                    }
+                }
+            }
+
+            boolean resultado = socioRepository.deleteSocio(dni);
+            if (resultado) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+
+        Hijos hijo = hijosRepository.findHijoByDni(dni);
+
+        if (hijo != null) {
+            if (hijo.getRegistrationId() > 0) {
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
+            }
+
+            boolean resultado = hijosRepository.deleteHijo(dni);
+            if (resultado) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 }

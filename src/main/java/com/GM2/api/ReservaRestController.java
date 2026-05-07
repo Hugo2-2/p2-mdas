@@ -1,18 +1,27 @@
 package com.GM2.api;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.GM2.model.domain.Alquiler;
 import com.GM2.model.domain.Embarcacion;
 import com.GM2.model.domain.Reserva;
 import com.GM2.model.repository.AlquilerRepository;
 import com.GM2.model.repository.EmbarcacionRepository;
 import com.GM2.model.repository.ReservaRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Controlador REST de la API de reservas.
@@ -79,27 +88,28 @@ public class ReservaRestController {
     @GetMapping(params = "fecha")
     public ResponseEntity<List<Reserva>> getReservasFuturas(@RequestParam LocalDate fecha) {
         try {
-            // Traemos todas las reservas porque el filtrado se hace en memoria (Java).
-            List<Reserva> todasReservas = reservaRepository.findAllReservas();
-            List<Reserva> reservasFuturas = new ArrayList<>();
-
-            if (todasReservas != null) {
-                for (Reserva reserva : todasReservas) {
-                    // Filtramos: Solo añadimos si la fecha de la reserva es POSTERIOR a la solicitada.
-                    if (reserva.getDate().isAfter(fecha)) {
-                        reservasFuturas.add(reserva);
-                    }
-                }
-            }
-
-            if (reservasFuturas.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(reservasFuturas, HttpStatus.OK);
-
+            return filtrarReservasFuturas(fecha);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private ResponseEntity<List<Reserva>> filtrarReservasFuturas(LocalDate fecha) {
+        List<Reserva> todasReservas = reservaRepository.findAllReservas();
+        List<Reserva> reservasFuturas = new ArrayList<>();
+
+        if (todasReservas != null) {
+            for (Reserva reserva : todasReservas) {
+                if (reserva.getDate().isAfter(fecha)) {
+                    reservasFuturas.add(reserva);
+                }
+            }
+        }
+
+        if (reservasFuturas.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(reservasFuturas, HttpStatus.OK);
     }
 
     /**
@@ -133,44 +143,33 @@ public class ReservaRestController {
     @PostMapping(consumes = "application/json")
     public ResponseEntity<Reserva> createReserva(@RequestBody Reserva nuevaReserva) {
         try {
-            // 1. VALIDACIÓN: ¿Existe la embarcación?
-            Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(nuevaReserva.getBoatRegistration());
-            if (embarcacion == null) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-            }
-
-            // 2. VALIDACIÓN: Capacidad.
-            // Plazas solicitadas + 1 (Patrón) no puede superar las plazas del barco.
-            if ((nuevaReserva.getSeats() + 1) > embarcacion.getSeats()) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-            }
-
-            // 3. VALIDACIÓN: Disponibilidad.
-            // Usamos el método auxiliar para ver si choca con alquileres o reservas existentes.
-            if (isEmbarcacionOcupada(nuevaReserva.getBoatRegistration(), nuevaReserva.getDate())) {
-                return new ResponseEntity<>(null, HttpStatus.CONFLICT); // 409 Conflict
-            }
-
-            // 4. LOGICA DE NEGOCIO: Calcular precio.
-            // Clean Code - Reglas de comentarios: Comentario que solo tiene sentido para el programador que lo escribió (Comentario reemplazado) 
-            // Calculamos el precio en el servidor para preveer manipulación desde el cliente
-            // Ignoramos cualquier precio que venga en el JSON para evitar fraudes.
-
-            // Clean Code - Reglas de nombrado: variable con unidad (precioCalculado -> calculatedPriceInEuros )
-            // Clean Code - Regla de función: Cálculo de días extraído a método privado
-            double calculatedPriceInEuros = calcularPrecioReserva(nuevaReserva.getSeats());
-            nuevaReserva.setPrice(calculatedPriceInEuros);
-
-            // 5. PERSISTENCIA: Guardar en BBDD.
-            boolean exito = reservaRepository.addReserva(nuevaReserva);
-
-            //Clean Code - Reglas de comentarios: Comentario redundate sobre código de estado
-            if (exito) return new ResponseEntity<>(nuevaReserva, HttpStatus.CREATED);
-            else return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-
+            return procesarCreacionReserva(nuevaReserva);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private ResponseEntity<Reserva> procesarCreacionReserva(Reserva nuevaReserva) {
+        Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(nuevaReserva.getBoatRegistration());
+        if (embarcacion == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        if ((nuevaReserva.getSeats() + 1) > embarcacion.getSeats()) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        if (isEmbarcacionOcupada(nuevaReserva.getBoatRegistration(), nuevaReserva.getDate())) {
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        }
+
+        double calculatedPriceInEuros = calcularPrecioReserva(nuevaReserva.getSeats());
+        nuevaReserva.setPrice(calculatedPriceInEuros);
+
+        boolean exito = reservaRepository.addReserva(nuevaReserva);
+
+        if (exito) return new ResponseEntity<>(nuevaReserva, HttpStatus.CREATED);
+        else return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -184,34 +183,32 @@ public class ReservaRestController {
     @PatchMapping("/{id}/fecha")
     public ResponseEntity<Reserva> updateReservaFecha(@PathVariable Integer id, @RequestBody Reserva datosNuevos) {
         try {
-            // Buscamos la reserva original.
-            Reserva reservaExistente = reservaRepository.findReservaById(id);
-            if (reservaExistente == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-            LocalDate nuevaFecha = datosNuevos.getDate();
-            if (nuevaFecha == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-            // VALIDACIÓN: No se puede mover una reserva al pasado.
-            if (nuevaFecha.isBefore(LocalDate.now())) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-
-            // VALIDACIÓN: Disponibilidad en la nueva fecha.
-            // Reutilizamos el método auxiliar. Si devuelve true, es que está ocupada.
-            if (isEmbarcacionOcupada(reservaExistente.getBoatRegistration(), nuevaFecha)) {
-                return new ResponseEntity<>(HttpStatus.CONFLICT); // El barco ya está cogido ese día.
-            }
-
-            // Aplicamos el cambio y guardamos.
-            reservaExistente.setDate(nuevaFecha);
-            boolean exito = reservaRepository.updateReserva(reservaExistente);
-
-            if (exito) return new ResponseEntity<>(reservaExistente, HttpStatus.OK);
-            else return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-
+            return procesarUpdateReservaFecha(id, datosNuevos);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private ResponseEntity<Reserva> procesarUpdateReservaFecha(Integer id, Reserva datosNuevos) {
+        Reserva reservaExistente = reservaRepository.findReservaById(id);
+        if (reservaExistente == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        LocalDate nuevaFecha = datosNuevos.getDate();
+        if (nuevaFecha == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        if (nuevaFecha.isBefore(LocalDate.now())) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        if (isEmbarcacionOcupada(reservaExistente.getBoatRegistration(), nuevaFecha)) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        reservaExistente.setDate(nuevaFecha);
+        boolean exito = reservaRepository.updateReserva(reservaExistente);
+
+        if (exito) return new ResponseEntity<>(reservaExistente, HttpStatus.OK);
+        else return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -225,40 +222,37 @@ public class ReservaRestController {
     @PatchMapping("/{id}/detalles")
     public ResponseEntity<Reserva> updateReservaDetalles(@PathVariable Integer id, @RequestBody Reserva datosNuevos) {
         try {
-            Reserva reservaExistente = reservaRepository.findReservaById(id);
-            if (reservaExistente == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-            // Si viene descripción, la actualizamos.
-            if (datosNuevos.getDescription() != null) {
-                reservaExistente.setDescription(datosNuevos.getDescription());
-            }
-
-            // Si vienen plazas, validamos capacidad antes de actualizar.
-            if (datosNuevos.getSeats() > 0) {
-                Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(reservaExistente.getBoatRegistration());
-
-                // Clean Code - Reglas de comentarios: Comentario que explica intención del código
-                if (embarcacion != null && (datosNuevos.getSeats() + 1) > embarcacion.getSeats()) {
-                    return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
-                }
-
-                // 1. Actualizamos las plazas
-                reservaExistente.setSeats(datosNuevos.getSeats());
-
-                // Clean Code - Reglas de comentarios: Comentario que solo tiene sentido para el programador que lo escribió
-                // Clean Code - Reglas de nombrado: variable con unidad (precioCalculado -> calculatedPriceInEuros )
-                double calculatedPriceInEuros = 40.0 * datosNuevos.getSeats();
-                reservaExistente.setPrice(calculatedPriceInEuros);
-            }
-
-            boolean exito = reservaRepository.updateReserva(reservaExistente);
-
-            if (exito) return new ResponseEntity<>(reservaExistente, HttpStatus.OK);
-            else return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-
+            return procesarUpdateReservaDetalles(id, datosNuevos);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private ResponseEntity<Reserva> procesarUpdateReservaDetalles(Integer id, Reserva datosNuevos) {
+        Reserva reservaExistente = reservaRepository.findReservaById(id);
+        if (reservaExistente == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        if (datosNuevos.getDescription() != null) {
+            reservaExistente.setDescription(datosNuevos.getDescription());
+        }
+
+        if (datosNuevos.getSeats() > 0) {
+            Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(reservaExistente.getBoatRegistration());
+
+            if (embarcacion != null && (datosNuevos.getSeats() + 1) > embarcacion.getSeats()) {
+                return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+
+            reservaExistente.setSeats(datosNuevos.getSeats());
+
+            double calculatedPriceInEuros = 40.0 * datosNuevos.getSeats();
+            reservaExistente.setPrice(calculatedPriceInEuros);
+        }
+
+        boolean exito = reservaRepository.updateReserva(reservaExistente);
+
+        if (exito) return new ResponseEntity<>(reservaExistente, HttpStatus.OK);
+        else return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**

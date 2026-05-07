@@ -103,38 +103,36 @@ public class EmbarcacionRestController {
     @PostMapping(consumes = "application/json")
     public ResponseEntity<Embarcacion> createEmbarcacion(@RequestBody Embarcacion nuevaEmbarcacion) {
         try {
-
-            // Verificar que los datos obligatorios no sean nulos ni estén vacíos
-            if (nuevaEmbarcacion.getRegistration() == null || nuevaEmbarcacion.getRegistration().trim().isEmpty() ||
-                    nuevaEmbarcacion.getName() == null || nuevaEmbarcacion.getName().trim().isEmpty() ||
-                    nuevaEmbarcacion.getType() == null || nuevaEmbarcacion.getType().trim().isEmpty() ||
-                    nuevaEmbarcacion.getDimensions() == null || nuevaEmbarcacion.getDimensions().trim().isEmpty() ||
-                    nuevaEmbarcacion.getSeats() <= 0) {
-
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            }
-
-            // No se le debe asociar ningún patron al crear, para cumplir lo que dice el enunciado
-            nuevaEmbarcacion.setSkipperId(null);
-
-            // Validar la duplicidad de datos (Matrícula y Nombre deben ser únicos)
-            if (embarcacionRepository.findEmbarcacionByMatricula(nuevaEmbarcacion.getRegistration()) != null) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-            }
-
-            if (embarcacionRepository.findEmbarcacionByNombre(nuevaEmbarcacion.getName()) != null) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-            }
-
-            boolean exito = embarcacionRepository.addEmbarcacion(nuevaEmbarcacion);
-
-            if (exito) {
-                return new ResponseEntity<>(nuevaEmbarcacion, HttpStatus.CREATED);
-            } else {
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
+            return procesarCreacionEmbarcacion(nuevaEmbarcacion);
         } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ResponseEntity<Embarcacion> procesarCreacionEmbarcacion(Embarcacion nuevaEmbarcacion) {
+        if (nuevaEmbarcacion.getRegistration() == null || nuevaEmbarcacion.getRegistration().trim().isEmpty() ||
+                nuevaEmbarcacion.getName() == null || nuevaEmbarcacion.getName().trim().isEmpty() ||
+                nuevaEmbarcacion.getType() == null || nuevaEmbarcacion.getType().trim().isEmpty() ||
+                nuevaEmbarcacion.getDimensions() == null || nuevaEmbarcacion.getDimensions().trim().isEmpty() ||
+                nuevaEmbarcacion.getSeats() <= 0) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        nuevaEmbarcacion.setSkipperId(null);
+
+        if (embarcacionRepository.findEmbarcacionByMatricula(nuevaEmbarcacion.getRegistration()) != null) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        if (embarcacionRepository.findEmbarcacionByNombre(nuevaEmbarcacion.getName()) != null) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        boolean exito = embarcacionRepository.addEmbarcacion(nuevaEmbarcacion);
+
+        if (exito) {
+            return new ResponseEntity<>(nuevaEmbarcacion, HttpStatus.CREATED);
+        } else {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -151,70 +149,62 @@ public class EmbarcacionRestController {
     @PatchMapping(path = "/{matricula}", consumes = "application/json")
     public ResponseEntity<Embarcacion> updateEmbarcacion(@PathVariable String matricula, @RequestBody Embarcacion nuevaEmbarcacion) {
         try {
-            // 1. Buscar si la embarcación existe
-            Embarcacion embarcacionActual = embarcacionRepository.findEmbarcacionByMatricula(matricula);
-            if (embarcacionActual == null) {
-                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-            }
-
-            // 2. Comprobar que no se quiera cambiar la matricula
-            if (nuevaEmbarcacion.getRegistration() != null) {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            }
-
-            // --- VALIDACIONES Y ACTUALIZACIÓN DE CAMPOS ---
-
-            // A) Validación de NOMBRE (Si se envía y es diferente al actual)
-            if (nuevaEmbarcacion.getName() != null && !nuevaEmbarcacion.getName().equals(embarcacionActual.getName())) {
-                // Comprobamos si el nuevo nombre ya está usado por OTRA embarcación
-                Embarcacion otraEmbarcacion = embarcacionRepository.findEmbarcacionByNombre(nuevaEmbarcacion.getName());
-                if (otraEmbarcacion != null) {
-                    return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-                }
-                embarcacionActual.setName(nuevaEmbarcacion.getName());
-            }
-
-            // B) Actualización de TIPO (Debe ser un tipo válido de la lista predefinida)
-            if (nuevaEmbarcacion.getType() != null) {
-                if (!TIPOS_VALIDOS.contains(nuevaEmbarcacion.getType())) {
-                    return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-                }
-                embarcacionActual.setType(nuevaEmbarcacion.getType());
-            }
-
-            // C) Validación de PLAZAS (Debe ser un número positivo mayor o igual a 2)
-            if (nuevaEmbarcacion.getSeats() != 0) { // Si viene dato de plazas
-                if (nuevaEmbarcacion.getSeats() < 2) {
-                    return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-                }
-                embarcacionActual.setSeats(nuevaEmbarcacion.getSeats());
-            }
-
-            // D) Validación de DIMENSIONES (Formato numérico válido y mayor que 1)
-            if (nuevaEmbarcacion.getDimensions() != null) {
-                try {
-                    // Intentamos parsear para validar formato y lógica
-                    double dimensionesNum = Double.parseDouble(nuevaEmbarcacion.getDimensions());
-                    if (dimensionesNum < 1) {
-                        return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-                    }
-                    embarcacionActual.setDimensions(nuevaEmbarcacion.getDimensions());
-                } catch (NumberFormatException e) {
-                    return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); // 400
-                }
-            }
-
-            // E) Guardar cambios en base de datos
-            boolean exito = embarcacionRepository.updateEmbarcacion(embarcacionActual);
-
-            if (exito) {
-                return new ResponseEntity<>(embarcacionActual, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
+            return procesarUpdateEmbarcacion(matricula, nuevaEmbarcacion);
         } catch (Exception e) {
             e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ResponseEntity<Embarcacion> procesarUpdateEmbarcacion(String matricula, Embarcacion nuevaEmbarcacion) {
+        Embarcacion embarcacionActual = embarcacionRepository.findEmbarcacionByMatricula(matricula);
+        if (embarcacionActual == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
+        if (nuevaEmbarcacion.getRegistration() != null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        if (nuevaEmbarcacion.getName() != null && !nuevaEmbarcacion.getName().equals(embarcacionActual.getName())) {
+            Embarcacion otraEmbarcacion = embarcacionRepository.findEmbarcacionByNombre(nuevaEmbarcacion.getName());
+            if (otraEmbarcacion != null) {
+                return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+            }
+            embarcacionActual.setName(nuevaEmbarcacion.getName());
+        }
+
+        if (nuevaEmbarcacion.getType() != null) {
+            if (!TIPOS_VALIDOS.contains(nuevaEmbarcacion.getType())) {
+                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+            embarcacionActual.setType(nuevaEmbarcacion.getType());
+        }
+
+        if (nuevaEmbarcacion.getSeats() != 0) {
+            if (nuevaEmbarcacion.getSeats() < 2) {
+                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+            embarcacionActual.setSeats(nuevaEmbarcacion.getSeats());
+        }
+
+        if (nuevaEmbarcacion.getDimensions() != null) {
+            try {
+                double dimensionesNum = Double.parseDouble(nuevaEmbarcacion.getDimensions());
+                if (dimensionesNum < 1) {
+                    return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+                }
+                embarcacionActual.setDimensions(nuevaEmbarcacion.getDimensions());
+            } catch (NumberFormatException e) {
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        boolean exito = embarcacionRepository.updateEmbarcacion(embarcacionActual);
+
+        if (exito) {
+            return new ResponseEntity<>(embarcacionActual, HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

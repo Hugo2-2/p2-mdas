@@ -82,41 +82,39 @@ public class PatronRestController {
     @PostMapping(consumes = "application/json")
     public ResponseEntity<Patron> createPatron(@RequestBody Patron nuevoPatron) {
         try {
-            // Verificamos que no queden campos nulos (Campos obligatorios NOT NULL)
-            if (nuevoPatron.getNationalId() == null || nuevoPatron.getNationalId().trim().isEmpty() ||
-                    nuevoPatron.getName() == null || nuevoPatron.getName().trim().isEmpty() ||
-                    nuevoPatron.getSurname() == null || nuevoPatron.getSurname().trim().isEmpty() ||
-                    nuevoPatron.getBirthDate() == null ||
-                    nuevoPatron.getTitleIssueDate() == null) {
-
-                // 400 Bad Request: El cliente envió datos incompletos
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            }
-
-            // Validar si el DNI ya está registrado
-            if (patronRepository.isRegistered(nuevoPatron.getNationalId())) {
-                return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-            }
-
-            // Validar lógica de fechas: No puede haber nacido en el futuro
-            if (nuevoPatron.getBirthDate().isAfter(java.time.LocalDate.now())) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-            }
-
-            // Validar lógica de fechas: Título no puede ser futuro ni anterior al nacimiento
-            if (nuevoPatron.getTitleIssueDate().isAfter(java.time.LocalDate.now()) ||
-                    nuevoPatron.getTitleIssueDate().isBefore(nuevoPatron.getBirthDate())) {
-                return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-            }
-
-            boolean exito = patronRepository.addPatron(nuevoPatron);
-
-            if (exito) {
-                return new ResponseEntity<>(nuevoPatron, HttpStatus.CREATED);
-            } else {
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            return procesarCreacionPatron(nuevoPatron);
         } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ResponseEntity<Patron> procesarCreacionPatron(Patron nuevoPatron) {
+        if (nuevoPatron.getNationalId() == null || nuevoPatron.getNationalId().trim().isEmpty() ||
+                nuevoPatron.getName() == null || nuevoPatron.getName().trim().isEmpty() ||
+                nuevoPatron.getSurname() == null || nuevoPatron.getSurname().trim().isEmpty() ||
+                nuevoPatron.getBirthDate() == null ||
+                nuevoPatron.getTitleIssueDate() == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        if (patronRepository.isRegistered(nuevoPatron.getNationalId())) {
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        }
+
+        if (nuevoPatron.getBirthDate().isAfter(java.time.LocalDate.now())) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        if (nuevoPatron.getTitleIssueDate().isAfter(java.time.LocalDate.now()) ||
+                nuevoPatron.getTitleIssueDate().isBefore(nuevoPatron.getBirthDate())) {
+            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        boolean exito = patronRepository.addPatron(nuevoPatron);
+
+        if (exito) {
+            return new ResponseEntity<>(nuevoPatron, HttpStatus.CREATED);
+        } else {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
