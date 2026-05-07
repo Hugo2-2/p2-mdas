@@ -135,23 +135,35 @@ public class SocioRepository extends AbstractRepository {
         }
     }
 
-    /**
-     * Inserta un nuevo socio en la base de datos.
-     * Realiza validaciones de negocio (edad mínima para titularidad) y
-     * crea automáticamente una inscripción si el socio es titular.
-     *
-     * @param socio El objeto {@link Socio} a insertar.
-     * @throws ValidationException si los datos del socio no son válidos.
-     * @throws DatabaseException si la operación de persistencia falla.
-     */
-    public void addSocio(Socio socio) {
+    // Clean Code - Regla 3 Funciones (argumentos): Se ha eliminado el parámetro bandera (flag) 'isTitular' dividiendo el comportamiento en métodos específicos.
+    public void addSocioTitular(Socio socio) {
         if (socio == null)
             throw new ValidationException("No se ha ingresado el socio");
 
-        if (socio.getBirthDate().getYear() > 2007 && socio.getIsTitular())
+        if (socio.getBirthDate().getYear() > 2007)
             throw new ValidationException("Debes de ser mayor de edad para realizar esta inscripcion");
 
-        boolean sqlRes;
+        boolean sqlRes = ejecutarInsertSocio(socio);
+
+        // Creamos su inscripcion simple que posteriormente podrá ser ampliada
+        Inscripcion inscripcion = new Inscripcion(socio.getNationalId());
+        boolean resInscripcion = inscripcionRepository.addInscripcion(inscripcion);
+        if (!(sqlRes && resInscripcion))
+            throw new DatabaseException("No se ha podido guardar el socio");
+    }
+
+    // Clean Code - Regla 3 Funciones (argumentos): Se ha eliminado el parámetro bandera (flag) 'isTitular' dividiendo el comportamiento en métodos específicos.
+    public void addSocioNoTitular(Socio socio) {
+        if (socio == null)
+            throw new ValidationException("No se ha ingresado el socio");
+
+        boolean sqlRes = ejecutarInsertSocio(socio);
+
+        if (!sqlRes)
+            throw new DatabaseException("No se ha podido guardar el socio");
+    }
+
+    private boolean ejecutarInsertSocio(Socio socio) {
         try {
             String query = sqlQueries.getProperty("insert-addSocio");
             if (query != null) {
@@ -165,27 +177,15 @@ public class SocioRepository extends AbstractRepository {
                    socio.getIsTitular(),
                    socio.getHasSkipperLicense()
                 );
-                sqlRes = result > 0;
+                return result > 0;
             } else {
-                sqlRes = false;
+                return false;
             }
         } catch (DataAccessException exception) {
             System.err.println("Unable to insert socios in the database");
             exception.printStackTrace();
-            sqlRes = false;
+            return false;
         }
-
-        // Creamos su inscripcion simple que posteriormente podrá ser ampliada
-        if (socio.getIsTitular() && socio.getIsTitular() != null) {
-            Inscripcion inscripcion = new Inscripcion(socio.getNationalId());
-            boolean resInscripcion = inscripcionRepository.addInscripcion(inscripcion);
-            if (!(sqlRes && resInscripcion))
-                throw new DatabaseException("No se ha podido guardar el socio");
-            return;
-        }
-
-        if (!sqlRes)
-            throw new DatabaseException("No se ha podido guardar el socio");
     }
 
     /**

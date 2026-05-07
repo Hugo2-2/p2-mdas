@@ -1,19 +1,14 @@
 package com.GM2.controller.socio;
 
-import java.time.LocalDate;
-
+import com.GM2.model.domain.Socio;
+import com.GM2.model.repository.SocioRepository;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.GM2.model.domain.Socio;
-import com.GM2.model.repository.SocioRepository;
+import java.time.LocalDate;
 
 /**
  * Controlador web (MVC) para la gestión de Socios.
@@ -64,20 +59,23 @@ public class AddSocioController {
      * Maneja la lógica de creación de inscripciones automáticas y redirección
      * a formularios de inscripción familiar si el socio es titular.
      *
-     * @param socio El objeto Socio con los datos rellenados del formulario (@ModelAttribute).
-     * @param ampliarInscripcion Parámetro opcional que indica si se desea ampliar la inscripción.
-     * @param redirectAttributes Interfaz para pasar mensajes (éxito/error) a la vista de redirección.
+     * @param socio              El objeto Socio con los datos rellenados del
+     *                           formulario (@ModelAttribute).
+     * @param ampliarInscripcion Parámetro opcional que indica si se desea ampliar
+     *                           la inscripción.
+     * @param redirectAttributes Interfaz para pasar mensajes (éxito/error) a la
+     *                           vista de redirección.
      * @return Un String que indica la URL a la que se debe redirigir.
      */
     @PostMapping("/addSocio")
     public String addSocio(@ModelAttribute Socio socio,
-                           @RequestParam(name = "ampliarInscripcion", required = false) String ampliarInscripcion,
-                           RedirectAttributes redirectAttributes,
-                           SessionStatus sessionStatus) {
+            @RequestParam(name = "ampliarInscripcion", required = false) String ampliarInscripcion,
+            RedirectAttributes redirectAttributes,
+            SessionStatus sessionStatus) {
 
         socio.setRegistrationDate(LocalDate.now());
 
-        //Mensajes para depurar en terminal
+        // Mensajes para depurar en terminal
         System.out.println("[SocioController] Informacion recivida: nombre=" + socio.getName() +
                 " apellidos=" + socio.getSurname() +
                 " dni=" + socio.getNationalId() +
@@ -93,23 +91,27 @@ public class AddSocioController {
             return "redirect:/api/socios/addSocio";
         }
 
-        try {
-            socioRepository.addSocio(socio);
+        // Usaremos estas funciones para añadir al socio y mostrar mensajes de error
+        String mensaje = socioRepository.addSocio(socio);
+
+        // Evaluamos el mensaje que se mostrará en las flashcards de error
+        if (mensaje.equals("EXITO")) {
             redirectAttributes.addFlashAttribute("mensajeExito", "Socio guardado exitosamente");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("mensajeError", e.getMessage());
+        } else {
+            redirectAttributes.addFlashAttribute("mensajeError", mensaje);
             sessionStatus.setComplete();
             return "redirect:/api/socios/addSocio";
         }
 
-        //Confirmamos que la checkbox de la vista está marcada
+        // Confirmamos que la checkbox de la vista está marcada
         boolean quiereAmpliar = (ampliarInscripcion != null && ampliarInscripcion.equals("true"));
 
         if (socio.getIsTitular() && quiereAmpliar) {
             // Pasamos el DNI del socio recién creado a la siguiente página
             redirectAttributes.addFlashAttribute("dniTitular", socio.getNationalId());
 
-            // Redirigimos al nuevo formulario de inscripción familiar pasando el id de la inscripción como parámetro en el enlace
+            // Redirigimos al nuevo formulario de inscripción familiar pasando el id de la
+            // inscripción como parámetro en el enlace
             sessionStatus.setComplete();
             return "redirect:/api/inscripciones/updateInscripcion";
         } else {

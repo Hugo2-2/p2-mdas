@@ -134,7 +134,11 @@ public class SociosRestController {
             socio.setRegistrationDate(LocalDate.now());
 
             try {
-                socioRepository.addSocio(socio);
+                if (socio.getIsTitular() != null && socio.getIsTitular()) {
+                    socioRepository.addSocioTitular(socio);
+                } else {
+                    socioRepository.addSocioNoTitular(socio);
+                }
                 return new ResponseEntity<>(socio, HttpStatus.OK);
             } catch (Exception e) {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -191,7 +195,11 @@ public class SociosRestController {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
-            socioRepository.addSocio(socio);
+            if (socio.getIsTitular() != null && socio.getIsTitular()) {
+                socioRepository.addSocioTitular(socio);
+            } else {
+                socioRepository.addSocioNoTitular(socio);
+            }
 
             if (inscripcion.getSecondAdult() == null) {
                 inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 250);
