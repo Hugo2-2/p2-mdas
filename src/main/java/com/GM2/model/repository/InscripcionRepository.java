@@ -1,5 +1,8 @@
 package com.GM2.model.repository;
 
+import com.GM2.exception.DatabaseException;
+import com.GM2.exception.EntityNotFoundException;
+import com.GM2.exception.ValidationException;
 import com.GM2.model.domain.Hijos;
 import com.GM2.model.domain.Inscripcion;
 import org.springframework.context.annotation.Lazy;
@@ -210,15 +213,18 @@ public class InscripcionRepository extends AbstractRepository{
      * Actualiza automáticamente la fecha de creación al momento actual.
      *
      * @param inscripcion El objeto {@link Inscripcion} con los datos actualizados.
-     * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
+     * @throws ValidationException si el objeto inscripcion es nulo.
+     * @throws EntityNotFoundException si la inscripción no existe en la base de datos.
+     * @throws DatabaseException si la operación de persistencia falla.
      */
-    public String updateInscripcion(Inscripcion inscripcion) {
-        if (inscripcion == null ) return "No se ha podido ingresar la inscripcion";
+    public void updateInscripcion(Inscripcion inscripcion) {
+        if (inscripcion == null)
+            throw new ValidationException("No se ha podido ingresar la inscripcion");
 
-        if (findInscripcionByDNITitular(inscripcion.getTitularMemberId()) == null )
-            return "No puedes actualizar la inscripcion porque no existe";
+        if (findInscripcionByDNITitular(inscripcion.getTitularMemberId()) == null)
+            throw new EntityNotFoundException("No puedes actualizar la inscripcion porque no existe");
 
-        // Clean Code - Regla de función: Función más pura posible  
+        // Clean Code - Regla de función: Función más pura posible
         inscripcion.setCreationDate(LocalDate.now());
 
         try {
@@ -230,16 +236,15 @@ public class InscripcionRepository extends AbstractRepository{
                     inscripcion.getSecondAdult(),
                     inscripcion.getId()
                 );
-
-                if (result > 0)
-                    return "EXITO";
-                else return "No se ha podido actualizar la inscripcion";
-
-            } else return "No se ha podido actualizar la inscripcion";
+                if (result <= 0)
+                    throw new DatabaseException("No se ha podido actualizar la inscripcion");
+            } else {
+                throw new DatabaseException("No se ha podido actualizar la inscripcion");
+            }
         } catch (DataAccessException ex) {
             System.err.println("Unable to retrieve results from the database");
             ex.printStackTrace();
-            return "No se ha podido actualizar la inscripcion";
+            throw new DatabaseException("No se ha podido actualizar la inscripcion");
         }
     }
 
@@ -251,32 +256,30 @@ public class InscripcionRepository extends AbstractRepository{
      *
      * @param dniTitular DNI del socio titular de la inscripción.
      * @param dniSegundoAdulto DNI del segundo adulto a añadir.
-     * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
+     * @throws EntityNotFoundException si alguno de los socios no está registrado o la inscripción no existe.
+     * @throws ValidationException si el titular no tiene permiso de titularidad.
      */
-    public String updateInscripcionSinHijos(String dniTitular, String dniSegundoAdulto) {
-        if (socioRepository.findSocioByDNI(dniTitular) == null && socioRepository.findSocioByDNI(dniSegundoAdulto) == null) {
-            return "El titular y el segundo adulto no están registrados como socios";
-        } else if (socioRepository.findSocioByDNI(dniTitular) == null) {
-            return "El titular no está registrado como socio";
-        } else if (socioRepository.findSocioByDNI(dniSegundoAdulto) == null) {
-            return "El segundo adulto no está registrado como socio.";
-        }
+    public void updateInscripcionSinHijos(String dniTitular, String dniSegundoAdulto) {
+        if (socioRepository.findSocioByDNI(dniTitular) == null && socioRepository.findSocioByDNI(dniSegundoAdulto) == null)
+            throw new EntityNotFoundException("El titular y el segundo adulto no están registrados como socios");
 
-        if (!socioRepository.findSocioByDNI(dniTitular).getIsTitular()) {
-            return "El socio introducido como titular no es titular de ninguna inscripción";
-        }
+        if (socioRepository.findSocioByDNI(dniTitular) == null)
+            throw new EntityNotFoundException("El titular no está registrado como socio");
+
+        if (socioRepository.findSocioByDNI(dniSegundoAdulto) == null)
+            throw new EntityNotFoundException("El segundo adulto no está registrado como socio");
+
+        if (!socioRepository.findSocioByDNI(dniTitular).getIsTitular())
+            throw new ValidationException("El socio introducido como titular no es titular de ninguna inscripción");
 
         Inscripcion inscripcion = findInscripcionByDNITitular(dniTitular);
-
-        if (inscripcion == null) {
-            return "No puedes actualizar la inscripcion porque no existe";
-        }
+        if (inscripcion == null)
+            throw new EntityNotFoundException("No puedes actualizar la inscripcion porque no existe");
 
         inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 250);
         inscripcion.setSecondAdult(dniSegundoAdulto);
 
-        return updateInscripcion(inscripcion);
-
+        updateInscripcion(inscripcion);
     }
 
     /**
@@ -286,49 +289,42 @@ public class InscripcionRepository extends AbstractRepository{
      *
      * @param dniTitular DNI del socio titular de la inscripción.
      * @param hijos Lista de objetos Hijos con los datos de los hijos.
-     * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
+     * @throws EntityNotFoundException si la inscripción no existe.
+     * @throws ValidationException si los datos de algún hijo no son válidos.
+     * @throws DatabaseException si falla la persistencia de algún hijo.
      */
-    public String updateInscripcionConHijos(String dniTitular, List<Hijos> hijos) { //Clean Code - Regla 2: Se reduce el número de parámetros de 5 a 2, pasando una lista de objetos Hijos
+    public void updateInscripcionConHijos(String dniTitular, List<Hijos> hijos) { //Clean Code - Regla 2: Se reduce el número de parámetros de 5 a 2, pasando una lista de objetos Hijos
         Inscripcion inscripcion = findInscripcionByDNITitular(dniTitular);
 
-        if (inscripcion == null) {
-            return "No puedes actualizar la inscripcion porque no existe";
-        }
+        if (inscripcion == null)
+            throw new EntityNotFoundException("No puedes actualizar la inscripcion porque no existe");
 
         for (Hijos hijo : hijos) {
+            if (hijo.getNationalId() == null || hijo.getNationalId().trim().isEmpty())
+                throw new ValidationException("DNI de hijo no válido o vacío");
 
-            if (hijo.getNationalId() == null || hijo.getNationalId().trim().isEmpty()) {
-                return "DNI de hijo no válido o vacío.";            
-            }
+            if (hijo.getName() == null || hijo.getName().trim().isEmpty())
+                throw new ValidationException("Nombre de hijo no proporcionado para DNI: " + hijo.getNationalId());
 
-            if (hijo.getName() == null || hijo.getName().trim().isEmpty()) {
-                return "Nombre de hijo no proporcionado para DNI: " + hijo.getNationalId();
-            }
-            
-            if (hijo.getSurname() == null || hijo.getSurname().trim().isEmpty()) {
-                return "Apellidos de hijo no proporcionados para DNI: " + hijo.getNationalId();
-            }
+            if (hijo.getSurname() == null || hijo.getSurname().trim().isEmpty())
+                throw new ValidationException("Apellidos de hijo no proporcionados para DNI: " + hijo.getNationalId());
 
-            if (hijo.getBirthDate() == null) {
-                return "Fecha de nacimiento no proporcionada para DNI: " + hijo.getNationalId();
-            }
+            if (hijo.getBirthDate() == null)
+                throw new ValidationException("Fecha de nacimiento no proporcionada para DNI: " + hijo.getNationalId());
 
             // Asignar el ID de la inscripción al hijo
             hijo.setRegistrationId(inscripcion.getId());
 
             // Guardar el hijo completo en la base de datos
             boolean resultado = hijosRepository.addHijo(hijo);
-            
-            if (!resultado) {
-                return "Error al guardar el hijo con DNI: " + hijo.getNationalId();
-            }
+            if (!resultado)
+                throw new DatabaseException("Error al guardar el hijo con DNI: " + hijo.getNationalId());
 
             // Actualizar la cuota en el objeto de inscripción (100€ por hijo)
             inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 100);
         }
 
-        return updateInscripcion(inscripcion);
-
+        updateInscripcion(inscripcion);
     }
 
     /**

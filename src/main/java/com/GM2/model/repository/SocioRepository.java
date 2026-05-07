@@ -1,5 +1,8 @@
 package com.GM2.model.repository;
 
+import com.GM2.exception.DatabaseException;
+import com.GM2.exception.EntityNotFoundException;
+import com.GM2.exception.ValidationException;
 import com.GM2.model.domain.Inscripcion;
 import com.GM2.model.domain.Socio;
 import org.springframework.context.annotation.Lazy;
@@ -138,16 +141,17 @@ public class SocioRepository extends AbstractRepository {
      * crea automáticamente una inscripción si el socio es titular.
      *
      * @param socio El objeto {@link Socio} a insertar.
-     * @return "EXITO" si la inserción fue exitosa, mensaje de error en caso contrario.
+     * @throws ValidationException si los datos del socio no son válidos.
+     * @throws DatabaseException si la operación de persistencia falla.
      */
-    public String addSocio(Socio socio) {
+    public void addSocio(Socio socio) {
+        if (socio == null)
+            throw new ValidationException("No se ha ingresado el socio");
+
+        if (socio.getBirthDate().getYear() > 2007 && socio.getIsTitular())
+            throw new ValidationException("Debes de ser mayor de edad para realizar esta inscripcion");
+
         boolean sqlRes;
-
-        if (socio == null ) return "No se ha ingresado el socio";
-
-        if (socio.getBirthDate().getYear() > 2007 && socio.getIsTitular() )
-            return "Debes de ser mayor de edad para realizar esta inscripcion";
-
         try {
             String query = sqlQueries.getProperty("insert-addSocio");
             if (query != null) {
@@ -161,39 +165,27 @@ public class SocioRepository extends AbstractRepository {
                    socio.getIsTitular(),
                    socio.getHasSkipperLicense()
                 );
-
-                if (result > 0)
-                    sqlRes = true;
-                else sqlRes = false;
-
-            } else sqlRes = false;
-
+                sqlRes = result > 0;
+            } else {
+                sqlRes = false;
+            }
         } catch (DataAccessException exception) {
             System.err.println("Unable to insert socios in the database");
             exception.printStackTrace();
             sqlRes = false;
         }
 
-        // Creamos su inscripcion simple que posteriormente podrá se ampliada
+        // Creamos su inscripcion simple que posteriormente podrá ser ampliada
         if (socio.getIsTitular() && socio.getIsTitular() != null) {
-
             Inscripcion inscripcion = new Inscripcion(socio.getNationalId());
-
             boolean resInscripcion = inscripcionRepository.addInscripcion(inscripcion);
-
-            if (sqlRes & resInscripcion ) {
-                return "EXITO";
-            } else {
-                return "No se ha podido guardar el socio";
-            }
+            if (!(sqlRes && resInscripcion))
+                throw new DatabaseException("No se ha podido guardar el socio");
+            return;
         }
 
-
-        if (sqlRes ) {
-            return "EXITO";
-        } else {
-            return "No se ha podido guardar el socio";
-        }
+        if (!sqlRes)
+            throw new DatabaseException("No se ha podido guardar el socio");
     }
 
     /**
@@ -202,22 +194,21 @@ public class SocioRepository extends AbstractRepository {
      * Verifica que el socio exista antes de realizar la actualización.
      *
      * @param socio El objeto {@link Socio} con los datos actualizados.
-     * @return "EXITO" si la actualización fue exitosa, mensaje de error en caso contrario.
+     * @throws ValidationException si los datos del socio no son válidos.
+     * @throws EntityNotFoundException si el socio no existe.
+     * @throws DatabaseException si la operación de persistencia falla.
      */
-    public String updateSocio(Socio socio) {
-        if (socio == null) {
-            return "No se ha ingresado el socio";
-        }
+    public void updateSocio(Socio socio) {
+        if (socio == null)
+            throw new ValidationException("No se ha ingresado el socio");
 
-        if (socio.getNationalId() == null || socio.getNationalId().isEmpty()) {
-            return "El DNI es obligatorio para actualizar el socio";
-        }
+        if (socio.getNationalId() == null || socio.getNationalId().isEmpty())
+            throw new ValidationException("El DNI es obligatorio para actualizar el socio");
 
         // Verificar que el socio existe
         Socio socioExistente = findSocioByDNI(socio.getNationalId());
-        if (socioExistente == null) {
-            return "No se puede actualizar, el socio no existe";
-        }
+        if (socioExistente == null)
+            throw new EntityNotFoundException("No se puede actualizar, el socio no existe");
 
         try {
             String query = sqlQueries.getProperty("update-socio");
@@ -232,19 +223,15 @@ public class SocioRepository extends AbstractRepository {
                     socio.getHasSkipperLicense(),
                     socio.getNationalId()
                 );
-
-                if (result > 0) {
-                    return "EXITO";
-                } else {
-                    return "No se ha podido actualizar el socio";
-                }
+                if (result <= 0)
+                    throw new DatabaseException("No se ha podido actualizar el socio");
             } else {
-                return "No se ha podido actualizar el socio";
+                throw new DatabaseException("No se ha podido actualizar el socio");
             }
         } catch (DataAccessException exception) {
             System.err.println("Unable to update socio in the database");
             exception.printStackTrace();
-            return "No se ha podido actualizar el socio";
+            throw new DatabaseException("No se ha podido actualizar el socio");
         }
     }
 

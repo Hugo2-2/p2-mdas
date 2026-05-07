@@ -222,7 +222,6 @@ public class InscripcionesRestController {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
-            boolean resInscripcion = false;
             boolean resHijos = false;
 
             // Clean Code - Reglas de comentarios: Comentario explícito sobre la intención del código
@@ -234,16 +233,14 @@ public class InscripcionesRestController {
             
             Hijos hijo = hijosRepository.findHijoByDni(dniNuevoMiembro);
             if (hijo != null) {
-
                 hijo.setRegistrationId(idInscripcion);
                 resHijos = hijosRepository.updateHijo(hijo);
                 inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 100);
-                
             }
 
-            resInscripcion = inscripcionRepository.updateInscripcion(inscripcion).equals("EXITO");
+            inscripcionRepository.updateInscripcion(inscripcion);
 
-            if ((resHijos && resInscripcion) || (resInscripcion && hijo == null)) {
+            if (hijo == null || resHijos) {
                 return new ResponseEntity<>(inscripcionRepository.findInscripcionById(idInscripcion), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -277,7 +274,6 @@ public class InscripcionesRestController {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
 
-            boolean resInscripcion = false;
             boolean resHijo = false;
 
             // Validar si estamos añadiendo un hijo o un segundo adulto
@@ -286,20 +282,19 @@ public class InscripcionesRestController {
             if (socio != null) {
                 inscripcion.setSecondAdult(null);
                 inscripcion.setAnnualFee(inscripcion.getAnnualFee() - 250);
-
             }
 
             Hijos hijo = hijosRepository.findHijoByDni(dniMiembro);
             if (hijo != null) {
                 hijo.setRegistrationId(0);
                 inscripcion.setAnnualFee(inscripcion.getAnnualFee() - 100);
-                resHijo = hijosRepository.updateHijo(hijo) == true;
+                resHijo = hijosRepository.updateHijo(hijo);
             }
 
-            resInscripcion = inscripcionRepository.updateInscripcion(inscripcion).equals("EXITO");
+            inscripcionRepository.updateInscripcion(inscripcion);
             inscripcion = inscripcionRepository.findInscripcionById(idInscripcion);
-            
-            if ((resHijo && resInscripcion) || (resInscripcion && hijo == null)) {
+
+            if (hijo == null || resHijo) {
                 return new ResponseEntity<>(inscripcion, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

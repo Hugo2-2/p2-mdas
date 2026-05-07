@@ -134,13 +134,8 @@ public class SociosRestController {
             socio.setRegistrationDate(LocalDate.now());
 
             try {
-                Boolean res = socioRepository.addSocio(socio).equals("EXITO");
-
-                if (res) {
-                    return new ResponseEntity<>(socio, HttpStatus.OK);
-                } else {
-                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                }
+                socioRepository.addSocio(socio);
+                return new ResponseEntity<>(socio, HttpStatus.OK);
             } catch (Exception e) {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -199,11 +194,7 @@ public class SociosRestController {
             } else {
 
                 // Guardar el socio
-                String resultado = socioRepository.addSocio(socio);
-                
-                if (!resultado.equals("EXITO")) {
-                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-                }
+                socioRepository.addSocio(socio);
 
                 if (inscripcion.getSecondAdult() == null) {
                     inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 250);
@@ -214,11 +205,7 @@ public class SociosRestController {
             }
 
             // Añadir el socio como segundo adulto a la inscripción
-            Boolean resultadoInscripcion = inscripcionRepository.updateInscripcion(inscripcion).equals("EXITO");
-
-            if (!resultadoInscripcion) {
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            inscripcionRepository.updateInscripcion(inscripcion);
 
             return new ResponseEntity<>(socio, HttpStatus.CREATED);
             
@@ -270,13 +257,8 @@ public class SociosRestController {
             }
 
             // Guardar los cambios
-            String resultado = socioRepository.updateSocio(socio);
-            
-            if (resultado.equals("EXITO")) {
-                return new ResponseEntity<>(socio, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            socioRepository.updateSocio(socio);
+            return new ResponseEntity<>(socio, HttpStatus.OK);
 
         } catch (Exception e) {
             e.printStackTrace();

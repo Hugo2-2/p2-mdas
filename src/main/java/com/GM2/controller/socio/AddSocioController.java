@@ -88,14 +88,11 @@ public class AddSocioController {
             return "redirect:/api/socios/addSocio";
         }
 
-        //Usaremos estas funciones para añadir al socio y mostrar mensajes de error
-        String mensaje = socioRepository.addSocio(socio);
-
-        //Evaluamos el mensaje que se mostrará en las flashcards de error
-        if (mensaje.equals("EXITO")) {
+        try {
+            socioRepository.addSocio(socio);
             redirectAttributes.addFlashAttribute("mensajeExito", "Socio guardado exitosamente");
-        } else {
-            redirectAttributes.addFlashAttribute("mensajeError", mensaje);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensajeError", e.getMessage());
             sessionStatus.setComplete();
             return "redirect:/api/socios/addSocio";
         }

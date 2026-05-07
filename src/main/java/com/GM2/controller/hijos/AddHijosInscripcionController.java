@@ -117,12 +117,11 @@ public class AddHijosInscripcionController {
             hijos.add(hijo);
         }
 
-        String resultado = inscripcionRepository.updateInscripcionConHijos(dniTitular, hijos);
-
-        if (resultado.equals("EXITO")) {
+        try {
+            inscripcionRepository.updateInscripcionConHijos(dniTitular, hijos);
             redirectAttributes.addFlashAttribute("mensajeExito", "Inscripción (con hijos) guardada.");
-        } else {
-            redirectAttributes.addFlashAttribute("mensajeError", resultado);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensajeError", e.getMessage());
         }
         return "redirect:/api/inscripciones/updateInscripcion";
     }

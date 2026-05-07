@@ -88,11 +88,11 @@ public class UpdateInscripcionController {
             redirectAttributes.addFlashAttribute("numeroHijos", numeroHijos);
 
             //Guardamos el segundo adulto
-            String resultado = inscripcionRepository.updateInscripcionSinHijos(dniTitular, dniSegundoAdulto);
-            if (resultado.equals("EXITO")) {
+            try {
+                inscripcionRepository.updateInscripcionSinHijos(dniTitular, dniSegundoAdulto);
                 redirectAttributes.addFlashAttribute("mensajeExito", "Inscripción (sin hijos) guardada.");
-            } else {
-                redirectAttributes.addFlashAttribute("mensajeError", resultado);
+            } catch (Exception e) {
+                redirectAttributes.addFlashAttribute("mensajeError", e.getMessage());
             }
 
             // Redirige a la vista de "Añadir Hijos"
@@ -100,12 +100,11 @@ public class UpdateInscripcionController {
 
         } else {
 
-            String resultado = inscripcionRepository.updateInscripcionSinHijos(dniTitular, dniSegundoAdulto);
-
-            if (resultado.equals("EXITO")) {
+            try {
+                inscripcionRepository.updateInscripcionSinHijos(dniTitular, dniSegundoAdulto);
                 redirectAttributes.addFlashAttribute("mensajeExito", "Inscripción (sin hijos) guardada.");
-            } else {
-                redirectAttributes.addFlashAttribute("mensajeError", resultado);
+            } catch (Exception e) {
+                redirectAttributes.addFlashAttribute("mensajeError", e.getMessage());
             }
             return "redirect:/api/inscripciones/updateInscripcion";
         }
