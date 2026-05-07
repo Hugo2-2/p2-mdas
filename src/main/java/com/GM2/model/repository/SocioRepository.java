@@ -135,6 +135,29 @@ public class SocioRepository extends AbstractRepository {
         }
     }
 
+    // Clean Code - Regla 4 Funciones (argumentos): Se ha eliminado el parámetro de salida '[errores]' y ahora la función devuelve directamente el resultado esperado.
+    public String addSocio(Socio socio) {
+        if (socio == null) return "No se ha ingresado el socio";
+        
+        if (socio.getBirthDate().getYear() > 2007 && socio.getIsTitular() != null && socio.getIsTitular()) {
+            return "Debes de ser mayor de edad para realizar esta inscripcion";
+        }
+
+        boolean sqlRes = ejecutarInsertSocio(socio);
+
+        if (socio.getIsTitular() != null && socio.getIsTitular()) {
+            Inscripcion inscripcion = new Inscripcion(socio.getNationalId());
+            boolean resInscripcion = inscripcionRepository.addInscripcion(inscripcion);
+            if (!(sqlRes && resInscripcion)) {
+                return "No se ha podido guardar el socio titular";
+            }
+        } else if (!sqlRes) {
+            return "No se ha podido guardar el socio";
+        }
+
+        return "EXITO";
+    }
+
     // Clean Code - Regla 3 Funciones (argumentos): Se ha eliminado el parámetro bandera (flag) 'isTitular' dividiendo el comportamiento en métodos específicos.
     public void addSocioTitular(Socio socio) {
         if (socio == null)
