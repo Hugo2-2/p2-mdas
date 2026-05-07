@@ -2,6 +2,7 @@ package com.GM2.model.repository;
 
 import com.GM2.exception.DatabaseException;
 import com.GM2.exception.EntityNotFoundException;
+import com.GM2.exception.ErrorCode;
 import com.GM2.exception.ValidationException;
 import com.GM2.model.domain.Inscripcion;
 import com.GM2.model.domain.Socio;
@@ -161,10 +162,10 @@ public class SocioRepository extends AbstractRepository {
     // Clean Code - Regla 3 Funciones (argumentos): Se ha eliminado el parámetro bandera (flag) 'isTitular' dividiendo el comportamiento en métodos específicos.
     public void addSocioTitular(Socio socio) {
         if (socio == null)
-            throw new ValidationException("No se ha ingresado el socio");
+            throw new ValidationException(ErrorCode.SOCIO_NO_INGRESADO);
 
         if (socio.getBirthDate().getYear() > 2007)
-            throw new ValidationException("Debes de ser mayor de edad para realizar esta inscripcion");
+            throw new ValidationException(ErrorCode.SOCIO_DEBE_SER_MAYOR_DE_EDAD);
 
         boolean sqlRes = ejecutarInsertSocio(socio);
 
@@ -172,18 +173,18 @@ public class SocioRepository extends AbstractRepository {
         Inscripcion inscripcion = new Inscripcion(socio.getNationalId());
         boolean resInscripcion = inscripcionRepository.addInscripcion(inscripcion);
         if (!(sqlRes && resInscripcion))
-            throw new DatabaseException("No se ha podido guardar el socio");
+            throw new DatabaseException(ErrorCode.SOCIO_NO_GUARDADO);
     }
 
     // Clean Code - Regla 3 Funciones (argumentos): Se ha eliminado el parámetro bandera (flag) 'isTitular' dividiendo el comportamiento en métodos específicos.
     public void addSocioNoTitular(Socio socio) {
         if (socio == null)
-            throw new ValidationException("No se ha ingresado el socio");
+            throw new ValidationException(ErrorCode.SOCIO_NO_INGRESADO);
 
         boolean sqlRes = ejecutarInsertSocio(socio);
 
         if (!sqlRes)
-            throw new DatabaseException("No se ha podido guardar el socio");
+            throw new DatabaseException(ErrorCode.SOCIO_NO_GUARDADO);
     }
 
     private boolean ejecutarInsertSocio(Socio socio) {
@@ -223,15 +224,15 @@ public class SocioRepository extends AbstractRepository {
      */
     public void updateSocio(Socio socio) {
         if (socio == null)
-            throw new ValidationException("No se ha ingresado el socio");
+            throw new ValidationException(ErrorCode.SOCIO_NO_INGRESADO);
 
         if (socio.getNationalId() == null || socio.getNationalId().isEmpty())
-            throw new ValidationException("El DNI es obligatorio para actualizar el socio");
+            throw new ValidationException(ErrorCode.SOCIO_DNI_OBLIGATORIO);
 
         // Verificar que el socio existe
         Socio socioExistente = findSocioByDNI(socio.getNationalId());
         if (socioExistente == null)
-            throw new EntityNotFoundException("No se puede actualizar, el socio no existe");
+            throw new EntityNotFoundException(ErrorCode.SOCIO_NO_EXISTE);
 
         try {
             String query = sqlQueries.getProperty("update-socio");
@@ -247,14 +248,14 @@ public class SocioRepository extends AbstractRepository {
                     socio.getNationalId()
                 );
                 if (result <= 0)
-                    throw new DatabaseException("No se ha podido actualizar el socio");
+                    throw new DatabaseException(ErrorCode.SOCIO_NO_ACTUALIZADO);
             } else {
-                throw new DatabaseException("No se ha podido actualizar el socio");
+                throw new DatabaseException(ErrorCode.SOCIO_NO_ACTUALIZADO);
             }
         } catch (DataAccessException exception) {
             System.err.println("Unable to update socio in the database");
             exception.printStackTrace();
-            throw new DatabaseException("No se ha podido actualizar el socio");
+            throw new DatabaseException(ErrorCode.SOCIO_NO_ACTUALIZADO);
         }
     }
 
