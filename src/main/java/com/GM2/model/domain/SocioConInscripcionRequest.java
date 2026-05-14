@@ -49,72 +49,58 @@ public class SocioConInscripcionRequest {
         this.titularNationalId = titularNationalId;
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getNationalId() { 
         return nationalId; 
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setNationalId(String nationalId) { 
         this.nationalId = nationalId; 
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getName() { 
         return name; 
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setName(String name) { 
         this.name = name; 
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getSurname() { 
         return surname; 
     }
 
-     //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setSurname(String surname) { 
         this.surname = surname; 
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public LocalDate getBirthDate() { 
         return birthDate; 
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setBirthDate(LocalDate birthDate) { 
         this.birthDate = birthDate; 
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getAddress() { 
         return address; 
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setAddress(String address) { 
         this.address = address; 
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public Boolean getIsSkipper() { 
         return isSkipper; 
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setIsSkipper(Boolean isSkipper) { 
         this.isSkipper = isSkipper; 
     }
 
-     //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getTitularNationalId() { 
         return titularNationalId; 
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setTitularNationalId(String titularNationalId) { 
         this.titularNationalId = titularNationalId; 
     }

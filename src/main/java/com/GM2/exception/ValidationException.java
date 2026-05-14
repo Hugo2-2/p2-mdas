@@ -1,20 +1,15 @@
 package com.GM2.exception;
 
-public class ValidationException extends RuntimeException {
-
-    private final ErrorCode errorCode;
+/**
+ * Excepción lanzada cuando una validación de negocio falla.
+ */
+public class ValidationException extends BaseBusinessException {
 
     public ValidationException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
+        super(errorCode);
     }
 
     public ValidationException(ErrorCode errorCode, Object... args) {
-        super(errorCode.getMessage(args));
-        this.errorCode = errorCode;
-    }
-
-    public ErrorCode getErrorCode() {
-        return errorCode;
+        super(errorCode, args);
     }
 }

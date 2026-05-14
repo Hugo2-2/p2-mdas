@@ -9,79 +9,60 @@ import com.GM2.model.domain.Inscripcion;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Repositorio para gestionar las operaciones CRUD (Crear, Leer, Actualizar, Borrar)
- * de la entidad {@link Inscripcion} en la base de datos.
- * Maneja las inscripciones del club náutico, incluyendo la gestión de cuotas,
- * segundos adultos e hijos asociados a las inscripciones familiares.
+ * Repositorio para gestionar las operaciones CRUD de la entidad {@link Inscripcion}.
+ *
+ * Refactoring 6.1: Se usa super(jdbcTemplate) del AbstractRepository.
+ * Refactoring 4.3: Consolidada la validación de socios en updateInscripcionSinHijos.
+ * Refactoring 3.1: Uso de constantes de cuota de {@link Inscripcion}.
+ * Refactoring 7.2: Eliminado import no usado (DateTimeParseException).
  *
  * @author gm2equipo1
  * @version 1.0
  */
 @Repository
-public class InscripcionRepository extends AbstractRepository{
+public class InscripcionRepository extends AbstractRepository {
 
-    final private HijosRepository hijosRepository;
-    final private SocioRepository socioRepository;
+    private final HijosRepository hijosRepository;
+    private final SocioRepository socioRepository;
 
-    /**
-     * Constructor para la inyección de dependencias.
-     * Configura JdbcTemplate y los repositorios relacionados, usando @Lazy
-     * para SocioRepository para evitar dependencias circulares.
-     *
-     * @param jdbcTemplate El bean de JdbcTemplate gestionado por Spring.
-     * @param hijosRepository Repositorio para gestionar los hijos de las inscripciones.
-     * @param socioRepository Repositorio de socios (cargado de forma lazy).
-     */
     public InscripcionRepository(JdbcTemplate jdbcTemplate, HijosRepository hijosRepository, @Lazy SocioRepository socioRepository) {
-        this.jdbcTemplate = jdbcTemplate;
+        super(jdbcTemplate);
         this.hijosRepository = hijosRepository;
         this.socioRepository = socioRepository;
-        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
-        setSqlQueriesFileName(sqlQueriesFileName);
-        this.hijosRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
     /**
      * Recupera una lista de todas las inscripciones de la base de datos.
-     * Incluye automáticamente los hijos asociados si la cuota es superior a 300€.
-     *
-     * @return Una lista de {@link Inscripcion}, o null si no se encuentran resultados o hay error.
+     * Incluye automáticamente los hijos asociados si la cuota supera la base individual.
      */
     public List<Inscripcion> findAllInscripciones() {
         try {
-            String query = sqlQueries.getProperty("select-findAllInscripciones");
-            if (query != null ) {
-                List<Inscripcion> result = jdbcTemplate.query(query, new RowMapper<Inscripcion>() {
-                    public Inscripcion mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        int id = rs.getInt("id");
-                        String titular = rs.getString("socio_Titular");
-                        float cuota = rs.getFloat("cuota_anual");
-                        LocalDate fechaCreacion = rs.getDate("fecha_creacion").toLocalDate();
-                        String segundoAdulto = rs.getString("segundo_adulto");
+            String query = getSqlQuery("select-findAllInscripciones");
+            if (query == null) return null;
 
-                        List<Hijos> hijos = new ArrayList<>();
+            return getJdbcTemplate().query(query, (rs, rowNum) -> {
+                int id = rs.getInt("id");
+                String titular = rs.getString("socio_Titular");
+                float cuota = rs.getFloat("cuota_anual");
+                LocalDate fechaCreacion = rs.getDate("fecha_creacion").toLocalDate();
+                String segundoAdulto = rs.getString("segundo_adulto");
 
-                        if (cuota > 300) {
-                            hijos = hijosRepository.findHijosByInscripcion(id);
-                        }
+                List<Hijos> hijos = new ArrayList<>();
+                if (cuota > Inscripcion.BASE_ANNUAL_FEE) {
+                    hijos = hijosRepository.findHijosByInscripcion(id);
+                }
 
-                        return new Inscripcion(id, titular, cuota, fechaCreacion, segundoAdulto, hijos);
-                    };
-                });
-
-                return result;
-            } else return null;
+                return new Inscripcion(id, titular, cuota, fechaCreacion, segundoAdulto, hijos);
+            });
         } catch (DataAccessException ex) {
             System.err.println("Unable to retrieve results from the database");
             ex.printStackTrace();
@@ -90,13 +71,7 @@ public class InscripcionRepository extends AbstractRepository{
     }
 
     /**
-     * Extrae y mapea la primera fila de un ResultSet a un objeto Inscripcion.
-     * Este método funciona como un ResultSetExtractor que solo procesa un resultado.
-     * Carga automáticamente los hijos asociados si la cuota anual es superior a 300€.
-     *
-     * @param rs El conjunto de resultados (ResultSet) completo devuelto por la consulta JDBC.
-     * @return Un objeto {@link Inscripcion} si se encuentra una fila,
-     *         o null si el ResultSet está vacío o si ocurre una SQLException.
+     * ResultSetExtractor que mapea la primera fila a una Inscripcion.
      */
     private Inscripcion mapRowToInscripcion(ResultSet rs) {
         try {
@@ -108,66 +83,42 @@ public class InscripcionRepository extends AbstractRepository{
                 String segundoAdulto = rs.getString("segundo_adulto");
 
                 List<Hijos> hijos = new ArrayList<>();
-
-                if (cuotaAnual > 300) {
+                if (cuotaAnual > Inscripcion.BASE_ANNUAL_FEE) {
                     hijos = hijosRepository.findHijosByInscripcion(id);
                 }
 
-                Inscripcion inscripcion = new Inscripcion(id, socioTitular, cuotaAnual, fechaCreacion, segundoAdulto, hijos);
-
-                return inscripcion;
-            } else {
-                return null;
+                return new Inscripcion(id, socioTitular, cuotaAnual, fechaCreacion, segundoAdulto, hijos);
             }
-
-
-
+            return null;
         } catch (SQLException ex) {
             System.err.println("Unable to retrieve results from the database");
             ex.printStackTrace();
             return null;
         }
-
     }
 
     /**
-     * Busca una inscripción específica por su ID (clave primaria).
-     *
-     * @param id El ID único de la inscripción a buscar.
-     * @return El objeto {@link Inscripcion} si se encuentra, o null si no existe.
+     * Busca una inscripción específica por su ID.
      */
     public Inscripcion findInscripcionById(int id) {
         try {
-            String query = sqlQueries.getProperty("select-findInscripcionById");
-            Inscripcion result = jdbcTemplate.query(query, this::mapRowToInscripcion, id);
-
-            if (result != null)
-                return result;
-            else return null;
-
+            String query = getSqlQuery("select-findInscripcionById");
+            return getJdbcTemplate().query(query, this::mapRowToInscripcion, id);
         } catch (DataAccessException ex) {
             System.err.println("Unable to retrieve results from the database");
             ex.printStackTrace();
             return null;
         }
-
     }
 
     /**
      * Busca una inscripción por el DNI del socio titular.
-     *
-     * @param dniTitular El DNI del socio titular de la inscripción.
-     * @return El objeto {@link Inscripcion} si se encuentra, o null si no existe.
      */
     public Inscripcion findInscripcionByDNITitular(String dniTitular) {
         try {
-            String query = sqlQueries.getProperty("select-findInscripcionByDniTitular");
-            Inscripcion result = jdbcTemplate.query(query, this::mapRowToInscripcion, dniTitular);
-
-            if (result != null)
-                return result;
-            else return null;
-        }  catch (DataAccessException ex) {
+            String query = getSqlQuery("select-findInscripcionByDniTitular");
+            return getJdbcTemplate().query(query, this::mapRowToInscripcion, dniTitular);
+        } catch (DataAccessException ex) {
             System.err.println("Unable to retrieve results from the database");
             ex.printStackTrace();
             return null;
@@ -176,47 +127,33 @@ public class InscripcionRepository extends AbstractRepository{
 
     /**
      * Inserta una nueva inscripción en la base de datos.
-     * Verifica que no exista ya una inscripción para el mismo titular.
-     *
-     * @param inscripcion El objeto {@link Inscripcion} a insertar.
-     * @return true si la inserción fue exitosa, false en caso contrario.
      */
     public boolean addInscripcion(Inscripcion inscripcion) {
-        if (inscripcion == null ) return false;
-
-        if (findInscripcionByDNITitular( inscripcion.getTitularMemberId() ) != null ) return false;
+        if (inscripcion == null) return false;
+        if (findInscripcionByDNITitular(inscripcion.getTitularMemberId()) != null) return false;
 
         try {
-            String query = sqlQueries.getProperty("insert-addInscripcion");
-            if (query != null) {
-                int result = jdbcTemplate.update(query,
+            String query = getSqlQuery("insert-addInscripcion");
+            if (query == null) return false;
+
+            int result = getJdbcTemplate().update(query,
                     inscripcion.getTitularMemberId(),
                     inscripcion.getAnnualFee(),
                     inscripcion.getCreationDate()
-                );
-
-                if (result > 0)
-                    return true;
-                else return false;
-            } else return false;
-
+            );
+            return result > 0;
         } catch (DataAccessException ex) {
             System.err.println("Unable to retrieve results from the database");
             ex.printStackTrace();
             return false;
         }
-
     }
 
     /**
      * Actualiza una inscripción existente en la base de datos.
-     * Verifica que la inscripción exista antes de realizar la actualización.
-     * Actualiza automáticamente la fecha de creación al momento actual.
      *
-     * @param inscripcion El objeto {@link Inscripcion} con los datos actualizados.
-     * @throws ValidationException si el objeto inscripcion es nulo.
-     * @throws EntityNotFoundException si la inscripción no existe en la base de datos.
-     * @throws DatabaseException si la operación de persistencia falla.
+     * Refactoring 1.7: Remove Assignments to Parameters — se usa variable local
+     * para la fecha en lugar de modificar el parámetro directamente.
      */
     public void updateInscripcion(Inscripcion inscripcion) {
         if (inscripcion == null)
@@ -225,17 +162,17 @@ public class InscripcionRepository extends AbstractRepository{
         if (findInscripcionByDNITitular(inscripcion.getTitularMemberId()) == null)
             throw new EntityNotFoundException(ErrorCode.INSCRIPCION_NO_EXISTE);
 
-        // Clean Code - Regla de función: Función más pura posible
-        inscripcion.setCreationDate(LocalDate.now());
+        LocalDate updatedDate = LocalDate.now();
+        inscripcion.setCreationDate(updatedDate);
 
         try {
-            String query = sqlQueries.getProperty("update-Inscripcion");
+            String query = getSqlQuery("update-Inscripcion");
             if (query != null) {
-                int result = jdbcTemplate.update(query,
-                    inscripcion.getAnnualFee(),
-                    inscripcion.getCreationDate(),
-                    inscripcion.getSecondAdult(),
-                    inscripcion.getId()
+                int result = getJdbcTemplate().update(query,
+                        inscripcion.getAnnualFee(),
+                        inscripcion.getCreationDate(),
+                        inscripcion.getSecondAdult(),
+                        inscripcion.getId()
                 );
                 if (result <= 0)
                     throw new DatabaseException(ErrorCode.INSCRIPCION_NO_ACTUALIZADA);
@@ -251,33 +188,32 @@ public class InscripcionRepository extends AbstractRepository{
 
     /**
      * Actualiza una inscripción añadiendo un segundo adulto sin hijos.
-     * Realiza validaciones para verificar que ambos socios estén registrados
-     * y que el titular tenga permisos de titularidad.
-     * Incrementa la cuota anual en 250€ por el segundo adulto.
      *
-     * @param dniTitular DNI del socio titular de la inscripción.
-     * @param dniSegundoAdulto DNI del segundo adulto a añadir.
-     * @throws EntityNotFoundException si alguno de los socios no está registrado o la inscripción no existe.
-     * @throws ValidationException si el titular no tiene permiso de titularidad.
+     * Refactoring 4.3: Consolidate Conditional Expression — se buscan titular y
+     * segundo adulto una sola vez y se reutilizan las variables, en lugar de
+     * llamar a findSocioByDNI() cuatro veces consecutivas.
      */
     public void updateInscripcionSinHijos(String dniTitular, String dniSegundoAdulto) {
-        if (socioRepository.findSocioByDNI(dniTitular) == null && socioRepository.findSocioByDNI(dniSegundoAdulto) == null)
+        var titular = socioRepository.findSocioByDNI(dniTitular);
+        var segundoAdulto = socioRepository.findSocioByDNI(dniSegundoAdulto);
+
+        if (titular == null && segundoAdulto == null)
             throw new EntityNotFoundException(ErrorCode.TITULAR_Y_SEGUNDO_ADULTO_NO_SOCIOS);
 
-        if (socioRepository.findSocioByDNI(dniTitular) == null)
+        if (titular == null)
             throw new EntityNotFoundException(ErrorCode.TITULAR_NO_SOCIO);
 
-        if (socioRepository.findSocioByDNI(dniSegundoAdulto) == null)
+        if (segundoAdulto == null)
             throw new EntityNotFoundException(ErrorCode.SEGUNDO_ADULTO_NO_SOCIO);
 
-        if (!socioRepository.findSocioByDNI(dniTitular).getIsTitular())
+        if (!titular.getIsTitular())
             throw new ValidationException(ErrorCode.TITULAR_NO_ES_TITULAR_INSCRIPCION);
 
         Inscripcion inscripcion = findInscripcionByDNITitular(dniTitular);
         if (inscripcion == null)
             throw new EntityNotFoundException(ErrorCode.INSCRIPCION_NO_EXISTE);
 
-        inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 250);
+        inscripcion.setAnnualFee(inscripcion.getAnnualFee() + Inscripcion.SECOND_ADULT_FEE);
         inscripcion.setSecondAdult(dniSegundoAdulto);
 
         updateInscripcion(inscripcion);
@@ -285,76 +221,61 @@ public class InscripcionRepository extends AbstractRepository{
 
     /**
      * Actualiza una inscripción añadiendo hijos a la inscripción familiar.
-     * Procesa una lista de hijos, los registra en la base de datos y
-     * actualiza la cuota anual incrementándola en 100€ por cada hijo.
-     *
-     * @param dniTitular DNI del socio titular de la inscripción.
-     * @param hijos Lista de objetos Hijos con los datos de los hijos.
-     * @throws EntityNotFoundException si la inscripción no existe.
-     * @throws ValidationException si los datos de algún hijo no son válidos.
-     * @throws DatabaseException si falla la persistencia de algún hijo.
      */
-    public void updateInscripcionConHijos(String dniTitular, List<Hijos> hijos) { //Clean Code - Regla 2: Se reduce el número de parámetros de 5 a 2, pasando una lista de objetos Hijos
+    public void updateInscripcionConHijos(String dniTitular, List<Hijos> hijos) {
         Inscripcion inscripcion = findInscripcionByDNITitular(dniTitular);
 
         if (inscripcion == null)
             throw new EntityNotFoundException(ErrorCode.INSCRIPCION_NO_EXISTE);
 
         for (Hijos hijo : hijos) {
-            if (hijo.getNationalId() == null || hijo.getNationalId().trim().isEmpty())
-                throw new ValidationException(ErrorCode.HIJO_DNI_INVALIDO);
+            validarDatosHijo(hijo);
 
-            if (hijo.getName() == null || hijo.getName().trim().isEmpty())
-                throw new ValidationException(ErrorCode.HIJO_NOMBRE_NO_PROPORCIONADO, hijo.getNationalId());
-
-            if (hijo.getSurname() == null || hijo.getSurname().trim().isEmpty())
-                throw new ValidationException(ErrorCode.HIJO_APELLIDOS_NO_PROPORCIONADOS, hijo.getNationalId());
-
-            if (hijo.getBirthDate() == null)
-                throw new ValidationException(ErrorCode.HIJO_FECHA_NO_PROPORCIONADA, hijo.getNationalId());
-
-            // Asignar el ID de la inscripción al hijo
             hijo.setRegistrationId(inscripcion.getId());
 
-            // Guardar el hijo completo en la base de datos
             boolean resultado = hijosRepository.addHijo(hijo);
             if (!resultado)
-                throw new DatabaseException(ErrorCode.HIJO_NO_GUARDADO, hijo.getNationalId());
+                throw new DatabaseException(ErrorCode.HIJO_NO_GUARDADO, hijo.getDni());
 
-            // Actualizar la cuota en el objeto de inscripción (100€ por hijo)
-            inscripcion.setAnnualFee(inscripcion.getAnnualFee() + 100);
+            inscripcion.setAnnualFee(inscripcion.getAnnualFee() + Inscripcion.CHILD_FEE);
         }
 
         updateInscripcion(inscripcion);
     }
 
     /**
-     * Elimina una inscripción por el DNI del titular.
-     * IMPORTANTE: Solo elimina la inscripción, no los socios ni los hijos.
-     * Los hijos quedan huérfanos y deberían ser gestionados por separado si es necesario.
+     * Valida los datos obligatorios de un hijo antes de su inserción.
      *
-     * @param dniTitular El DNI del socio titular de la inscripción a eliminar.
-     * @return true si la eliminación fue exitosa, false en caso contrario.
+     * Refactoring 1.1: Extract Method — extraída la validación de datos de hijo
+     * del bucle principal de updateInscripcionConHijos para mejorar la legibilidad.
+     */
+    private void validarDatosHijo(Hijos hijo) {
+        if (hijo.getDni() == null || hijo.getDni().trim().isEmpty())
+            throw new ValidationException(ErrorCode.HIJO_DNI_INVALIDO);
+
+        if (hijo.getName() == null || hijo.getName().trim().isEmpty())
+            throw new ValidationException(ErrorCode.HIJO_NOMBRE_NO_PROPORCIONADO, hijo.getDni());
+
+        if (hijo.getSurname() == null || hijo.getSurname().trim().isEmpty())
+            throw new ValidationException(ErrorCode.HIJO_APELLIDOS_NO_PROPORCIONADOS, hijo.getDni());
+
+        if (hijo.getBirthDate() == null)
+            throw new ValidationException(ErrorCode.HIJO_FECHA_NO_PROPORCIONADA, hijo.getDni());
+    }
+
+    /**
+     * Elimina una inscripción por el DNI del titular.
      */
     public boolean deleteInscripcionByDniTitular(String dniTitular) {
-        if (dniTitular == null || dniTitular.isEmpty()) {
-            return false;
-        }
-
-        // Verificar que la inscripción existe
-        Inscripcion inscripcion = findInscripcionByDNITitular(dniTitular);
-        if (inscripcion == null) {
-            return false;
-        }
+        if (dniTitular == null || dniTitular.isEmpty()) return false;
+        if (findInscripcionByDNITitular(dniTitular) == null) return false;
 
         try {
-            String query = sqlQueries.getProperty("delete-deleteInscripcionByDniTitular");
-            if (query != null) {
-                int result = jdbcTemplate.update(query, dniTitular);
-                return result > 0;
-            } else {
-                return false;
-            }
+            String query = getSqlQuery("delete-deleteInscripcionByDniTitular");
+            if (query == null) return false;
+
+            int result = getJdbcTemplate().update(query, dniTitular);
+            return result > 0;
         } catch (DataAccessException ex) {
             System.err.println("Unable to delete inscription from the database");
             ex.printStackTrace();

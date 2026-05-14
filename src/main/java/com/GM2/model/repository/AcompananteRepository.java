@@ -3,32 +3,35 @@ package com.GM2.model.repository;
 import com.GM2.model.domain.Acompanante;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-
 /**
  * Repositorio para gestionar las operaciones de base de datos relacionadas con los acompañantes.
  * Proporciona métodos para buscar, agregar y gestionar acompañantes de alquileres.
- * Representa a la clase {@link Acompanante} para el manejo de datos.
  * 
  * @author gm2equipo1
  * @version 1.0
  */
 @Repository
 public class AcompananteRepository extends AbstractRepository {
-    private JdbcTemplate jdbcTemplate;
 
     /**
      * Constructor para la inyección de dependencias de JdbcTemplate.
+     *
+     * Refactoring 3.4: Eliminado campo duplicado {@code private JdbcTemplate jdbcTemplate}
+     * que sombreaba al heredado de {@link AbstractRepository}.
+     *
+     * Refactoring 6.1: Se delega al constructor de {@link AbstractRepository}
+     * la inicialización del JdbcTemplate y las propiedades SQL.
+     *
      * @param jdbcTemplate El bean de JdbcTemplate gestionado por Spring.
      */
     public AcompananteRepository(JdbcTemplate jdbcTemplate) { 
-        this.jdbcTemplate = jdbcTemplate; 
+        super(jdbcTemplate);
     }
 
     /**
@@ -38,28 +41,20 @@ public class AcompananteRepository extends AbstractRepository {
      */
     public List<Acompanante> findAllAcompanantes() {
         try {
-            String query = sqlQueries.getProperty("select-findAllAcompanantes");
-            if (query != null) {
-                List<Acompanante> result = jdbcTemplate.query(query, new RowMapper<Acompanante>() {
-                    public Acompanante mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        return new Acompanante(
-                                rs.getInt("id"),
-                                rs.getString("dni"),
-                                rs.getInt("id_alquiler")
-                        );
-                    };
-                });
+            String query = getSqlQuery("select-findAllAcompanantes");
+            if (query == null) return null;
 
-                return result;
-            } else return null;
-
+            return getJdbcTemplate().query(query, (rs, rowNum) -> new Acompanante(
+                    rs.getInt("id"),
+                    rs.getString("dni"),
+                    rs.getInt("id_alquiler")
+            ));
         } catch (DataAccessException exception) {
             System.err.println("Unable to find acompanantes");
             exception.printStackTrace();
             return null;
         }
     }
-
 
     /**
      * Busca un acompañante por su DNI.
@@ -69,12 +64,9 @@ public class AcompananteRepository extends AbstractRepository {
      */
     public Acompanante findAcompananteByDni(String dni) {
         try {
-            String query = sqlQueries.getProperty("select-findAcompananteByDni");
-            Acompanante result = jdbcTemplate.query(query, this::mapRowToAcompanante, dni);
-            if (result != null )
-                return result;
-            else return null;
-        } catch(DataAccessException exception) {
+            String query = getSqlQuery("select-findAcompananteByDni");
+            return getJdbcTemplate().query(query, this::mapRowToAcompanante, dni);
+        } catch (DataAccessException exception) {
             System.err.println("Unable to find acompanante with dni: " + dni);
             exception.printStackTrace();
             return null;
@@ -84,64 +76,44 @@ public class AcompananteRepository extends AbstractRepository {
     /**
      * Busca todos los acompañantes de un alquiler.
      * 
-     * @param id_alquiler ID del alquiler al que pertenecen.
+     * @param idAlquiler ID del alquiler al que pertenecen.
      * @return Lista de {@link Acompanante} o null si ocurre un error.
      */
-    public List<Acompanante> findAcompananteByAlquiler(int id_alquiler) {
+    public List<Acompanante> findAcompananteByAlquiler(int idAlquiler) {
         try {
-            String query = sqlQueries.getProperty("select-findAcompanantesByAlquiler");
-            List<Acompanante> result = jdbcTemplate.query(query, this::mapRowFromAlquiler, id_alquiler);
-            if (result != null )
-                return result;
-            else return null;
-        } catch(DataAccessException exception) {
-            System.err.println("Unable to find acompanantes with id_alquiler: " + id_alquiler);
+            String query = getSqlQuery("select-findAcompanantesByAlquiler");
+            return getJdbcTemplate().query(query, this::mapRowFromAlquiler, idAlquiler);
+        } catch (DataAccessException exception) {
+            System.err.println("Unable to find acompanantes with id_alquiler: " + idAlquiler);
             exception.printStackTrace();
             return null;
         }
     }
 
     /**
-     * Extrae y mapea la *primera* fila de un ResultSet a un objeto Acompanante.
-     * Este método funciona como un ResultSetExtractor que solo procesa un resultado.
-     * Mueve el cursor a la primera fila; si no hay filas, devuelve null.
-     * 
-     * @param row El conjunto de resultados (ResultSet) completo devuelto por la consulta JDBC.
-     * @param rowNum Número de fila.
-     * @return Un objeto {@link Acompanante} si se encuentra una fila,
-     * o null si el ResultSet está vacío o si ocurre una SQLException.
+     * RowMapper para mapear una fila del ResultSet a un objeto Acompanante.
      */
     private Acompanante mapRowFromAlquiler(ResultSet row, int rowNum) throws SQLException {
-                int id = row.getInt("id");
-                String dni = row.getString("dni");
-                int id_alquiler = row.getInt("id_alquiler");
-
-                return new Acompanante(id, dni, id_alquiler);
-            
+        return new Acompanante(
+                row.getInt("id"),
+                row.getString("dni"),
+                row.getInt("id_alquiler")
+        );
     }
     
     /**
-     * Extrae y mapea la fila de un ResultSet a un objeto Acompanante.
-     * Este método funciona como un ResultSetExtractor que solo procesa un resultado.
-     * Mueve el cursor a la fila; si no hay filas, devuelve null.
-     *  
-     * @param row El conjunto de resultados (ResultSet) completo devuelto por la consulta JDBC.
-     * @return Un objeto {@link Acompanante} si se encuentra una fila,
-     * o null si el ResultSet está vacío o si ocurre una SQLException.  
+     * ResultSetExtractor para mapear la primera fila del ResultSet a un Acompanante.
      */
     private Acompanante mapRowToAcompanante(ResultSet row) {
         try {
-
             if (row.first()) {
-                int id = row.getInt("id");
-                String dni = row.getString("dni");
-                int id_alquiler = row.getInt("id_alquiler");
-
-                Acompanante acompanante = new Acompanante(id, dni, id_alquiler);
-                return acompanante;
-            } else {
-                return null;
+                return new Acompanante(
+                        row.getInt("id"),
+                        row.getString("dni"),
+                        row.getInt("id_alquiler")
+                );
             }
+            return null;
         } catch (SQLException exception) {
             System.err.println("Unable to map row to Acompanantes object");
             exception.printStackTrace();
@@ -152,13 +124,13 @@ public class AcompananteRepository extends AbstractRepository {
     /**
      * Agrega un nuevo acompañante a la base de datos.
      * 
-     * @param acompañante Objeto Acompañante a agregar
+     * @param acompanante Objeto Acompañante a agregar
      * @return true si se agregó correctamente, false en caso contrario
      */
     public boolean addAcompanante(Acompanante acompanante) {
         try {
-            String query = sqlQueries.getProperty("insert-addAcompanante");
-            int rowsAffected = jdbcTemplate.update(query, acompanante.getNationalId(), acompanante.getRentalId());
+            String query = getSqlQuery("insert-addAcompanante");
+            int rowsAffected = getJdbcTemplate().update(query, acompanante.getNationalId(), acompanante.getRentalId());
             return rowsAffected > 0;
         } catch (DataAccessException exception) {
             System.err.println("Unable to add acompanante");
@@ -170,14 +142,14 @@ public class AcompananteRepository extends AbstractRepository {
     /**
      * Elimina un acompanante de la base de datos.
      * 
-     * @param id ID del acompanante a eliminar
-     * @param dniSocio DNI del socio al que pertenece
+     * @param idAlquiler ID del alquiler al que pertenece
+     * @param dniSocio DNI del socio a desvincular
      * @return true si se eliminó correctamente, false en caso contrario
      */
-    public boolean deleteAcompanante(int id, String dniSocio) {
+    public boolean deleteAcompanante(int idAlquiler, String dniSocio) {
         try {
-            String query = sqlQueries.getProperty("delete-deleteAcompanante");
-            int rowsAffected = jdbcTemplate.update(query, id, dniSocio);
+            String query = getSqlQuery("delete-deleteAcompanante");
+            int rowsAffected = getJdbcTemplate().update(query, idAlquiler, dniSocio);
             return rowsAffected > 0;
         } catch (DataAccessException exception) {
             System.err.println("Unable to delete acompanante");
@@ -185,5 +157,4 @@ public class AcompananteRepository extends AbstractRepository {
             return false;
         }
     }
-    
 }

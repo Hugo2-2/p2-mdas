@@ -2,6 +2,7 @@ package com.GM2.model.domain;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -12,6 +13,10 @@ import java.util.List;
  * @version 1.0
  */
 public class Alquiler {
+
+    /** Precio base por persona y día de alquiler (en euros). */
+    public static final double PRICE_PER_PERSON_PER_DAY = 20.0;
+
     private int id;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -29,7 +34,6 @@ public class Alquiler {
         this.companions = new ArrayList<>();
     }
 
-    // Clean Code - Regla 1 Funciones (argumentos): Se ha reducido el número de argumentos encapsulándolos en el objeto 'AlquilerRentalDetails'.
     /**
      * Constructor con todos los parámetros, refactorizado para recibir un objeto
      * {@link AlquilerRentalDetails} en lugar de una lista larga de argumentos.
@@ -46,116 +50,112 @@ public class Alquiler {
         this.seats = rentalDetails.getSeats();
         this.userNationalId = rentalDetails.getUserNationalId();
         this.boatRegistration = rentalDetails.getBoatRegistration();
-        this.companions = companions;
+        this.companions = companions != null ? new ArrayList<>(companions) : new ArrayList<>();
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public int getId() {
         return id;
     }
-    
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
+
     public void setId(int id) {
         this.id = id;
     }
-    
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
+
     public LocalDate getStartDate() {
         return startDate;
     }
-    
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
+
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
-    
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
+
     public LocalDate getEndDate() {
         return endDate;
     }
-    
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
+
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
-    
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
+
     public double getPrice() {
         return price;
     }
-    
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
+
     public void setPrice(double price) {
         this.price = price;
     }
-    
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
+
     public int getSeats() {
         return seats;
     }
-    
-     //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
+
     public void setSeats(int seats) {
         this.seats = seats;
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public String getUserNationalId() {
         return userNationalId;
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setUserNationalId(String userNationalId) {
         this.userNationalId = userNationalId;
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
+    /**
+     * Devuelve una vista no modificable de la lista de acompañantes.
+     * Para modificar la lista, use {@link #addCompanion(Acompanante)} o {@link #removeCompanion(Acompanante)}.
+     */
     public List<Acompanante> getCompanions() {
-        return companions;
+        return Collections.unmodifiableList(companions);
     }
 
-     //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setCompanions(List<Acompanante> companions) {
-        this.companions = companions;
+        this.companions = companions != null ? new ArrayList<>(companions) : new ArrayList<>();
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
+    public void addCompanion(Acompanante companion) {
+        this.companions.add(companion);
+    }
+
+    public void removeCompanion(Acompanante companion) {
+        this.companions.remove(companion);
+    }
+
     public String getBoatRegistration() {
         return boatRegistration;
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setBoatRegistration(String boatRegistration) {
         this.boatRegistration = boatRegistration;
     }
 
-
     /**
      * Representación de un alquiler en String.
+     * Refactorizado para usar StringBuilder en lugar de concatenación con +=.
      * 
      * @return Representación de un alquiler en String
      */
     @Override
     public String toString() {
-        String result = "Alquiler {\n";
-        result += "  ID: " + id + "\n";
-        result += "  Fecha inicio: " + startDate + "\n";
-        result += "  Fecha fin: " + endDate + "\n";
-        result += "  Plazas: " + seats + "\n";
-        result += "  Precio: " + price + "€\n";
-        result += "  DNI Socio: " + userNationalId + "\n";
-        result += "  Matrícula: " + boatRegistration + "\n";
-        
+        StringBuilder sb = new StringBuilder("Alquiler {\n");
+        sb.append("  ID: ").append(id).append("\n");
+        sb.append("  Fecha inicio: ").append(startDate).append("\n");
+        sb.append("  Fecha fin: ").append(endDate).append("\n");
+        sb.append("  Plazas: ").append(seats).append("\n");
+        sb.append("  Precio: ").append(price).append("€\n");
+        sb.append("  DNI Socio: ").append(userNationalId).append("\n");
+        sb.append("  Matrícula: ").append(boatRegistration).append("\n");
+
         if (companions != null && !companions.isEmpty()) {
-            result += "  Acompañantes (" + companions.size() + "):\n";
+            sb.append("  Acompañantes (").append(companions.size()).append("):\n");
             for (Acompanante a : companions) {
-                result += "    - " + a + "\n"; // Llama a a.toString()
+                sb.append("    - ").append(a).append("\n");
             }
         } else {
-            result += "  Acompañantes: Ninguno\n";
+            sb.append("  Acompañantes: Ninguno\n");
         }
-        
-        result += "}";
-        return result;
-    }   
+
+        sb.append("}");
+        return sb.toString();
+    }
 }

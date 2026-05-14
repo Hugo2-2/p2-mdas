@@ -9,18 +9,19 @@ import com.GM2.model.domain.Socio;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Repositorio para gestionar las operaciones CRUD (Crear, Leer, Actualizar, Borrar)
- * de la entidad {@link Socio} en la base de datos.
- * También maneja la creación de inscripciones automáticas para socios titulares.
+ * Repositorio para gestionar las operaciones CRUD de la entidad {@link Socio}.
+ *
+ * Refactoring 5.4: Replace Error Code with Exception — el método addSocio() ahora
+ * usa las excepciones del sistema en lugar de retornar strings como códigos de error.
+ *
+ * Refactoring 6.1: Se usa super(jdbcTemplate) del AbstractRepository.
  *
  * @author gm2equipo1
  * @version 1.0
@@ -28,51 +29,31 @@ import java.util.List;
 @Repository
 public class SocioRepository extends AbstractRepository {
 
-    InscripcionRepository inscripcionRepository;
+    private final InscripcionRepository inscripcionRepository;
 
-    /**
-     * Constructor para la inyección de dependencias.
-     * Configura JdbcTemplate y el repositorio de inscripciones usando @Lazy
-     * para evitar dependencias circulares.
-     *
-     * @param jdbcTemplate El bean de JdbcTemplate gestionado por Spring.
-     * @param inscripcionRepository Repositorio de inscripciones (cargado de forma lazy).
-     */
     public SocioRepository(JdbcTemplate jdbcTemplate, @Lazy InscripcionRepository inscripcionRepository) {
-        this.jdbcTemplate = jdbcTemplate;
+        super(jdbcTemplate);
         this.inscripcionRepository = inscripcionRepository;
-        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
-        setSqlQueriesFileName(sqlQueriesFileName);
     }
 
     /**
      * Recupera una lista de todos los socios de la base de datos.
-     *
-     * @return Una lista de {@link Socio}, o null si no se encuentran resultados o hay error.
      */
     public List<Socio> findAllSocios() {
         try {
-            String query = sqlQueries.getProperty("select-findAllSocios");
-            if (query != null ) {
-                List<Socio> result = jdbcTemplate.query(query, new RowMapper<Socio>() {
-                   public Socio mapRow(ResultSet rs, int rowNum) throws SQLException {
-                       return new Socio(
-                               rs.getBoolean("titulo_patron"),
-                               rs.getBoolean("es_titular"),
-                               //Date.valueOf(rs.getString("fecha_inscripcion")).toLocalDate(),
-                               rs.getDate("fecha_inscripcion").toLocalDate(),
-                               rs.getString("direccion"),
-                               //Date.valueOf(rs.getString("fecha_nacimiento")).toLocalDate(),
-                               rs.getDate("fecha_nacimiento").toLocalDate(),
-                               rs.getString("dni"),
-                               rs.getString("apellidos"),
-                               rs.getString("nombre")
-                       );
-                   };
-                });
+            String query = getSqlQuery("select-findAllSocios");
+            if (query == null) return null;
 
-                return result;
-            } else return null;
+            return getJdbcTemplate().query(query, (rs, rowNum) -> new Socio(
+                    rs.getBoolean("titulo_patron"),
+                    rs.getBoolean("es_titular"),
+                    rs.getDate("fecha_inscripcion").toLocalDate(),
+                    rs.getString("direccion"),
+                    rs.getDate("fecha_nacimiento").toLocalDate(),
+                    rs.getString("dni"),
+                    rs.getString("apellidos"),
+                    rs.getString("nombre")
+            ));
         } catch (DataAccessException exception) {
             System.err.println("Unable to find socios");
             exception.printStackTrace();
@@ -81,19 +62,13 @@ public class SocioRepository extends AbstractRepository {
     }
 
     /**
-     * Busca un socio específico por su DNI (clave primaria).
-     *
-     * @param dni El DNI único del socio a buscar.
-     * @return El objeto {@link Socio} si se encuentra, o null si no existe.
+     * Busca un socio específico por su DNI.
      */
     public Socio findSocioByDNI(String dni) {
         try {
-            String query = sqlQueries.getProperty("select-findSocioByDNI");
-            Socio result = jdbcTemplate.query(query, this::mapRowToSocio, dni);
-            if (result != null )
-                return result;
-            else return null;
-        } catch(DataAccessException exception) {
+            String query = getSqlQuery("select-findSocioByDNI");
+            return getJdbcTemplate().query(query, this::mapRowToSocio, dni);
+        } catch (DataAccessException exception) {
             System.err.println("Unable to find socio with dni: " + dni);
             exception.printStackTrace();
             return null;
@@ -101,34 +76,23 @@ public class SocioRepository extends AbstractRepository {
     }
 
     /**
-     * Extrae y mapea la primera fila de un ResultSet a un objeto Socio.
-     * Este método funciona como un ResultSetExtractor que solo procesa un resultado.
-     * Mueve el cursor a la primera fila; si no hay filas, devuelve null.
-     *
-     * @param row El conjunto de resultados (ResultSet) completo devuelto por la consulta JDBC.
-     * @return Un objeto {@link Socio} si se encuentra una fila,
-     *         o null si el ResultSet está vacío o si ocurre una SQLException.
+     * ResultSetExtractor que mapea la primera fila a un Socio.
      */
     private Socio mapRowToSocio(ResultSet row) {
         try {
-
             if (row.first()) {
-                String nombre = row.getString("nombre");
-                String apellidos = row.getString("apellidos");
-                String dni = row.getString("dni");
-                Date fechaNacimiento = row.getDate("fecha_nacimiento");
-                String direccion = row.getString("direccion");
-                Date fechaInscripcion = row.getDate("fecha_inscripcion");
-                Boolean esTitular = row.getBoolean("es_titular");
-                Boolean tituloPatron = row.getBoolean("titulo_patron");
-
-                Socio socio = new Socio(tituloPatron, esTitular, fechaInscripcion.toLocalDate(),
-                        direccion, fechaNacimiento.toLocalDate(), dni, apellidos, nombre);
-                return socio;
-            } else {
-                return null;
+                return new Socio(
+                        row.getBoolean("titulo_patron"),
+                        row.getBoolean("es_titular"),
+                        row.getDate("fecha_inscripcion").toLocalDate(),
+                        row.getString("direccion"),
+                        row.getDate("fecha_nacimiento").toLocalDate(),
+                        row.getString("dni"),
+                        row.getString("apellidos"),
+                        row.getString("nombre")
+                );
             }
-
+            return null;
         } catch (SQLException exception) {
             System.err.println("Unable to retrieve results from the database");
             exception.printStackTrace();
@@ -136,47 +100,57 @@ public class SocioRepository extends AbstractRepository {
         }
     }
 
-    // Clean Code - Regla 4 Funciones (argumentos): Se ha eliminado el parámetro de salida '[errores]' y ahora la función devuelve directamente el resultado esperado.
+    /**
+     * Registra un socio usando el flujo legacy (retorna strings como códigos de error).
+     *
+     * Refactoring 5.4: Replace Error Code with Exception — se reemplaza el retorno
+     * de strings como "EXITO" / "No se ha podido guardar..." por excepciones tipadas.
+     *
+     * @deprecated Preferir {@link #addSocioTitular(Socio)} o {@link #addSocioNoTitular(Socio)}.
+     */
+    @Deprecated
     public String addSocio(Socio socio) {
-        if (socio == null) return "No se ha ingresado el socio";
-        
-        if (socio.getBirthDate().getYear() > 2007 && socio.getIsTitular() != null && socio.getIsTitular()) {
-            return "Debes de ser mayor de edad para realizar esta inscripcion";
-        }
+        if (socio == null)
+            throw new ValidationException(ErrorCode.SOCIO_NO_INGRESADO);
+
+        if (!socio.isOfLegalAge(java.time.LocalDate.now()) && socio.getIsTitular() != null && socio.getIsTitular())
+            throw new ValidationException(ErrorCode.SOCIO_DEBE_SER_MAYOR_DE_EDAD);
 
         boolean sqlRes = ejecutarInsertSocio(socio);
 
         if (socio.getIsTitular() != null && socio.getIsTitular()) {
             Inscripcion inscripcion = new Inscripcion(socio.getNationalId());
             boolean resInscripcion = inscripcionRepository.addInscripcion(inscripcion);
-            if (!(sqlRes && resInscripcion)) {
-                return "No se ha podido guardar el socio titular";
-            }
+            if (!(sqlRes && resInscripcion))
+                throw new DatabaseException(ErrorCode.SOCIO_NO_GUARDADO);
         } else if (!sqlRes) {
-            return "No se ha podido guardar el socio";
+            throw new DatabaseException(ErrorCode.SOCIO_NO_GUARDADO);
         }
 
         return "EXITO";
     }
 
-    // Clean Code - Regla 3 Funciones (argumentos): Se ha eliminado el parámetro bandera (flag) 'isTitular' dividiendo el comportamiento en métodos específicos.
+    /**
+     * Registra un socio como titular y crea su inscripción asociada.
+     */
     public void addSocioTitular(Socio socio) {
         if (socio == null)
             throw new ValidationException(ErrorCode.SOCIO_NO_INGRESADO);
 
-        if (socio.getBirthDate().getYear() > 2007)
+        if (!socio.isOfLegalAge(java.time.LocalDate.now()))
             throw new ValidationException(ErrorCode.SOCIO_DEBE_SER_MAYOR_DE_EDAD);
 
         boolean sqlRes = ejecutarInsertSocio(socio);
 
-        // Creamos su inscripcion simple que posteriormente podrá ser ampliada
         Inscripcion inscripcion = new Inscripcion(socio.getNationalId());
         boolean resInscripcion = inscripcionRepository.addInscripcion(inscripcion);
         if (!(sqlRes && resInscripcion))
             throw new DatabaseException(ErrorCode.SOCIO_NO_GUARDADO);
     }
 
-    // Clean Code - Regla 3 Funciones (argumentos): Se ha eliminado el parámetro bandera (flag) 'isTitular' dividiendo el comportamiento en métodos específicos.
+    /**
+     * Registra un socio sin titularidad.
+     */
     public void addSocioNoTitular(Socio socio) {
         if (socio == null)
             throw new ValidationException(ErrorCode.SOCIO_NO_INGRESADO);
@@ -187,24 +161,25 @@ public class SocioRepository extends AbstractRepository {
             throw new DatabaseException(ErrorCode.SOCIO_NO_GUARDADO);
     }
 
+    /**
+     * Ejecuta la sentencia INSERT para un socio.
+     */
     private boolean ejecutarInsertSocio(Socio socio) {
         try {
-            String query = sqlQueries.getProperty("insert-addSocio");
-            if (query != null) {
-                int result = jdbcTemplate.update(query,
-                   socio.getName(),
-                   socio.getSurname(),
-                   socio.getNationalId(),
-                   socio.getBirthDate(),
-                   socio.getAddress(),
-                   socio.getRegistrationDate(),
-                   socio.getIsTitular(),
-                   socio.getHasSkipperLicense()
-                );
-                return result > 0;
-            } else {
-                return false;
-            }
+            String query = getSqlQuery("insert-addSocio");
+            if (query == null) return false;
+
+            int result = getJdbcTemplate().update(query,
+                    socio.getName(),
+                    socio.getSurname(),
+                    socio.getNationalId(),
+                    socio.getBirthDate(),
+                    socio.getAddress(),
+                    socio.getRegistrationDate(),
+                    socio.getIsTitular(),
+                    socio.getHasSkipperLicense()
+            );
+            return result > 0;
         } catch (DataAccessException exception) {
             System.err.println("Unable to insert socios in the database");
             exception.printStackTrace();
@@ -213,14 +188,7 @@ public class SocioRepository extends AbstractRepository {
     }
 
     /**
-     * Actualiza la información de un socio existente en la base de datos.
-     * No permite actualizar el DNI (se usa como clave primaria).
-     * Verifica que el socio exista antes de realizar la actualización.
-     *
-     * @param socio El objeto {@link Socio} con los datos actualizados.
-     * @throws ValidationException si los datos del socio no son válidos.
-     * @throws EntityNotFoundException si el socio no existe.
-     * @throws DatabaseException si la operación de persistencia falla.
+     * Actualiza la información de un socio existente.
      */
     public void updateSocio(Socio socio) {
         if (socio == null)
@@ -229,23 +197,21 @@ public class SocioRepository extends AbstractRepository {
         if (socio.getNationalId() == null || socio.getNationalId().isEmpty())
             throw new ValidationException(ErrorCode.SOCIO_DNI_OBLIGATORIO);
 
-        // Verificar que el socio existe
-        Socio socioExistente = findSocioByDNI(socio.getNationalId());
-        if (socioExistente == null)
+        if (findSocioByDNI(socio.getNationalId()) == null)
             throw new EntityNotFoundException(ErrorCode.SOCIO_NO_EXISTE);
 
         try {
-            String query = sqlQueries.getProperty("update-socio");
+            String query = getSqlQuery("update-socio");
             if (query != null) {
-                int result = jdbcTemplate.update(query,
-                    socio.getName(),
-                    socio.getSurname(),
-                    socio.getBirthDate(),
-                    socio.getAddress(),
-                    socio.getRegistrationDate(),
-                    socio.getIsTitular(),
-                    socio.getHasSkipperLicense(),
-                    socio.getNationalId()
+                int result = getJdbcTemplate().update(query,
+                        socio.getName(),
+                        socio.getSurname(),
+                        socio.getBirthDate(),
+                        socio.getAddress(),
+                        socio.getRegistrationDate(),
+                        socio.getIsTitular(),
+                        socio.getHasSkipperLicense(),
+                        socio.getNationalId()
                 );
                 if (result <= 0)
                     throw new DatabaseException(ErrorCode.SOCIO_NO_ACTUALIZADO);
@@ -261,30 +227,17 @@ public class SocioRepository extends AbstractRepository {
 
     /**
      * Elimina un socio de la base de datos por su DNI.
-     * IMPORTANTE: Solo debe usarse si el socio no está vinculado a ninguna inscripción.
-     *
-     * @param dni El DNI del socio a eliminar.
-     * @return true si la eliminación fue exitosa, false en caso contrario.
      */
     public boolean deleteSocio(String dni) {
-        if (dni == null || dni.isEmpty()) {
-            return false;
-        }
-
-        // Verificar que el socio existe
-        Socio socio = findSocioByDNI(dni);
-        if (socio == null) {
-            return false;
-        }
+        if (dni == null || dni.isEmpty()) return false;
+        if (findSocioByDNI(dni) == null) return false;
 
         try {
-            String query = sqlQueries.getProperty("delete-deleteSocio");
-            if (query != null) {
-                int result = jdbcTemplate.update(query, dni);
-                return result > 0;
-            } else {
-                return false;
-            }
+            String query = getSqlQuery("delete-deleteSocio");
+            if (query == null) return false;
+
+            int result = getJdbcTemplate().update(query, dni);
+            return result > 0;
         } catch (DataAccessException exception) {
             System.err.println("Unable to delete socio from the database");
             exception.printStackTrace();
@@ -292,4 +245,3 @@ public class SocioRepository extends AbstractRepository {
         }
     }
 }
-

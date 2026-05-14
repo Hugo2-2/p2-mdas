@@ -1,290 +1,111 @@
 package com.GM2.api;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.GM2.model.domain.Embarcacion;
 import com.GM2.model.domain.Patron;
 import com.GM2.model.repository.EmbarcacionRepository;
 import com.GM2.model.repository.PatronRepository;
 
-/**
- * Controlador REST para la gestión de recursos de tipo Patron.
- * Permite realizar operaciones CRUD, así como gestionar la vinculación
- * y desvinculación de patrones con las embarcaciones.
- *
- * @author gm2equipo1
- * @version 1.0
- */
-@RestController()
+@RestController
 @RequestMapping(path = "api/patrones", produces = "application/json")
 public class PatronRestController {
     private final EmbarcacionRepository embarcacionRepository;
-    PatronRepository patronRepository;
+    private final PatronRepository patronRepository;
 
-    /**
-     * Constructor del controlador.
-     * Inyecta los repositorios necesarios y configura la carga de sentencias SQL.
-     *
-     * @param patronRepository Repositorio para la gestión de patrones.
-     * @param embarcacionRepository Repositorio para consultar estados de embarcaciones.
-     */
     public PatronRestController(PatronRepository patronRepository, EmbarcacionRepository embarcacionRepository) {
         this.patronRepository = patronRepository;
-        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
-
-        this.patronRepository.setSqlQueriesFileName(sqlQueriesFileName);
         this.embarcacionRepository = embarcacionRepository;
     }
 
-    /**
-     * Obtiene el listado completo de todos los patrones registrados.
-     *
-     * @return ResponseEntity con la lista de patrones y estado 200 OK,
-     * o 404 Not Found si no se encuentran datos.
-     */
     @GetMapping
     public ResponseEntity<List<Patron>> getAllPatrones() {
         try {
             List<Patron> patrones = patronRepository.findAllPatrones();
-
-            if (patrones == null || patrones.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-
-            return new ResponseEntity<>(patrones, HttpStatus.OK);
-
-        } catch (Exception e) {
-            // Si falla la conexión a la BD o hay otro error inesperado
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            return (patrones == null || patrones.isEmpty())
+                    ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
+                    : new ResponseEntity<>(patrones, HttpStatus.OK);
+        } catch (Exception e) { return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
-    /**
-     * Registra un nuevo patrón en el sistema.
-     * Realiza validaciones de campos obligatorios, unicidad de DNI y coherencia de fechas.
-     *
-     * @param nuevoPatron Objeto con los datos del nuevo patrón.
-     * @return ResponseEntity con el patrón creado y estado 201 Created,
-     * o códigos de error (400, 409, 422) si fallan las validaciones.
-     */
     @PostMapping(consumes = "application/json")
     public ResponseEntity<Patron> createPatron(@RequestBody Patron nuevoPatron) {
-        try {
-            return procesarCreacionPatron(nuevoPatron);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        try { return procesarCreacionPatron(nuevoPatron); }
+        catch (Exception e) { return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
-    private ResponseEntity<Patron> procesarCreacionPatron(Patron nuevoPatron) {
-        if (nuevoPatron.getNationalId() == null || nuevoPatron.getNationalId().trim().isEmpty() ||
-                nuevoPatron.getName() == null || nuevoPatron.getName().trim().isEmpty() ||
-                nuevoPatron.getSurname() == null || nuevoPatron.getSurname().trim().isEmpty() ||
-                nuevoPatron.getBirthDate() == null ||
-                nuevoPatron.getTitleIssueDate() == null) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-
-        if (patronRepository.isRegistered(nuevoPatron.getNationalId())) {
-            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-        }
-
-        if (nuevoPatron.getBirthDate().isAfter(java.time.LocalDate.now())) {
+    private ResponseEntity<Patron> procesarCreacionPatron(Patron p) {
+        if (tieneCamposObligatoriosNulos(p)) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        if (patronRepository.isRegistered(p.getNationalId())) return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        if (p.getBirthDate().isAfter(java.time.LocalDate.now())) return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        if (p.getTitleIssueDate().isAfter(java.time.LocalDate.now()) || p.getTitleIssueDate().isBefore(p.getBirthDate()))
             return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-
-        if (nuevoPatron.getTitleIssueDate().isAfter(java.time.LocalDate.now()) ||
-                nuevoPatron.getTitleIssueDate().isBefore(nuevoPatron.getBirthDate())) {
-            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-
-        boolean exito = patronRepository.addPatron(nuevoPatron);
-
-        if (exito) {
-            return new ResponseEntity<>(nuevoPatron, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        boolean ok = patronRepository.addPatron(p);
+        return ok ? new ResponseEntity<>(p, HttpStatus.CREATED) : new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /**
-     * Actualiza la información personal de un patrón existente.
-     * No permite modificar el DNI. Incluye validaciones de fechas.
-     *
-     * @param dni Identificador del patrón a modificar.
-     * @param newPatron Objeto con los nuevos datos.
-     * @return ResponseEntity con el patrón actualizado y estado 200 OK.
-     */
+    private boolean tieneCamposObligatoriosNulos(Patron p) {
+        return p.getNationalId() == null || p.getNationalId().trim().isEmpty() ||
+               p.getName() == null || p.getName().trim().isEmpty() ||
+               p.getSurname() == null || p.getSurname().trim().isEmpty() ||
+               p.getBirthDate() == null || p.getTitleIssueDate() == null;
+    }
+
     @PatchMapping(path = "/{dni}", consumes = "application/json")
     public ResponseEntity<Patron> updatePatron(@PathVariable("dni") String dni, @RequestBody Patron newPatron) {
-        Patron patronActual = patronRepository.findPatronByDNI(dni);
-        if (patronActual == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-
-        if (newPatron.getNationalId() != null) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-
-        // Actualización parcial de campos
-        if (newPatron.getName() != null) patronActual.setName(newPatron.getName());
-        if (newPatron.getSurname() != null) patronActual.setSurname(newPatron.getSurname());
-        if (newPatron.getBirthDate() != null) patronActual.setBirthDate(newPatron.getBirthDate());
-        if (newPatron.getTitleIssueDate() != null) patronActual.setTitleIssueDate(newPatron.getTitleIssueDate());
-
-        // Validaciones de negocio tras la actualización
-        if (patronActual.getBirthDate().isAfter(LocalDate.now())) {
-            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-
-        if (patronActual.getTitleIssueDate().isAfter(LocalDate.now())) {
-            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-
-        if (patronActual.getTitleIssueDate().isBefore(patronActual.getBirthDate())) {
-            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-
-        boolean exito = patronRepository.updatePatron(patronActual);
-
-        if (exito) {
-            return new ResponseEntity<>(patronActual, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Patron actual = patronRepository.findPatronByDNI(dni);
+        if (actual == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        if (newPatron.getNationalId() != null) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        if (newPatron.getName() != null) actual.setName(newPatron.getName());
+        if (newPatron.getSurname() != null) actual.setSurname(newPatron.getSurname());
+        if (newPatron.getBirthDate() != null) actual.setBirthDate(newPatron.getBirthDate());
+        if (newPatron.getTitleIssueDate() != null) actual.setTitleIssueDate(newPatron.getTitleIssueDate());
+        if (actual.getBirthDate().isAfter(java.time.LocalDate.now())) return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        if (actual.getTitleIssueDate().isAfter(java.time.LocalDate.now())) return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        if (actual.getTitleIssueDate().isBefore(actual.getBirthDate())) return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        boolean ok = patronRepository.updatePatron(actual);
+        return ok ? new ResponseEntity<>(actual, HttpStatus.OK) : new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /**
-     * Vincula un patrón a una embarcación.
-     * Verifica que el patrón exista y no esté ocupado en otra embarcación.
-     *
-     * @param matricula Matrícula de la embarcación (en la URL).
-     * @param dniPatron DNI del patrón a asignar (en el cuerpo de la petición).
-     * @return ResponseEntity con el objeto Patron asignado.
-     */
     @PatchMapping(path = "/{matricula}/patron")
     public ResponseEntity<Patron> assignPatronToEmbarcacion(@PathVariable String matricula, @RequestBody String dniPatron) {
-        // Limpiamos el dni de posibles comillas del JSON
-        String dniPatronLimpio = dniPatron.replaceAll("[\"{}]", "").trim();
-
-        if (embarcacionRepository.findEmbarcacionByMatricula(matricula) == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-
-        Patron patron = patronRepository.findPatronByDNI(dniPatronLimpio);
-        if (patron == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-
-        // Comprobar que el patrón no está asignado a ninguna otra embarcación
-        if (embarcacionRepository.isPatronAssignedToEmbarcacion(dniPatronLimpio)) {
-            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-        }
-
-        boolean result = embarcacionRepository.updatePatron(dniPatronLimpio, matricula);
-
-        if (result) {
-            return new ResponseEntity<>(patron, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        String dniLimpio = dniPatron.replaceAll("[\"{}]", "").trim();
+        if (embarcacionRepository.findEmbarcacionByMatricula(matricula) == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        Patron patron = patronRepository.findPatronByDNI(dniLimpio);
+        if (patron == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        if (embarcacionRepository.isPatronAssignedToEmbarcacion(dniLimpio)) return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        boolean ok = embarcacionRepository.updatePatron(dniLimpio, matricula);
+        return ok ? new ResponseEntity<>(patron, HttpStatus.OK) : new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /**
-     * Desvincula un patrón de una embarcación.
-     * Verifica que el patrón indicado sea el que realmente está asignado a la embarcación.
-     *
-     * @param matricula Matrícula de la embarcación (en la URL).
-     * @param dniPatron DNI del patrón a retirar (en el cuerpo de la petición).
-     * @return ResponseEntity con el objeto Patron desvinculado.
-     */
     @PatchMapping(path = "/{matricula}/noPatron")
     public ResponseEntity<Patron> unassignPatronToEmbarcacion(@PathVariable String matricula, @RequestBody String dniPatron) {
-        // Limpiamos el dni
-        String dniPatronLimpio = dniPatron.replaceAll("[\"{}]", "").trim();
-
-        Embarcacion embarcacionActual = embarcacionRepository.findEmbarcacionByMatricula(matricula);
-        if (embarcacionActual == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-
-        Patron patron = patronRepository.findPatronByDNI(dniPatronLimpio);
-        if (patron == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-
-        String patronEmbarcacionActual = embarcacionActual.getSkipperId();
-
-        // Seguridad: Si el barco está vacío O el patrón no coincide, damos error para evitar borrados accidentales
-        if (patronEmbarcacionActual == null || !patronEmbarcacionActual.equals(dniPatronLimpio)) {
-            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-        }
-
-        boolean result = embarcacionRepository.updatePatron(null, matricula);
-
-        if (result) {
-            return new ResponseEntity<>(patron, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        String dniLimpio = dniPatron.replaceAll("[\"{}]", "").trim();
+        Embarcacion emb = embarcacionRepository.findEmbarcacionByMatricula(matricula);
+        if (emb == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        Patron patron = patronRepository.findPatronByDNI(dniLimpio);
+        if (patron == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        String patronActual = emb.getSkipperId();
+        if (patronActual == null || !patronActual.equals(dniLimpio)) return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        boolean ok = embarcacionRepository.updatePatron(null, matricula);
+        return ok ? new ResponseEntity<>(patron, HttpStatus.OK) : new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /**
-     * Elimina un patrón del sistema.
-     * Solo se permite si el patrón no está asignado actualmente a ninguna embarcación.
-     *
-     * @param dni Identificador del patrón a borrar.
-     * @return ResponseEntity con estado 204 No Content si se borra correctamente.
-     */
     @DeleteMapping("/{dni}")
     public ResponseEntity<Void> deletePatron(@PathVariable String dni) {
-        // Validar existencia del patrón
-        if (patronRepository.findPatronByDNI(dni) == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        // Validar si tiene barco asignado
-        if (embarcacionRepository.isPatronAssignedToEmbarcacion(dni)) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-
-        // Ejecutar borrado físico
-        boolean exito = patronRepository.deletePatron(dni);
-
-        if (exito) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        if (patronRepository.findPatronByDNI(dni) == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (embarcacionRepository.isPatronAssignedToEmbarcacion(dni)) return new ResponseEntity<>(HttpStatus.CONFLICT);
+        boolean ok = patronRepository.deletePatron(dni);
+        return ok ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /**
-     * Obtener un patrón específico por su DNI.
-     * Endpoint auxiliar, utilizado principalmente para verificaciones de clientes y pruebas.
-     *
-     * @param dni Identificador único del patrón.
-     * @return ResponseEntity con el patrón encontrado y estado 200 OK.
-     */
     @GetMapping("/{dni}")
     public ResponseEntity<Patron> getPatronByDni(@PathVariable String dni) {
         Patron patron = patronRepository.findPatronByDNI(dni);
-
-        if (patron != null) {
-            return new ResponseEntity<>(patron, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return patron != null ? new ResponseEntity<>(patron, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

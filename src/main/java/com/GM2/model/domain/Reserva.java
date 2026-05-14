@@ -4,12 +4,12 @@ import java.time.LocalDate;
 
 /**
  * Clase de dominio que representa una Reserva en el sistema.
- * Es un POJO (Plain Old Java Object) con atributos, un constructor vacío,
- * un constructor con todos los argumentos y sus respectivos getters y setters.
  */
 public class Reserva {
 
-    // Clean Code - Regla 8: Se ha eliminado código obsoleto que estaba comentado, delegando el historial al control de versiones.
+    /** Precio base por plaza de reserva (en euros). */
+    public static final double PRICE_PER_SEAT = 40.0;
+
     private int id;
     private LocalDate date;
     private int seats;

@@ -1,6 +1,8 @@
 package com.GM2.model.domain;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -13,6 +15,15 @@ import java.util.List;
  * @version 1.0
  */
 public class Inscripcion {
+
+    /** Cuota base anual para una inscripción individual (en euros). */
+    public static final float BASE_ANNUAL_FEE = 300f;
+
+    /** Incremento en la cuota anual por añadir un segundo adulto (en euros). */
+    public static final float SECOND_ADULT_FEE = 250f;
+
+    /** Incremento en la cuota anual por cada hijo añadido (en euros). */
+    public static final float CHILD_FEE = 100f;
 
     private int id;
     private String titularMemberId;
@@ -30,14 +41,14 @@ public class Inscripcion {
 
     /**
      * Constructor para crear una inscripción básica con valores por defecto.
-     * Establece la cuota anual a 300, la fecha de creación como la actual,
+     * Establece la cuota anual base, la fecha de creación como la actual,
      * y deja el segundo adulto e hijos como nulos.
      *
      * @param titularMemberId ID del socio titular de la inscripción.
      */
     public Inscripcion(String titularMemberId) {
         this.titularMemberId = titularMemberId;
-        this.annualFee = 300;
+        this.annualFee = BASE_ANNUAL_FEE;
         this.creationDate = LocalDate.now();
         this.secondAdult = null;
         this.children = null;
@@ -45,17 +56,17 @@ public class Inscripcion {
 
     public Inscripcion(String titularMemberId, String secondAdult, List<Hijos> children) {
         this.titularMemberId = titularMemberId;
-        this.annualFee = 300;
+        this.annualFee = BASE_ANNUAL_FEE;
         this.creationDate = LocalDate.now();
 
         if (secondAdult != null && !secondAdult.isEmpty()) {
             this.secondAdult = secondAdult;
-            this.annualFee += 250;
+            this.annualFee += SECOND_ADULT_FEE;
         }
 
         if (children != null && !children.isEmpty()) {
-            this.children = children;
-            this.annualFee += children.size() * 100;
+            this.children = new ArrayList<>(children);
+            this.annualFee += children.size() * CHILD_FEE;
         }
     }
 
@@ -76,7 +87,6 @@ public class Inscripcion {
 
     /**
      * Constructor completo para crear una inscripción con todos los datos.
-     * Incluye la opción de añadir un segundo adulto e hijos a la inscripción.
      *
      * @param id ID único de la inscripción.
      * @param titularMemberId ID del socio titular de la inscripción.
@@ -92,8 +102,9 @@ public class Inscripcion {
         this.creationDate = creationDate;
         this.secondAdult = secondAdult;
 
-        if (!children.isEmpty())
-            this.children = children;
+        if (children != null && !children.isEmpty()) {
+            this.children = new ArrayList<>(children);
+        }
     }
 
     public int getId() {
@@ -124,11 +135,6 @@ public class Inscripcion {
         return creationDate;
     }
 
-    /**
-     * Establece la fecha de creación como la fecha actual.
-     * Método de conveniencia para actualizar la fecha de creación.
-     */
-    //Clean Code - Regla de función: La función depende de 'LocalDate.now()', causando un efecto secundario y dificultando las pruebas. No es "pura"
     public void setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
     }
@@ -141,16 +147,39 @@ public class Inscripcion {
         this.secondAdult = secondAdult;
     }
 
+    /**
+     * Devuelve una vista no modificable de la lista de hijos.
+     * Para modificar la lista, use {@link #addChild(Hijos)}.
+     */
     public List<Hijos> getChildren() {
-        return children;
+        if (children == null) {
+            return null;
+        }
+        return Collections.unmodifiableList(children);
     }
 
     public void setChildren(List<Hijos> children) {
-        this.children = children;
+        this.children = children != null ? new ArrayList<>(children) : null;
     }
 
-    public void addChildren(Hijos child) {
+    public void addChild(Hijos child) {
+        if (this.children == null) {
+            this.children = new ArrayList<>();
+        }
         this.children.add(child);
+    }
+
+    /**
+     * Recalcula la cuota anual basándose en la composición actual de la inscripción.
+     */
+    public void recalcularCuota() {
+        this.annualFee = BASE_ANNUAL_FEE;
+        if (secondAdult != null && !secondAdult.isEmpty()) {
+            this.annualFee += SECOND_ADULT_FEE;
+        }
+        if (children != null) {
+            this.annualFee += children.size() * CHILD_FEE;
+        }
     }
 
     @Override

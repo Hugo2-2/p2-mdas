@@ -13,6 +13,10 @@ import java.time.Period;
  * @version 1.0
  */
 public class Socio {
+
+    /** Edad mínima legal para ser titular de una inscripción. */
+    public static final int LEGAL_AGE = 18;
+
     private String name;
     private String surname;
     private String nationalId;
@@ -31,6 +35,74 @@ public class Socio {
     /**
      * Constructor completo para crear un socio con todos sus datos.
      *
+     * @param name Nombre del socio.
+     * @param surname Apellidos del socio.
+     * @param nationalId DNI del socio.
+     * @param birthDate Fecha de nacimiento del socio.
+     * @param address Dirección del socio.
+     * @param registrationDate Fecha de inscripción en el club.
+     * @param isTitular Indica si el socio es titular de la inscripción.
+     * @param hasSkipperLicense Indica si el socio tiene licencia de patrón.
+     */
+    public Socio(String name, String surname, String nationalId, LocalDate birthDate,
+                 String address, LocalDate registrationDate, Boolean isTitular, Boolean hasSkipperLicense) {
+        this.name = name;
+        this.surname = surname;
+        this.nationalId = nationalId;
+        this.birthDate = birthDate;
+        this.address = address;
+        this.registrationDate = registrationDate;
+        this.isTitular = isTitular;
+        this.hasSkipperLicense = hasSkipperLicense;
+    }
+
+    /**
+     * Constructor para crear un socio sin titularidad, con fecha de inscripción actual.
+     *
+     * @param name Nombre del socio.
+     * @param surname Apellidos del socio.
+     * @param nationalId DNI del socio.
+     * @param birthDate Fecha de nacimiento del socio.
+     * @param address Dirección del socio.
+     * @param registrationDate Fecha de inscripción.
+     * @param hasSkipperLicense Indica si el socio tiene licencia de patrón.
+     */
+    public Socio(String name, String surname, String nationalId, LocalDate birthDate,
+                 String address, LocalDate registrationDate, Boolean hasSkipperLicense) {
+        this.name = name;
+        this.surname = surname;
+        this.nationalId = nationalId;
+        this.birthDate = birthDate;
+        this.address = address;
+        this.registrationDate = registrationDate;
+        this.hasSkipperLicense = hasSkipperLicense;
+        this.isTitular = false;
+    }
+
+    /**
+     * Constructor para crear un socio con datos básicos sin fecha de inscripción.
+     *
+     * @param name Nombre del socio.
+     * @param surname Apellidos del socio.
+     * @param nationalId DNI del socio.
+     * @param birthDate Fecha de nacimiento del socio.
+     * @param address Dirección del socio.
+     * @param hasSkipperLicense Indica si el socio tiene licencia de patrón.
+     */
+    public Socio(String name, String surname, String nationalId, LocalDate birthDate,
+                 String address, Boolean hasSkipperLicense) {
+        this.name = name;
+        this.surname = surname;
+        this.nationalId = nationalId;
+        this.birthDate = birthDate;
+        this.address = address;
+        this.hasSkipperLicense = hasSkipperLicense;
+    }
+
+    /**
+     * Constructor legacy con orden de parámetros invertido.
+     * Mantenido por compatibilidad con código existente.
+     *
      * @param hasSkipperLicense Indica si el socio tiene licencia de patrón.
      * @param isTitular Indica si el socio es titular de la inscripción.
      * @param registrationDate Fecha de inscripción en el club.
@@ -40,7 +112,8 @@ public class Socio {
      * @param surname Apellidos del socio.
      * @param name Nombre del socio.
      */
-    public Socio(Boolean hasSkipperLicense, Boolean isTitular, LocalDate registrationDate, String address, LocalDate birthDate, String nationalId, String surname, String name) {
+    public Socio(Boolean hasSkipperLicense, Boolean isTitular, LocalDate registrationDate,
+                 String address, LocalDate birthDate, String nationalId, String surname, String name) {
         this.hasSkipperLicense = hasSkipperLicense;
         this.isTitular = isTitular;
         this.registrationDate = registrationDate;
@@ -52,17 +125,11 @@ public class Socio {
     }
 
     /**
-     * Constructor para crear un socio estableciendo la fecha de inscripción como la fecha actual.
-     *
-     * @param hasSkipperLicense Indica si el socio tiene licencia de patrón.
-     * @param isTitular Indica si el socio es titular de la inscripción.
-     * @param address Dirección del socio.
-     * @param birthDate Fecha de nacimiento del socio.
-     * @param nationalId DNI del socio.
-     * @param surname Apellidos del socio.
-     * @param name Nombre del socio.
+     * Constructor legacy con fecha de inscripción actual y orden de parámetros invertido.
+     * Mantenido por compatibilidad con código existente.
      */
-    public Socio(Boolean hasSkipperLicense, Boolean isTitular, String address, LocalDate birthDate, String nationalId, String surname, String name) {
+    public Socio(Boolean hasSkipperLicense, Boolean isTitular, String address,
+                 LocalDate birthDate, String nationalId, String surname, String name) {
         this.hasSkipperLicense = hasSkipperLicense;
         this.isTitular = isTitular;
         this.registrationDate = LocalDate.now();
@@ -71,37 +138,6 @@ public class Socio {
         this.nationalId = nationalId;
         this.surname = surname;
         this.name = name;
-    }
-
-    public Socio(String name, String surname, String nationalId, LocalDate birthDate, String address, LocalDate registrationDate, Boolean isTitular, Boolean hasSkipperLicense) {
-        this.name = name;
-        this.surname = surname;
-        this.nationalId = nationalId;
-        this.birthDate = birthDate;
-        this.address = address;
-        this.registrationDate = registrationDate;
-        this.isTitular = hasSkipperLicense;
-        this.hasSkipperLicense = hasSkipperLicense;
-    }
-
-    public Socio(String name, String surname, String nationalId, LocalDate birthDate, String address, LocalDate registrationDate, Boolean hasSkipperLicense) {
-        this.name = name;
-        this.surname = surname;
-        this.nationalId = nationalId;
-        this.birthDate = birthDate;
-        this.address = address;
-        this.registrationDate = registrationDate;
-        this.hasSkipperLicense = hasSkipperLicense;
-        this.isTitular = false;
-    }
-
-    public Socio(String name, String surname, String nationalId, LocalDate birthDate, String address, Boolean hasSkipperLicense) {
-        this.name = name;
-        this.surname = surname;
-        this.nationalId = nationalId;
-        this.birthDate = birthDate;
-        this.address = address;
-        this.hasSkipperLicense = hasSkipperLicense;
     }
 
     public String getName() {
@@ -171,13 +207,14 @@ public class Socio {
     /**
      * Determina si el socio es mayor de edad.
      * Calcula la edad actual del socio basándose en su fecha de nacimiento
-     * y verifica si es mayor o igual a 18 años.
+     * y verifica si es mayor o igual a la edad legal mínima.
      *
-     * @return true si el socio es mayor de edad (18 años o más), false en caso contrario.
+     * @param currentDate Fecha actual para calcular la edad (inyectada para facilitar testing).
+     * @return true si el socio es mayor de edad, false en caso contrario.
      */
-    public boolean isOfLegalAge(LocalDate currentDate) { //Clean Code - Regla de función: La función depende de 'LocalDate.now()', causando un efecto secundario y dificultando las pruebas. No es "pura"
+    public boolean isOfLegalAge(LocalDate currentDate) {
         int age = Period.between(birthDate, currentDate).getYears();
-        return age >= 18;
+        return age >= LEGAL_AGE;
     }
 
     @Override
@@ -194,5 +231,3 @@ public class Socio {
                 '}';
     }
 }
-
-

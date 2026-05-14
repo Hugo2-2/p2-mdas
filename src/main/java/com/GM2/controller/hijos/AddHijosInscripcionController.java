@@ -115,7 +115,7 @@ public class AddHijosInscripcionController {
         List<Hijos> hijos = new ArrayList<>();
         for (int i = 0; i < dnisHijos.size(); i++) {
             Hijos hijo = new Hijos();
-            hijo.setNationalId(dnisHijos.get(i));
+            hijo.setDni(dnisHijos.get(i));
             hijo.setName(nombreHijos.get(i));
             hijo.setSurname(apellidosHijos.get(i));
             hijo.setBirthDate(fechaNacimientoHijos.get(i));

@@ -1,20 +1,15 @@
 package com.GM2.exception;
 
-public class DatabaseException extends RuntimeException {
-
-    private final ErrorCode errorCode;
+/**
+ * Excepción lanzada cuando una operación de base de datos falla.
+ */
+public class DatabaseException extends BaseBusinessException {
 
     public DatabaseException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
+        super(errorCode);
     }
 
     public DatabaseException(ErrorCode errorCode, Object... args) {
-        super(errorCode.getMessage(args));
-        this.errorCode = errorCode;
-    }
-
-    public ErrorCode getErrorCode() {
-        return errorCode;
+        super(errorCode, args);
     }
 }

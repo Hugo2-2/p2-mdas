@@ -6,15 +6,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.GM2.model.domain.Alquiler;
 import com.GM2.model.domain.Embarcacion;
@@ -23,305 +15,126 @@ import com.GM2.model.repository.AlquilerRepository;
 import com.GM2.model.repository.EmbarcacionRepository;
 import com.GM2.model.repository.ReservaRepository;
 
-/**
- * Controlador REST de la API de reservas.
- *
- * @author gm2equipo1
- * @version 1.0
- */
-
-//Clean Code - Reglas de comentarios: Comentario redundate sobre @RestController
-@RestController 
-// Clean Code - Reglas de comentarios: Comentario redundate sobre @RequestMapping
+@RestController
 @RequestMapping(path = "api/reservas", produces = "application/json")
 public class ReservaRestController {
+    private final ReservaRepository reservaRepository;
+    private final EmbarcacionRepository embarcacionRepository;
+    private final AlquilerRepository alquilerRepository;
 
-    // Repositorios necesarios para acceder a la BBDD.
-    ReservaRepository reservaRepository;
-    EmbarcacionRepository embarcacionRepository;
-    AlquilerRepository alquilerRepository;
-
-    // Constructor con inyección de dependencias.
-    public ReservaRestController(ReservaRepository reservaRepository,
-                                 EmbarcacionRepository embarcacionRepository,
-                                 AlquilerRepository alquilerRepository) {
+    public ReservaRestController(ReservaRepository reservaRepository, EmbarcacionRepository embarcacionRepository, AlquilerRepository alquilerRepository) {
         this.reservaRepository = reservaRepository;
         this.embarcacionRepository = embarcacionRepository;
         this.alquilerRepository = alquilerRepository;
-
-        // Configuración de la ruta del archivo SQL (necesario por la arquitectura de AbstractRepository).
-        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
-        this.reservaRepository.setSqlQueriesFileName(sqlQueriesFileName);
-        this.embarcacionRepository.setSqlQueriesFileName(sqlQueriesFileName);
-        this.alquilerRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
-    // Clean Code - Regla 7: Se han eliminado los marcadores de separación visuales (ej. === MÉTODOS GET ===) para evitar ruido innecesario en el código.
-    /**
-     * Obtener la lista completa de reservas (GET)
-     *
-     * @return ResponseEntity con la lista de reservas y estado 200 (OK) si se ha podido obtener correctamente,
-     * 204 (No Content) si la lista está vacía, y en caso de error: 500 (Internal Server Error)
-     */
     @GetMapping
     public ResponseEntity<List<Reserva>> getAllReservas() {
         try {
             List<Reserva> reservas = reservaRepository.findAllReservas();
-            //Clean Code - Reglas de comentarios: Comentario redundate sobre código de estado
-            if (reservas == null || reservas.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            //Clean Code - Reglas de comentarios: Comentario redundate sobre código de estado
-            return new ResponseEntity<>(reservas, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            return (reservas == null || reservas.isEmpty()) ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(reservas, HttpStatus.OK);
+        } catch (Exception e) { return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
-    /**
-     * Obtener la lista de reservas futuras dada una fecha (GET)
-     *
-     * @param fecha Fecha de referencia para filtrar las reservas futuras
-     * @return ResponseEntity con la lista de reservas futuras y estado 200 (OK) si se ha podido obtener correctamente,
-     * 204 (No Content) si no hay resultados, y en caso de error: 500 (Internal Server Error)
-     */
     @GetMapping(params = "fecha")
     public ResponseEntity<List<Reserva>> getReservasFuturas(@RequestParam LocalDate fecha) {
         try {
-            return filtrarReservasFuturas(fecha);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            List<Reserva> todas = reservaRepository.findAllReservas();
+            List<Reserva> futuras = new ArrayList<>();
+            if (todas != null) { for (Reserva r : todas) { if (r.getDate().isAfter(fecha)) futuras.add(r); } }
+            return futuras.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(futuras, HttpStatus.OK);
+        } catch (Exception e) { return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
-    private ResponseEntity<List<Reserva>> filtrarReservasFuturas(LocalDate fecha) {
-        List<Reserva> todasReservas = reservaRepository.findAllReservas();
-        List<Reserva> reservasFuturas = new ArrayList<>();
-
-        if (todasReservas != null) {
-            for (Reserva reserva : todasReservas) {
-                if (reserva.getDate().isAfter(fecha)) {
-                    reservasFuturas.add(reserva);
-                }
-            }
-        }
-
-        if (reservasFuturas.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(reservasFuturas, HttpStatus.OK);
-    }
-
-    /**
-     * Obtener la información concreta de una reserva dado su identificador (GET)
-     *
-     * @param id Identificador de la reserva
-     * @return ResponseEntity con la información de la reserva y estado 200 (OK) si se ha podido obtener correctamente
-     * y en caso de error: 404 (Not Found) o 500 (Internal Server Error)
-     */
     @GetMapping("/{id}")
     public ResponseEntity<Reserva> getReservaById(@PathVariable Integer id) {
         try {
             Reserva reserva = reservaRepository.findReservaById(id);
-            //Clean Code - Reglas de comentarios: Comentario redundate sobre código de estado
-            if (reserva == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(reserva, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            return reserva == null ? new ResponseEntity<>(HttpStatus.NOT_FOUND) : new ResponseEntity<>(reserva, HttpStatus.OK);
+        } catch (Exception e) { return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
-    /**
-     * Crea una nueva reserva (POST)
-     *
-     * @param nuevaReserva Reserva a crear
-     * @return ResponseEntity con la reserva creada y estado 201 (Created) si se ha podido crear correctamente
-     * y en caso de error: 409 (Conflict), 422 (Unprocessable Entity) o 500 (Internal Server Error)
-     */
     @PostMapping(consumes = "application/json")
     public ResponseEntity<Reserva> createReserva(@RequestBody Reserva nuevaReserva) {
-        try {
-            return procesarCreacionReserva(nuevaReserva);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        try { return procesarCreacionReserva(nuevaReserva); }
+        catch (Exception e) { return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
     private ResponseEntity<Reserva> procesarCreacionReserva(Reserva nuevaReserva) {
-        Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(nuevaReserva.getBoatRegistration());
-        if (embarcacion == null) {
-            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-
-        if ((nuevaReserva.getSeats() + 1) > embarcacion.getSeats()) {
-            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-
-        if (isEmbarcacionOcupada(nuevaReserva.getBoatRegistration(), nuevaReserva.getDate())) {
-            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-        }
-
-        double calculatedPriceInEuros = calcularPrecioReserva(nuevaReserva.getSeats());
-        nuevaReserva.setPrice(calculatedPriceInEuros);
-
-        boolean exito = reservaRepository.addReserva(nuevaReserva);
-
-        if (exito) return new ResponseEntity<>(nuevaReserva, HttpStatus.CREATED);
-        else return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        Embarcacion emb = embarcacionRepository.findEmbarcacionByMatricula(nuevaReserva.getBoatRegistration());
+        if (emb == null) return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        if ((nuevaReserva.getSeats() + 1) > emb.getSeats()) return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        if (isEmbarcacionOcupada(nuevaReserva.getBoatRegistration(), nuevaReserva.getDate())) return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        nuevaReserva.setPrice(Reserva.PRICE_PER_SEAT * nuevaReserva.getSeats());
+        boolean ok = reservaRepository.addReserva(nuevaReserva);
+        return ok ? new ResponseEntity<>(nuevaReserva, HttpStatus.CREATED) : new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /**
-     * Modificar la fecha de una reserva futura (PATCH)
-     *
-     * @param id Identificador de la reserva
-     * @param datosNuevos Objeto Reserva con la nueva fecha
-     * @return ResponseEntity con la reserva actualizada y estado 200 (OK) si se ha podido actualizar correctamente
-     * y en caso de error: 400 (Bad Request), 404 (Not Found), 409 (Conflict) o 500 (Internal Server Error)
-     */
     @PatchMapping("/{id}/fecha")
     public ResponseEntity<Reserva> updateReservaFecha(@PathVariable Integer id, @RequestBody Reserva datosNuevos) {
         try {
-            return procesarUpdateReservaFecha(id, datosNuevos);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            Reserva existente = reservaRepository.findReservaById(id);
+            if (existente == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            LocalDate nuevaFecha = datosNuevos.getDate();
+            if (nuevaFecha == null || nuevaFecha.isBefore(LocalDate.now())) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            if (isEmbarcacionOcupada(existente.getBoatRegistration(), nuevaFecha)) return new ResponseEntity<>(HttpStatus.CONFLICT);
+            existente.setDate(nuevaFecha);
+            boolean ok = reservaRepository.updateReserva(existente);
+            return ok ? new ResponseEntity<>(existente, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) { return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
-    private ResponseEntity<Reserva> procesarUpdateReservaFecha(Integer id, Reserva datosNuevos) {
-        Reserva reservaExistente = reservaRepository.findReservaById(id);
-        if (reservaExistente == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-        LocalDate nuevaFecha = datosNuevos.getDate();
-        if (nuevaFecha == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-        if (nuevaFecha.isBefore(LocalDate.now())) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        if (isEmbarcacionOcupada(reservaExistente.getBoatRegistration(), nuevaFecha)) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-
-        reservaExistente.setDate(nuevaFecha);
-        boolean exito = reservaRepository.updateReserva(reservaExistente);
-
-        if (exito) return new ResponseEntity<>(reservaExistente, HttpStatus.OK);
-        else return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    /**
-     * Modificar descripción y plazas de una reserva (PATCH)
-     *
-     * @param id Identificador de la reserva
-     * @param datosNuevos Objeto Reserva con los nuevos detalles
-     * @return ResponseEntity con la reserva actualizada y estado 200 (OK) si se ha podido actualizar correctamente
-     * y en caso de error: 404 (Not Found), 422 (Unprocessable Entity) o 500 (Internal Server Error)
-     */
     @PatchMapping("/{id}/detalles")
     public ResponseEntity<Reserva> updateReservaDetalles(@PathVariable Integer id, @RequestBody Reserva datosNuevos) {
         try {
-            return procesarUpdateReservaDetalles(id, datosNuevos);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    private ResponseEntity<Reserva> procesarUpdateReservaDetalles(Integer id, Reserva datosNuevos) {
-        Reserva reservaExistente = reservaRepository.findReservaById(id);
-        if (reservaExistente == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-        if (datosNuevos.getDescription() != null) {
-            reservaExistente.setDescription(datosNuevos.getDescription());
-        }
-
-        if (datosNuevos.getSeats() > 0) {
-            Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(reservaExistente.getBoatRegistration());
-
-            if (embarcacion != null && (datosNuevos.getSeats() + 1) > embarcacion.getSeats()) {
-                return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+            Reserva existente = reservaRepository.findReservaById(id);
+            if (existente == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            if (datosNuevos.getDescription() != null) existente.setDescription(datosNuevos.getDescription());
+            if (datosNuevos.getSeats() > 0) {
+                Embarcacion emb = embarcacionRepository.findEmbarcacionByMatricula(existente.getBoatRegistration());
+                if (emb != null && (datosNuevos.getSeats() + 1) > emb.getSeats()) return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+                existente.setSeats(datosNuevos.getSeats());
+                existente.setPrice(Reserva.PRICE_PER_SEAT * datosNuevos.getSeats());
             }
-
-            reservaExistente.setSeats(datosNuevos.getSeats());
-
-            double calculatedPriceInEuros = 40.0 * datosNuevos.getSeats();
-            reservaExistente.setPrice(calculatedPriceInEuros);
-        }
-
-        boolean exito = reservaRepository.updateReserva(reservaExistente);
-
-        if (exito) return new ResponseEntity<>(reservaExistente, HttpStatus.OK);
-        else return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            boolean ok = reservaRepository.updateReserva(existente);
+            return ok ? new ResponseEntity<>(existente, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) { return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
-    /**
-     * Cancelar una reserva existente (DELETE)
-     *
-     * @param id Identificador de la reserva
-     * @return ResponseEntity con estado 204 (No Content) si se ha podido cancelar correctamente
-     * y en caso de error: 400 (Bad Request), 404 (Not Found) o 500 (Internal Server Error)
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReserva(@PathVariable Integer id) {
         try {
             Reserva reserva = reservaRepository.findReservaById(id);
             if (reserva == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-            // VALIDACIÓN: No permitir cancelar reservas que ya han pasado.
-            if (reserva.getDate().isBefore(LocalDate.now())) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-
-            boolean exito = reservaRepository.deleteReserva(id);
-
-            //Clean Code - Reglas de comentarios: Comentario redundate sobre código de estado
-            if (exito) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            else return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    //Clean Code - Regla 3: Método extraído para mantener homogeneidad de abstracción
-    private double calcularPrecioReserva(int seats) {
-        return 40.0 * seats;
+            if (reserva.getDate().isBefore(LocalDate.now())) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            boolean ok = reservaRepository.deleteReserva(id);
+            return ok ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) { return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
     /**
-     * Método auxiliar para comprobar si una embarcación está ocupada en una fecha específica.
-     * Revisa conflictos tanto en la tabla de ALQUILERES como en la de RESERVAS.
-     *
-     * @param matricula Matrícula de la embarcación
-     * @param fecha Fecha a comprobar
-     * @return true si está ocupada, false si está libre
+     * Refactoring 1.4: Extract Method — se extraen tieneConflictoConAlquileres y tieneConflictoConReservas.
      */
     private boolean isEmbarcacionOcupada(String matricula, LocalDate fecha) {
-        // 1. Comprobar conflictos con ALQUILERES (Rango de fechas).
-        List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
-        if (alquileres != null) {
-            for (Alquiler alquiler : alquileres) {
-                if (alquiler.getBoatRegistration().equals(matricula)) {
-                    // Lógica: Si la fecha solicitada NO es antes del inicio Y NO es después del fin,
-                    // significa que está DENTRO del periodo de alquiler.
-                    if (!fecha.isBefore(alquiler.getStartDate()) && !fecha.isAfter(alquiler.getEndDate())) {
-                        return true; // Conflicto encontrado
-                    }
-                }
-            }
-        }
+        return tieneConflictoConAlquileres(matricula, fecha) || tieneConflictoConReservas(matricula, fecha);
+    }
 
-        // 2. Comprobar conflictos con OTRAS RESERVAS (Fecha única).
-        List<Reserva> reservas = reservaRepository.findAllReservas();
-        if (reservas != null) {
-            for (Reserva r : reservas) {
-                // Si es el mismo barco y el mismo día -> Conflicto.
-                if (r.getBoatRegistration().equals(matricula) && r.getDate().equals(fecha)) {
-                    return true;
-                }
-            }
+    private boolean tieneConflictoConAlquileres(String matricula, LocalDate fecha) {
+        List<Alquiler> alquileres = alquilerRepository.findAllAlquileres();
+        if (alquileres == null) return false;
+        for (Alquiler a : alquileres) {
+            if (a.getBoatRegistration().equals(matricula) && !fecha.isBefore(a.getStartDate()) && !fecha.isAfter(a.getEndDate()))
+                return true;
         }
-        return false; // Está libre
+        return false;
+    }
+
+    private boolean tieneConflictoConReservas(String matricula, LocalDate fecha) {
+        List<Reserva> reservas = reservaRepository.findAllReservas();
+        if (reservas == null) return false;
+        for (Reserva r : reservas) {
+            if (r.getBoatRegistration().equals(matricula) && r.getDate().equals(fecha)) return true;
+        }
+        return false;
     }
 }

@@ -32,36 +32,29 @@ public class Acompanante {
         this.rentalId = rentalId;
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public int getId() {
         return id;
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setId(int id) {
         this.id = id;
     }
-    
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
+
     public String getNationalId() {
         return nationalId;
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setNationalId(String nationalId) {
         this.nationalId = nationalId;
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public int getRentalId() {
         return rentalId;
     }
 
-    //Clean Code - Reglas de comentarios: Comentario redundate sobre getters y setters
     public void setRentalId(int rentalId) {
         this.rentalId = rentalId;
     }
-
 
     /**
      * Representación de un acompanante en String.

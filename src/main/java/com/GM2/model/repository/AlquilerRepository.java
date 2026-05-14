@@ -6,7 +6,6 @@ import com.GM2.model.domain.Acompanante;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
@@ -22,53 +21,49 @@ import java.util.List;
  * @version 1.0
  */
 @Repository
-public class AlquilerRepository extends AbstractRepository{
+public class AlquilerRepository extends AbstractRepository {
 
-    private AcompananteRepository acompanantesRepository;
-    
+    private final AcompananteRepository acompanantesRepository;
 
     /**
      * Constructor del repositorio de alquileres.
      * 
+     * Refactoring 6.1: Se delega la inicialización del JdbcTemplate y SQL properties
+     * al constructor de {@link AbstractRepository}.
+     *
      * @param jdbcTemplate Template JDBC para operaciones de base de datos
      * @param acompanantesRepository Repositorio de acompañantes para cargar relaciones
      */
     public AlquilerRepository(JdbcTemplate jdbcTemplate, AcompananteRepository acompanantesRepository) {
-        this.jdbcTemplate = jdbcTemplate;
+        super(jdbcTemplate);
         this.acompanantesRepository = acompanantesRepository;
-
-        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
-        this.setSqlQueriesFileName(sqlQueriesFileName);
-        this.acompanantesRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
     /**
      * Obtiene todos los alquileres registrados en el sistema.
      * 
+     * Refactoring 7.3: Extraído el RowMapper anónimo como lambda.
+     *
      * @return Lista de todos los objetos {@link Alquiler} registrados o null si ocurre un error.
      */
     public List<Alquiler> findAllAlquileres() {
         try {
-            String query = sqlQueries.getProperty("select-findAllAlquileres");
-            if (query != null ) {
-                List<Alquiler> result = jdbcTemplate.query(query, new RowMapper<Alquiler>() {
-                    public Alquiler mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        int idAlquiler = rs.getInt("id");
-                        List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(idAlquiler);
-                        AlquilerRentalDetails rentalDetails = new AlquilerRentalDetails(
-                                rs.getDate("fechainicio").toLocalDate(),
-                                rs.getDate("fechafin").toLocalDate(),
-                                rs.getDouble("precio"),
-                                rs.getInt("plazas"),
-                                rs.getString("usuario_dni"),
-                                rs.getString("matricula_embarcacion")
-                        );
-                        return new Alquiler(idAlquiler, rentalDetails, acompanantes);
-                    };
-                });
+            String query = getSqlQuery("select-findAllAlquileres");
+            if (query == null) return null;
 
-                return result;
-            } else return null;
+            return getJdbcTemplate().query(query, (rs, rowNum) -> {
+                int idAlquiler = rs.getInt("id");
+                List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(idAlquiler);
+                AlquilerRentalDetails rentalDetails = new AlquilerRentalDetails(
+                        rs.getDate("fechainicio").toLocalDate(),
+                        rs.getDate("fechafin").toLocalDate(),
+                        rs.getDouble("precio"),
+                        rs.getInt("plazas"),
+                        rs.getString("usuario_dni"),
+                        rs.getString("matricula_embarcacion")
+                );
+                return new Alquiler(idAlquiler, rentalDetails, acompanantes);
+            });
         } catch (DataAccessException exception) {
             System.err.println("Unable to find alquileres");
             exception.printStackTrace();
@@ -84,12 +79,9 @@ public class AlquilerRepository extends AbstractRepository{
      */
     public Alquiler findAlquilerById(int id) {
         try {
-            String query = sqlQueries.getProperty("select-findAlquilerById");
-            Alquiler result = jdbcTemplate.query(query, this::mapRowToAlquiler, id);
-            if (result != null )
-                return result;
-            else return null;
-        } catch(DataAccessException exception) {
+            String query = getSqlQuery("select-findAlquilerById");
+            return getJdbcTemplate().query(query, this::mapRowToAlquiler, id);
+        } catch (DataAccessException exception) {
             System.err.println("Unable to find alquiler with id: " + id);
             exception.printStackTrace();
             return null;
@@ -97,37 +89,24 @@ public class AlquilerRepository extends AbstractRepository{
     }
 
     /**
-     * Extrae y mapea la fila de un ResultSet a un objeto Alquiler.
-     * Este método funciona como un ResultSetExtractor que solo procesa un resultado.
-     * Mueve el cursor a la fila; si no hay filas, devuelve null.
-     *  
-     * @param row El conjunto de resultados (ResultSet) completo devuelto por la consulta JDBC.
-     * @return Un objeto {@link Alquiler} si se encuentra una fila,
-     * o null si el ResultSet está vacío o si ocurre una SQLException.  
+     * ResultSetExtractor para mapear la primera fila del ResultSet a un Alquiler.
      */
     private Alquiler mapRowToAlquiler(ResultSet row) {
         try {
-
             if (row.first()) {
                 int id = row.getInt("id");
-                Date fechainicio = row.getDate("fechainicio");
-                Date fechafin = row.getDate("fechafin");
-                double precio = row.getDouble("precio");
-                int plazas = row.getInt("plazas");
-                String usuario_dni = row.getString("usuario_dni");
-                String matricula_embarcacion = row.getString("matricula_embarcacion");
-                
-                List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
                 AlquilerRentalDetails rentalDetails = new AlquilerRentalDetails(
-                        fechainicio.toLocalDate(), fechafin.toLocalDate(), precio, plazas, usuario_dni, matricula_embarcacion
+                        row.getDate("fechainicio").toLocalDate(),
+                        row.getDate("fechafin").toLocalDate(),
+                        row.getDouble("precio"),
+                        row.getInt("plazas"),
+                        row.getString("usuario_dni"),
+                        row.getString("matricula_embarcacion")
                 );
-                Alquiler alquiler = new Alquiler(id, rentalDetails, acompanantes);
-                return alquiler;
-
-            } else {
-                return null;
+                List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(id);
+                return new Alquiler(id, rentalDetails, acompanantes);
             }
-
+            return null;
         } catch (SQLException exception) {
             System.err.println("Unable to retrieve results from the database");
             exception.printStackTrace();
@@ -138,45 +117,37 @@ public class AlquilerRepository extends AbstractRepository{
     /**
      * Agrega un nuevo alquiler a la base de datos.
      * 
+     * Refactoring 4.4: Simplificado {@code if (result <= 0) return false; return true;}
+     * a {@code return result > 0;} donde es posible.
+     *
      * @param alquiler Objeto {@link Alquiler} a agregar
      * @return true si se agregó correctamente, false en caso contrario
      */
     public boolean addAlquiler(Alquiler alquiler) {
         try {
-            String query = sqlQueries.getProperty("insert-addAlquiler");
-            String lastIdQuery = sqlQueries.getProperty("select-lastInsertedAlquilerId");
-            
-            if (query != null) {
+            String query = getSqlQuery("insert-addAlquiler");
+            String lastIdQuery = getSqlQuery("select-lastInsertedAlquilerId");
+            if (query == null) return false;
 
-                int result = jdbcTemplate.update(query,
-                   
-                   Date.valueOf(alquiler.getStartDate()),
-                   Date.valueOf(alquiler.getEndDate()),
-                   alquiler.getPrice(),
-                   alquiler.getSeats(),
-                   alquiler.getUserNationalId(),
-                   alquiler.getBoatRegistration()
-                   
-                );
+            int result = getJdbcTemplate().update(query,
+                    Date.valueOf(alquiler.getStartDate()),
+                    Date.valueOf(alquiler.getEndDate()),
+                    alquiler.getPrice(),
+                    alquiler.getSeats(),
+                    alquiler.getUserNationalId(),
+                    alquiler.getBoatRegistration()
+            );
 
-                if (result <= 0) {
-                    return false;
-                }
+            if (result <= 0) return false;
 
-                //Obtener el ID del último alquiler insertado (puedes ajustarlo según tu BBDD)
-                Integer idAlquiler = jdbcTemplate.queryForObject(lastIdQuery, Integer.class);
-                alquiler.setId(idAlquiler);
-
-                return true;
-
-            } else return false;
-
+            Integer idAlquiler = getJdbcTemplate().queryForObject(lastIdQuery, Integer.class);
+            alquiler.setId(idAlquiler);
+            return true;
         } catch (DataAccessException exception) {
             System.err.println("Unable to insert alquileres in the database");
             exception.printStackTrace();
+            return false;
         }
-
-        return false;
     }
 
     /**
@@ -187,67 +158,46 @@ public class AlquilerRepository extends AbstractRepository{
      */
     public boolean updateAlquiler(Alquiler alquiler) {
         try {
-            String query = sqlQueries.getProperty("update-updateAlquiler");
-            if (query != null) {
-                int result = jdbcTemplate.update(query,
-                        Date.valueOf(alquiler.getStartDate()),
-                        Date.valueOf(alquiler.getEndDate()),
-                        alquiler.getPrice(),
-                        alquiler.getSeats(),
-                        alquiler.getUserNationalId(),
-                        alquiler.getBoatRegistration(),
-                        alquiler.getId()
-                );
+            String query = getSqlQuery("update-updateAlquiler");
+            if (query == null) return false;
 
-                if (result <= 0) {
-                    return false;
-                }
-
-                return true;
-
-            } else return false;
-
+            int result = getJdbcTemplate().update(query,
+                    Date.valueOf(alquiler.getStartDate()),
+                    Date.valueOf(alquiler.getEndDate()),
+                    alquiler.getPrice(),
+                    alquiler.getSeats(),
+                    alquiler.getUserNationalId(),
+                    alquiler.getBoatRegistration(),
+                    alquiler.getId()
+            );
+            return result > 0;
         } catch (DataAccessException exception) {
             System.err.println("Unable to update alquileres in the database");
             exception.printStackTrace();
+            return false;
         }
-
-        return false;
     }
 
     /**
-     * Elimina un alquiler de la base de datos.
+     * Elimina un alquiler y sus acompañantes de la base de datos.
      * 
      * @param id ID del alquiler a eliminar
      * @return true si se eliminó correctamente, false en caso contrario     
      */
     public boolean deleteAlquiler(int id) {
         try {
-            //Eliminar acompanantes
-            String deleteAcom = sqlQueries.getProperty("delete-deleteAcompanantesByAlquiler");
-            jdbcTemplate.update(deleteAcom, id);
+            String deleteAcom = getSqlQuery("delete-deleteAcompanantesByAlquiler");
+            getJdbcTemplate().update(deleteAcom, id);
 
-            //Eliminar alquiler
-            String query = sqlQueries.getProperty("delete-deteleAlquiler");
-            if (query != null) {
-                int result = jdbcTemplate.update(query, id);
+            String query = getSqlQuery("delete-deteleAlquiler");
+            if (query == null) return false;
 
-                if (result <= 0) {
-                    return false;
-                }
-
-                return true;
-
-            } else return false;
-
+            int result = getJdbcTemplate().update(query, id);
+            return result > 0;
         } catch (DataAccessException exception) {
             System.err.println("Unable to delete alquileres in the database");
             exception.printStackTrace();
+            return false;
         }
-
-        return false;
     }
-
-
-
 }

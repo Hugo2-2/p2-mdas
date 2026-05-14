@@ -3,7 +3,6 @@ package com.GM2.model.repository;
 import com.GM2.model.domain.Patron;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
@@ -13,27 +12,36 @@ import java.util.List;
 
 /**
  * Repositorio para operaciones de base de datos relacionadas con los patrones.
- * Se encarga de consultar, insertar y validar la existencia de patrones.
- * Utiliza JdbcTemplate para ejecutar las consultas SQL definidas en un archivo de propiedades.
+ *
+ * Refactoring 6.1: Se usa super(jdbcTemplate) del AbstractRepository.
+ * Refactoring 7.3: Extraído RowMapper como lambda reutilizable.
+ * Refactoring 4.4: Simplificados patrones if/else return.
  */
 @Repository
 public class PatronRepository extends AbstractRepository {
 
     /**
-     * Constructor que recibe la instancia de JdbcTemplate.
-     * @param jdbcTemplate Instancia para ejecutar consultas SQL en la base de datos.
+     * RowMapper reutilizable para convertir una fila del ResultSet a un Patron.
      */
-    public PatronRepository(JdbcTemplate jdbcTemplate) { this.jdbcTemplate = jdbcTemplate; }
+    private final org.springframework.jdbc.core.RowMapper<Patron> patronRowMapper = (rs, rowNum) -> new Patron(
+            rs.getString("nombre"),
+            rs.getString("apellidos"),
+            rs.getString("dni"),
+            rs.getDate("fecha_nacimiento").toLocalDate(),
+            rs.getDate("fecha_expedicion_titulo").toLocalDate()
+    );
+
+    public PatronRepository(JdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate);
+    }
 
     /**
      * Obtiene todos los patrones registrados en la base de datos.
-     * @return Lista de patrones o null si ocurre un error.
      */
     public List<Patron> findAllPatrones() {
         try {
-            String query = sqlQueries.getProperty("select-findAllPatrones");
+            String query = getSqlQuery("select-findAllPatrones");
             return getPatrons(query);
-
         } catch (DataAccessException exception) {
             System.err.println("Unable to find patrones");
             exception.printStackTrace();
@@ -42,14 +50,12 @@ public class PatronRepository extends AbstractRepository {
     }
 
     /**
-     * Obtiene todos los patrones que actualmente no están asignados a ninguna embarcación.
-     * @return Lista de patrones libres o null si ocurre un error.
+     * Obtiene todos los patrones que no están asignados a ninguna embarcación.
      */
     public List<Patron> findAllFreePatrones() {
         try {
-            String query = sqlQueries.getProperty("select-findAllFreePatrones");
+            String query = getSqlQuery("select-findAllFreePatrones");
             return getPatrons(query);
-
         } catch (DataAccessException exception) {
             System.err.println("Unable to find patrones");
             exception.printStackTrace();
@@ -59,40 +65,20 @@ public class PatronRepository extends AbstractRepository {
 
     /**
      * Ejecuta una consulta SQL para obtener una lista de patrones.
-     * @param query Consulta SQL que retorna patrones
-     * @return Lista de objetos Patron o null si la consulta es nula
      */
     private List<Patron> getPatrons(String query) {
-        if (query != null) {
-            List<Patron> result = jdbcTemplate.query(query, new RowMapper<Patron>() {
-                public Patron mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return new Patron(
-                            rs.getString("nombre"),
-                            rs.getString("apellidos"),
-                            rs.getString("dni"),
-                            rs.getDate("fecha_nacimiento").toLocalDate(),
-                            rs.getDate("fecha_expedicion_titulo").toLocalDate()
-                    );
-                };
-            });
-
-            return result;
-        } else return null;
+        if (query == null) return null;
+        return getJdbcTemplate().query(query, patronRowMapper);
     }
 
     /**
      * Busca un patrón por su DNI.
-     * @param dni DNI del patrón
-     * @return Patron encontrado o null si no existe o hay error
      */
     public Patron findPatronByDNI(String dni) {
         try {
-            String query = sqlQueries.getProperty("select-findPatronByDNI");
-            Patron result = jdbcTemplate.query(query, this::mapRowToPatron, dni);
-            if (result != null )
-                return result;
-            else return null;
-        } catch(DataAccessException exception) {
+            String query = getSqlQuery("select-findPatronByDNI");
+            return getJdbcTemplate().query(query, this::mapRowToPatron, dni);
+        } catch (DataAccessException exception) {
             System.err.println("Unable to find patron with dni: " + dni);
             exception.printStackTrace();
             return null;
@@ -101,17 +87,13 @@ public class PatronRepository extends AbstractRepository {
 
     /**
      * Comprueba si un patrón ya está registrado en la base de datos.
-     * @param dni DNI del patrón
-     * @return true si el patrón existe, false en caso contrario o error
      */
     public boolean isRegistered(String dni) {
         try {
-            String query = sqlQueries.getProperty("select-countPatronByDNI");
-            Integer count = jdbcTemplate.queryForObject(query, Integer.class, dni);
-            if (count != null && count > 0 )
-                return true;
-            else return false;
-        } catch(DataAccessException exception) {
+            String query = getSqlQuery("select-countPatronByDNI");
+            Integer count = getJdbcTemplate().queryForObject(query, Integer.class, dni);
+            return count != null && count > 0;
+        } catch (DataAccessException exception) {
             System.err.println("Unable to find patron with dni: " + dni);
             exception.printStackTrace();
             return false;
@@ -119,27 +101,20 @@ public class PatronRepository extends AbstractRepository {
     }
 
     /**
-     * Convierte el primer resultado de un ResultSet en un objeto Patron.
-     * @param row ResultSet de la consulta
-     * @return Patron o null si no hay resultados
+     * ResultSetExtractor que mapea la primera fila a un Patron.
      */
     private Patron mapRowToPatron(ResultSet row) {
         try {
-
             if (row.first()) {
-                String nombre = row.getString("nombre");
-                String apellidos = row.getString("apellidos");
-                String dni = row.getString("dni");
-                Date fechaNacimiento = row.getDate("fecha_nacimiento");
-                Date fechaExpedicionTitulo = row.getDate("fecha_expedicion_titulo");
-
-                Patron patron = new Patron(nombre, apellidos, dni,
-                                    fechaNacimiento.toLocalDate(), fechaExpedicionTitulo.toLocalDate());
-                return patron;
-            } else {
-                return null;
+                return new Patron(
+                        row.getString("nombre"),
+                        row.getString("apellidos"),
+                        row.getString("dni"),
+                        row.getDate("fecha_nacimiento").toLocalDate(),
+                        row.getDate("fecha_expedicion_titulo").toLocalDate()
+                );
             }
-
+            return null;
         } catch (SQLException exception) {
             System.err.println("Unable to retrieve results from the database");
             exception.printStackTrace();
@@ -149,55 +124,43 @@ public class PatronRepository extends AbstractRepository {
 
     /**
      * Inserta un nuevo patrón en la base de datos.
-     * @param patron Objeto Patron a insertar
-     * @return true si la inserción fue exitosa, false en caso contrario
      */
     public boolean addPatron(Patron patron) {
         try {
-            String query = sqlQueries.getProperty("insert-addPatron");
-            if (query != null) {
-                int result = jdbcTemplate.update(query,
-                        patron.getName(),
-                        patron.getSurname(),
-                        patron.getNationalId(),
-                        patron.getBirthDate(),
-                        patron.getTitleIssueDate()
-                );
+            String query = getSqlQuery("insert-addPatron");
+            if (query == null) return false;
 
-                if (result > 0)
-                    return true;
-                else return false;
-
-            } else return false;
-
+            int result = getJdbcTemplate().update(query,
+                    patron.getName(),
+                    patron.getSurname(),
+                    patron.getNationalId(),
+                    patron.getBirthDate(),
+                    patron.getTitleIssueDate()
+            );
+            return result > 0;
         } catch (DataAccessException exception) {
             System.err.println("Unable to insert patron in the database");
             exception.printStackTrace();
+            return false;
         }
-
-        return false;
     }
 
     /**
-     * Actualiza los datos personales de un patrón.
-     * NO actualiza el DNI.
-     * @param patron Objeto con los datos ya modificados.
-     * @return true si se actualizó correctamente.
+     * Actualiza los datos personales de un patrón (no el DNI).
      */
     public boolean updatePatron(Patron patron) {
         try {
-            String query = sqlQueries.getProperty("update-updatePatronInfo");
-            if (query != null) {
-                int result = jdbcTemplate.update(query,
-                        patron.getName(),
-                        patron.getSurname(),
-                        patron.getBirthDate(),
-                        patron.getTitleIssueDate(),
-                        patron.getNationalId()
-                );
-                return result > 0;
-            }
-            return false;
+            String query = getSqlQuery("update-updatePatronInfo");
+            if (query == null) return false;
+
+            int result = getJdbcTemplate().update(query,
+                    patron.getName(),
+                    patron.getSurname(),
+                    patron.getBirthDate(),
+                    patron.getTitleIssueDate(),
+                    patron.getNationalId()
+            );
+            return result > 0;
         } catch (DataAccessException e) {
             System.err.println("Error al actualizar el patrón: " + patron.getNationalId());
             e.printStackTrace();
@@ -207,27 +170,18 @@ public class PatronRepository extends AbstractRepository {
 
     /**
      * Elimina un patrón de la base de datos.
-     * Utiliza el DNI proporcionado para localizar y borrar el registro correspondiente.
-     *
-     * @param dni El DNI del patrón que se desea eliminar.
-     * @return true si la operación de borrado afectó a alguna fila (éxito),
-     * false si no se encontró el patrón o si ocurrió un error durante la ejecución.
      */
     public boolean deletePatron(String dni) {
         try {
-            String query = sqlQueries.getProperty("delete-deletePatron");
+            String query = getSqlQuery("delete-deletePatron");
+            if (query == null) return false;
 
-            if (query != null) {
-                int rows = jdbcTemplate.update(query, dni);
-
-                // Si rows > 0 significa que al menos un registro fue eliminado
-                return rows > 0;
-            }
+            int rows = getJdbcTemplate().update(query, dni);
+            return rows > 0;
         } catch (Exception e) {
             System.err.println("Error al eliminar el patrón: " + dni);
             e.printStackTrace();
+            return false;
         }
-        return false;
     }
-
 }

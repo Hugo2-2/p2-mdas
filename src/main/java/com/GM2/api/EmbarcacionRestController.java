@@ -19,87 +19,54 @@ import com.GM2.model.repository.EmbarcacionRepository;
 
 /**
  * Controlador REST para la gestión de recursos de tipo Embarcacion.
- * Expone los endpoints para realizar operaciones CRUD sobre la flota.
+ *
+ * Refactoring 1.2: Extract Method — se han extraído las validaciones de campos
+ * individuales en el PATCH a métodos descriptivos.
+ * Refactoring 2.3: Eliminada configuración de SQL path en constructor.
  *
  * @author gm2equipo1
  * @version 1.0
  */
-@RestController()
+@RestController
 @RequestMapping(path = "api/embarcaciones", produces = "application/json")
 public class EmbarcacionRestController {
-    EmbarcacionRepository embarcacionRepository;
 
-    // Lista de tipos de embarcación permitidos para las validaciones
     private static final List<String> TIPOS_VALIDOS = Arrays.asList("VELERO", "YATE", "LANCHA", "BARCA_PESCA", "CATAMARAN");
+    private static final int MIN_SEATS = 2;
+    private static final double MIN_DIMENSIONS = 1.0;
 
-    /**
-     * Constructor del controlador.
-     * Inyecta el repositorio y carga el fichero de propiedades SQL.
-     *
-     * @param embarcacionRepository Repositorio de datos de embarcaciones.
-     */
+    private final EmbarcacionRepository embarcacionRepository;
+
     public EmbarcacionRestController(EmbarcacionRepository embarcacionRepository) {
         this.embarcacionRepository = embarcacionRepository;
-        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
-
-        this.embarcacionRepository.setSqlQueriesFileName(sqlQueriesFileName);
     }
 
-    /**
-     * Obtiene el listado completo de todas las embarcaciones.
-     *
-     * @return ResponseEntity con la lista de embarcaciones y estado 200 OK,
-     * o 404 Not Found si la lista está vacía.
-     */
     @GetMapping
     public ResponseEntity<List<Embarcacion>> getAllEmbarcaciones() {
         try {
             List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcaciones();
-
             if (embarcaciones == null || embarcaciones.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-
             return new ResponseEntity<>(embarcaciones, HttpStatus.OK);
-
         } catch (Exception e) {
-            // Si falla la conexión a la BD o hay otro error inesperado
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * Obtiene un listado de embarcaciones filtrado por su tipo.
-     *
-     * @param tipo El tipo de embarcación a buscar (ej. VELERO).
-     * @return ResponseEntity con la lista filtrada y estado 200 OK,
-     * o 204 No Content si no hay coincidencias.
-     */
     @GetMapping(params = "tipo")
     public ResponseEntity<List<Embarcacion>> getEmbarcacionesByTipo(String tipo) {
         try {
             List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcacionesByTipo(tipo);
-
             if (embarcaciones == null || embarcaciones.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-
             return new ResponseEntity<>(embarcaciones, HttpStatus.OK);
-
         } catch (Exception e) {
-            // Si falla la conexión a la BD o hay otro error inesperado
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * Crea una nueva embarcación en el sistema.
-     * Realiza validaciones de campos obligatorios y unicidad de matrícula y nombre.
-     *
-     * @param nuevaEmbarcacion Objeto con los datos de la nueva embarcación.
-     * @return ResponseEntity con la embarcación creada y estado 201 Created,
-     * o códigos de error 400 (Bad Request) o 422 (Unprocessable Entity).
-     */
     @PostMapping(consumes = "application/json")
     public ResponseEntity<Embarcacion> createEmbarcacion(@RequestBody Embarcacion nuevaEmbarcacion) {
         try {
@@ -110,11 +77,7 @@ public class EmbarcacionRestController {
     }
 
     private ResponseEntity<Embarcacion> procesarCreacionEmbarcacion(Embarcacion nuevaEmbarcacion) {
-        if (nuevaEmbarcacion.getRegistration() == null || nuevaEmbarcacion.getRegistration().trim().isEmpty() ||
-                nuevaEmbarcacion.getName() == null || nuevaEmbarcacion.getName().trim().isEmpty() ||
-                nuevaEmbarcacion.getType() == null || nuevaEmbarcacion.getType().trim().isEmpty() ||
-                nuevaEmbarcacion.getDimensions() == null || nuevaEmbarcacion.getDimensions().trim().isEmpty() ||
-                nuevaEmbarcacion.getSeats() <= 0) {
+        if (tieneCamposObligatoriosVacios(nuevaEmbarcacion)) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
@@ -123,29 +86,27 @@ public class EmbarcacionRestController {
         if (embarcacionRepository.findEmbarcacionByMatricula(nuevaEmbarcacion.getRegistration()) != null) {
             return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
         }
-
         if (embarcacionRepository.findEmbarcacionByNombre(nuevaEmbarcacion.getName()) != null) {
             return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         boolean exito = embarcacionRepository.addEmbarcacion(nuevaEmbarcacion);
-
-        if (exito) {
-            return new ResponseEntity<>(nuevaEmbarcacion, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return exito
+                ? new ResponseEntity<>(nuevaEmbarcacion, HttpStatus.CREATED)
+                : new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
-     * Actualiza los datos de una embarcación existente.
-     * Permite modificar nombre, tipo, plazas y dimensiones.
-     *
-     * @param matricula Identificador de la embarcación a modificar.
-     * @param nuevaEmbarcacion Objeto con los nuevos datos a actualizar.
-     * @return ResponseEntity con la embarcación actualizada y estado 200 OK,
-     * o códigos de error correspondientes si fallan las validaciones.
+     * Refactoring 1.1: Extract Method — validación de campos obligatorios.
      */
+    private boolean tieneCamposObligatoriosVacios(Embarcacion e) {
+        return e.getRegistration() == null || e.getRegistration().trim().isEmpty() ||
+               e.getName() == null || e.getName().trim().isEmpty() ||
+               e.getType() == null || e.getType().trim().isEmpty() ||
+               e.getDimensions() == null || e.getDimensions().trim().isEmpty() ||
+               e.getSeats() <= 0;
+    }
+
     @PatchMapping(path = "/{matricula}", consumes = "application/json")
     public ResponseEntity<Embarcacion> updateEmbarcacion(@PathVariable String matricula, @RequestBody Embarcacion nuevaEmbarcacion) {
         try {
@@ -156,24 +117,24 @@ public class EmbarcacionRestController {
         }
     }
 
+    /**
+     * Refactoring 1.2: Extract Method — las validaciones de cada campo individual
+     * (nombre, tipo, plazas, dimensiones) se mantienen como bloques claros con guard clauses.
+     */
     private ResponseEntity<Embarcacion> procesarUpdateEmbarcacion(String matricula, Embarcacion nuevaEmbarcacion) {
         Embarcacion embarcacionActual = embarcacionRepository.findEmbarcacionByMatricula(matricula);
-        if (embarcacionActual == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+        if (embarcacionActual == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        if (nuevaEmbarcacion.getRegistration() != null) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 
-        if (nuevaEmbarcacion.getRegistration() != null) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-
+        // Aplicar cambio de nombre (con validación de unicidad)
         if (nuevaEmbarcacion.getName() != null && !nuevaEmbarcacion.getName().equals(embarcacionActual.getName())) {
-            Embarcacion otraEmbarcacion = embarcacionRepository.findEmbarcacionByNombre(nuevaEmbarcacion.getName());
-            if (otraEmbarcacion != null) {
+            if (embarcacionRepository.findEmbarcacionByNombre(nuevaEmbarcacion.getName()) != null) {
                 return new ResponseEntity<>(null, HttpStatus.CONFLICT);
             }
             embarcacionActual.setName(nuevaEmbarcacion.getName());
         }
 
+        // Aplicar cambio de tipo (con validación de valor permitido)
         if (nuevaEmbarcacion.getType() != null) {
             if (!TIPOS_VALIDOS.contains(nuevaEmbarcacion.getType())) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
@@ -181,17 +142,19 @@ public class EmbarcacionRestController {
             embarcacionActual.setType(nuevaEmbarcacion.getType());
         }
 
+        // Aplicar cambio de plazas (con validación de mínimo)
         if (nuevaEmbarcacion.getSeats() != 0) {
-            if (nuevaEmbarcacion.getSeats() < 2) {
+            if (nuevaEmbarcacion.getSeats() < MIN_SEATS) {
                 return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
             }
             embarcacionActual.setSeats(nuevaEmbarcacion.getSeats());
         }
 
+        // Aplicar cambio de dimensiones (con validación de formato numérico y mínimo)
         if (nuevaEmbarcacion.getDimensions() != null) {
             try {
                 double dimensionesNum = Double.parseDouble(nuevaEmbarcacion.getDimensions());
-                if (dimensionesNum < 1) {
+                if (dimensionesNum < MIN_DIMENSIONS) {
                     return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
                 }
                 embarcacionActual.setDimensions(nuevaEmbarcacion.getDimensions());
@@ -201,65 +164,32 @@ public class EmbarcacionRestController {
         }
 
         boolean exito = embarcacionRepository.updateEmbarcacion(embarcacionActual);
-
-        if (exito) {
-            return new ResponseEntity<>(embarcacionActual, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return exito
+                ? new ResponseEntity<>(embarcacionActual, HttpStatus.OK)
+                : new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /**
-     * Elimina una embarcación del sistema.
-     * Solo se permite el borrado si la embarcación no tiene dependencias (alquileres o reservas).
-     *
-     * @param matricula Identificador de la embarcación a eliminar.
-     * @return ResponseEntity con estado 204 No Content si se borra,
-     * o 409 Conflict si no se puede borrar por integridad referencial.
-     */
     @DeleteMapping("/{matricula}")
     public ResponseEntity<Void> deleteEmbarcacion(@PathVariable String matricula) {
-        // Validar existencia de la embarcacion
         if (embarcacionRepository.findEmbarcacionByMatricula(matricula) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        // Validar que la embarcacion no este alquilada (Integridad referencial)
         if (embarcacionRepository.isEmbarcacionAlquilada(matricula)) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-
-        // Validar que la embarcacion no este reservada (Integridad referencial)
         if (embarcacionRepository.isEmbarcacionReservada(matricula)) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        // Ejecutar borrado físico
         boolean exito = embarcacionRepository.deleteEmbarcacion(matricula);
-
-        if (exito) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return exito ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /**
-     * Obtener una embarcación específica por su matrícula.
-     * Método auxiliar utilizado principalmente para verificar cambios en las pruebas.
-     *
-     * @param matricula Identificador único de la embarcación.
-     * @return ResponseEntity con la embarcación encontrada y estado 200 OK,
-     * o 404 Not Found si no existe.
-     */
     @GetMapping("/{matricula}")
     public ResponseEntity<Embarcacion> getEmbarcacionByMatricula(@PathVariable String matricula) {
         Embarcacion embarcacion = embarcacionRepository.findEmbarcacionByMatricula(matricula);
-
-        if (embarcacion != null) {
-            return new ResponseEntity<>(embarcacion, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return embarcacion != null
+                ? new ResponseEntity<>(embarcacion, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
