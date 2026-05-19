@@ -113,12 +113,14 @@ public class SocioRepository extends AbstractRepository {
         if (socio == null)
             throw new ValidationException(ErrorCode.SOCIO_NO_INGRESADO);
 
-        if (!socio.isOfLegalAge(java.time.LocalDate.now()) && socio.getIsTitular() != null && socio.getIsTitular())
+        //Extract to local variable: se extrae la variable isTitular para mejorar la legibilidad del código.
+        Boolean isTitular = socio.getIsTitular();
+        if (!socio.isOfLegalAge(java.time.LocalDate.now()) && isTitular != null && isTitular)
             throw new ValidationException(ErrorCode.SOCIO_DEBE_SER_MAYOR_DE_EDAD);
 
         boolean sqlRes = ejecutarInsertSocio(socio);
 
-        if (socio.getIsTitular() != null && socio.getIsTitular()) {
+        if (isTitular != null && isTitular) {
             Inscripcion inscripcion = new Inscripcion(socio.getNationalId());
             boolean resInscripcion = inscripcionRepository.addInscripcion(inscripcion);
             if (!(sqlRes && resInscripcion))
