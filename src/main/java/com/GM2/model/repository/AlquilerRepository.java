@@ -54,13 +54,16 @@ public class AlquilerRepository extends AbstractRepository {
             return getJdbcTemplate().query(query, (rs, rowNum) -> {
                 int idAlquiler = rs.getInt("id");
                 List<Acompanante> acompanantes = acompanantesRepository.findAcompananteByAlquiler(idAlquiler);
+                //Extract to local variable: se extrae la variable MATRICULA_EMBARCACION para mejorar la legibilidad del código.
+                String MATRICULA_EMBARCACION = rs.getString("matricula_embarcacion");
+                
                 AlquilerRentalDetails rentalDetails = new AlquilerRentalDetails(
                         rs.getDate("fechainicio").toLocalDate(),
                         rs.getDate("fechafin").toLocalDate(),
                         rs.getDouble("precio"),
                         rs.getInt("plazas"),
                         rs.getString("usuario_dni"),
-                        rs.getString("matricula_embarcacion")
+                        MATRICULA_EMBARCACION
                 );
                 return new Alquiler(idAlquiler, rentalDetails, acompanantes);
             });
