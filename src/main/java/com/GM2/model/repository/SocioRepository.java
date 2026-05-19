@@ -170,7 +170,7 @@ public class SocioRepository extends AbstractRepository {
             if (query == null) return false;
 
             int result = getJdbcTemplate().update(query,
-                    socio.getName(),
+                    extracted(socio),
                     socio.getSurname(),
                     socio.getNationalId(),
                     socio.getBirthDate(),
@@ -185,6 +185,12 @@ public class SocioRepository extends AbstractRepository {
             exception.printStackTrace();
             return false;
         }
+    }
+
+    //Refactorizacion automatica, Extract Method: se extrae el método extracted() para obtener el nombre del socio.
+
+    private String extracted(Socio socio) {
+        return socio.getName();
     }
 
     /**
@@ -204,7 +210,7 @@ public class SocioRepository extends AbstractRepository {
             String query = getSqlQuery("update-socio");
             if (query != null) {
                 int result = getJdbcTemplate().update(query,
-                        socio.getName(),
+                        extracted(socio),
                         socio.getSurname(),
                         socio.getBirthDate(),
                         socio.getAddress(),
